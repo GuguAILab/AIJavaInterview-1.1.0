@@ -1987,7 +1987,7 @@ if language_mode in MOCK_INTERVIEW_MODES:
                 user_answer = ""
                 skip_q = False
 
-                col_rec, col_skip = st.columns([2, 2])
+               col_rec, col_skip = st.columns([2, 2])
 
 with col_rec:
 
@@ -2016,39 +2016,58 @@ with col_rec:
 
             st.session_state["voice_answer"] = transcription
             st.session_state["audio_failed"] = False
-
             st.success("✅ Speech recognized successfully!")
 
         except Exception as e:
 
             st.session_state["voice_answer"] = ""
             st.session_state["audio_failed"] = True
-
-            st.error(f"Speech recognition failed : {e}")
+            st.error(f"Speech recognition failed: {e}")
 
         st.rerun()
 
-                with col_skip:
-                    skip_q = st.button("⏭️ Skip Question", use_container_width=True, key=f"skip_{idx}")
 
-                # ── Audio failed: show warning + Next Question button ──
-                if st.session_state.get("audio_failed", False):
-                    st.warning("⚠️ Could not understand your audio. Please try again or go to the next question.")
-                    if st.button("⏩ Next Question", use_container_width=True, key=f"next_fail_{idx}", type="primary"):
-                        st.session_state["interview_answers"].append({
-                            "question": current_q,
-                            "answer": "[Audio not recognized – skipped]",
-                            "feedback": "Audio was not recognized. Question was skipped automatically.",
-                            "score": 0
-                        })
-                        st.session_state["interview_index"] += 1
-                        st.session_state["voice_answer"] = ""
-                        st.session_state["audio_failed"] = False
-                        st.session_state["question_start_time"] = time.time()  # reset timer
-                        if st.session_state["interview_index"] >= total:
-                            st.session_state["interview_done"] = True
-                            st.session_state["interview_active"] = False
-                        st.rerun()
+# ← OUTSIDE with col_rec
+with col_skip:
+
+    skip_q = st.button(
+        "⏭️ Skip Question",
+        use_container_width=True,
+        key=f"skip_{idx}"
+    )
+
+
+# ← OUTSIDE both columns
+if st.session_state.get("audio_failed", False):
+
+    st.warning(
+        "⚠️ Could not understand your audio. Please try again or go to the next question."
+    )
+
+    if st.button(
+        "⏩ Next Question",
+        use_container_width=True,
+        key=f"next_fail_{idx}",
+        type="primary"
+    ):
+
+        st.session_state["interview_answers"].append({
+            "question": current_q,
+            "answer": "[Audio not recognized – skipped]",
+            "feedback": "Audio was not recognized.",
+            "score": 0
+        })
+
+        st.session_state["interview_index"] += 1
+        st.session_state["voice_answer"] = ""
+        st.session_state["audio_failed"] = False
+        st.session_state["question_start_time"] = time.time()
+
+        if st.session_state["interview_index"] >= total:
+            st.session_state["interview_done"] = True
+            st.session_state["interview_active"] = False
+
+        st.rerun()
 
                 # Show successfully recorded answer
                 if st.session_state["voice_answer"] and not st.session_state.get("audio_failed", False):
