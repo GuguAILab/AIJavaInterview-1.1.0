@@ -1,13 +1,26 @@
+# -*- coding: utf-8 -*-
+import os
+import sys
+
+# ── Force UTF-8 encoding on Windows (fixes emoji mojibake) ──
+os.environ.setdefault("PYTHONUTF8", "1")
+os.environ.setdefault("PYTHONIOENCODING", "utf-8")
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 import streamlit as st
 from groq import Groq
 import speech_recognition as sr
-
+import pyttsx3
 import threading
 import time
 import streamlit.components.v1 as components
 import json
 import hashlib
-import os
 import random
 import uuid
 
@@ -19,7 +32,7 @@ QUESTION_BANK_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "q
 
 def load_question_bank():
     if os.path.exists(QUESTION_BANK_FILE):
-        with open(QUESTION_BANK_FILE, "r") as f:
+        with open(QUESTION_BANK_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     return {}
 
@@ -54,13 +67,13 @@ def hash_password(password):
 
 def load_users():
     if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, "r") as f:
+        with open(USERS_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     return {}
 
 def save_users(users):
-    with open(USERS_FILE, "w") as f:
-        json.dump(users, f, indent=2)
+    with open(USERS_FILE, "w", encoding="utf-8") as f:
+        json.dump(users, f, indent=2, ensure_ascii=False)
 
 def register_user(username, password, email):
     users = load_users()
@@ -107,7 +120,7 @@ def reset_password(username, new_password):
     save_users(users)
     return True, "✅ Password reset successfully! Please log in with your new password."
 
-# ───────────────────────────────────────────────────
+# ───────────────────────────────────────────────────────
 # 💳 SUBSCRIPTION PLANS
 # ───────────────────────────────────────────────────
 PLANS = {
@@ -309,9 +322,9 @@ client = Groq(api_key="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"
 # -------------------------------
 # 🎤 Text-to-Speech setup
 # -------------------------------
-#engine = pyttsx3.init()
-#engine.setProperty("rate", 170)
-#engine.setProperty("volume", 0.9)
+engine = pyttsx3.init()
+engine.setProperty("rate", 170)
+engine.setProperty("volume", 0.9)
 
 def speak_async(text, lang="en"):
     """Speak asynchronously (supports English, Hindi, Spanish)."""
@@ -344,11 +357,14 @@ def speak_async(text, lang="en"):
 # -------------------------------
 st.set_page_config(page_title="AI Java Interview", page_icon="☕", layout="wide")
 
+# Force UTF-8 charset in the browser (fixes emoji rendering on Windows)
+st.markdown('<meta charset="UTF-8">', unsafe_allow_html=True)
+
 st.markdown("""
 <style>
 /* ── Remove Streamlit default top padding ── */
 .block-container {
-    padding-top: 2rem !important;
+    padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
 }
 section[data-testid="stSidebar"] > div {
@@ -568,11 +584,11 @@ body { background-color: #1f2937; }
 
 .hero-card{
 background:linear-gradient(135deg,#0B1725,#132A45);
-padding:14px 20px;
+padding:37px 100px 14px 100px;
 border-radius:10px;
 border:2px solid #1E88E5;
 box-shadow:0px 0px 12px rgba(30,136,229,.25);
-margin-bottom:12px;
+margin-bottom:0px;
 }
 
 .hero-title{
@@ -626,6 +642,16 @@ color:white;
 margin-top:15px;
 }
 @keyframes blink { 50% { opacity: 0.4; } }
+
+/* ── Kill all inter-element gaps on home page ── */
+.block-container { padding-left: 1rem !important; padding-right: 1rem !important; }
+div[data-testid="stHorizontalBlock"] { gap: 0px !important; }
+div[data-testid="column"] { padding: 0 !important; }
+div[data-testid="column"] > div { padding: 0 !important; }
+div[data-testid="stVerticalBlock"] > div { margin-bottom: 0 !important; gap: 0 !important; }
+iframe { display: block; margin: 0 !important; padding: 0 !important; }
+.element-container { margin: 0 !important; padding: 0 !important; }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -659,14 +685,14 @@ if not st.session_state["logged_in"]:
     if os.path.exists(_nit_path):
         with open(_nit_path, "rb") as _f:
             _nit_b64 = base64.b64encode(_f.read()).decode("utf-8")
-        _nit_img_tag = f'<img src="data:image/png;base64,{_nit_b64}" style="position:absolute;top:10px;right:14px;width:84px;height:84px;object-fit:contain;border-radius:10px;opacity:0.92;" alt="Nit Logo"/>'
+        _nit_img_tag = f'<img src="data:image/png;base64,{_nit_b64}" style="position:absolute;top:36px;right:14px;width:80px;height:80px;object-fit:contain;border-radius:10px;opacity:0.92;" alt="Nit Logo"/>'
 
     _robot_img_tag = ""
     _robot_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Robot.png")
     if os.path.exists(_robot_path):
         with open(_robot_path, "rb") as _f:
             _robot_b64 = base64.b64encode(_f.read()).decode("utf-8")
-        _robot_img_tag = f'<img src="data:image/png;base64,{_robot_b64}" style="position:absolute;top:10px;left:14px;width:84px;height:84px;object-fit:contain;border-radius:10px;opacity:0.92;" alt="Robot Logo"/>'
+        _robot_img_tag = f'<img src="data:image/png;base64,{_robot_b64}" style="position:absolute;top:36px;left:14px;width:80px;height:80px;object-fit:contain;border-radius:10px;opacity:0.92;" alt="Robot Logo"/>'
 
     st.markdown(f"""
 <div class="hero-card" style="position:relative;">
@@ -784,48 +810,197 @@ Smart Multilingual AI Career Assistant
 </div>
 """, unsafe_allow_html=True)
 
-    col1,col2,col3,col4=st.columns(4)
+    # ── Encode emp images for slider ──
+    import base64 as _b64
+    def _enc(fname):
+        p = os.path.join(os.path.dirname(os.path.abspath(__file__)), fname)
+        if os.path.exists(p):
+            with open(p,"rb") as f: return _b64.b64encode(f.read()).decode()
+        return ""
+    _e1,_e2,_e3 = _enc("emp1.png"), _enc("emp2.png"), _enc("emp3.png")
+    def _itag(b64, alt=""):
+        if b64: return f'<img src="data:image/png;base64,{b64}" class="slide-emp" alt="{alt}"/>'
+        return ""
+    _imgs = [_itag(_e1,"emp1"),_itag(_e2,"emp2"),_itag(_e3,"emp3"),
+             _itag(_e1,"emp1"),_itag(_e2,"emp2"),_itag(_e3,"emp3"),
+             _itag(_e1,"emp1"),_itag(_e2,"emp2"),_itag(_e3,"emp3"),
+             _itag(_e1,"emp1"),_itag(_e2,"emp2")]
 
-    with col1:
-        st.markdown('<div class="feature-box">☕ Java</div>',unsafe_allow_html=True)
+    # ── Encode left-panel images (int1, int2, bit, nitrkl) ──
+    _li1 = _enc("int1.png"); _li2 = _enc("int2.png")
+    _li3 = _enc("bit.png");  _li4 = _enc("Nitrkl.png")
+    _left_srcs_js = ",".join([
+        f'"{s}"' for s in [
+            f"data:image/png;base64,{_li1}" if _li1 else "",
+            f"data:image/png;base64,{_li2}" if _li2 else "",
+            f"data:image/png;base64,{_li3}" if _li3 else "",
+            f"data:image/png;base64,{_li4}" if _li4 else "",
+        ] if s
+    ])
+    _left_panel_html = """
+<!DOCTYPE html><html><head>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:transparent; }
+  .lp-wrapper {
+    width:100%; height:268px; border-radius:14px; overflow:hidden;
+    background:linear-gradient(160deg,#0d1b2a,#1a2744);
+    border:1.5px solid #1E88E5;
+    box-shadow:0 4px 18px rgba(0,0,0,0.4);
+    position:relative; cursor:pointer;
+  }
+  .lp-slide {
+    position:absolute; inset:0; display:flex;
+    flex-direction:column; align-items:center; justify-content:center;
+    padding:8px; opacity:0; transition:opacity 0.7s ease;
+  }
+  .lp-slide.active { opacity:1; }
+  .lp-img { width:100%; height:215px; object-fit:contain; border-radius:10px;
+    filter:drop-shadow(0 4px 14px rgba(0,0,0,0.55)); }
+  .lp-dots { position:absolute; bottom:5px; left:0; right:0;
+    display:flex; justify-content:center; gap:5px; }
+  .lp-dot { width:6px; height:6px; border-radius:50%;
+    background:rgba(255,255,255,0.28); transition:background 0.3s,transform 0.3s; }
+  .lp-dot.active { background:#42A5F5; transform:scale(1.45); }
+</style></head><body>
+<div class="lp-wrapper" id="lpw"></div>
+<script>
+  var srcs = [__LEFT_IMGS__];
+  var wrapper = document.getElementById('lpw');
+  var slides = [], dots = [], cur = 0, tmr;
+  var dotsEl = document.createElement('div'); dotsEl.className='lp-dots';
+  srcs.forEach(function(src,i){
+    var sl=document.createElement('div');
+    sl.className='lp-slide'+(i===0?' active':'');
+    var img=document.createElement('img'); img.src=src; img.className='lp-img';
+    sl.appendChild(img); wrapper.appendChild(sl); slides.push(sl);
+    var d=document.createElement('div'); d.className='lp-dot'+(i===0?' active':'');
+    d.addEventListener('click',(function(idx){ return function(){ goTo(idx); reset(); }; })(i));
+    dotsEl.appendChild(d); dots.push(d);
+  });
+  wrapper.appendChild(dotsEl);
+  function goTo(n){
+    slides[cur].classList.remove('active'); dots[cur].classList.remove('active');
+    cur=(n+slides.length)%slides.length;
+    slides[cur].classList.add('active'); dots[cur].classList.add('active');
+  }
+  function reset(){ clearInterval(tmr); tmr=setInterval(function(){ goTo(cur+1); },2800); }
+  wrapper.addEventListener('click',function(){ goTo(cur+1); reset(); });
+  reset();
+</script></body></html>
+""".replace("__LEFT_IMGS__", _left_srcs_js)
 
-    with col2:
-        st.markdown('<div class="feature-box">🐍 Python</div>',unsafe_allow_html=True)
 
-    with col3:
-        st.markdown('<div class="feature-box">📊 DSA</div>',unsafe_allow_html=True)
 
-    with col4:
-        st.markdown('<div class="feature-box">🏗️ System Design</div>',unsafe_allow_html=True)
+    # ── Topic Carousel Slider ──
+    _slider_html = """
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: transparent; font-family: 'Segoe UI', sans-serif; }
+  .slider-wrapper {
+    position: relative; width: 100%; max-width: 100%;
+    margin: 0; border-radius: 16px;
+    overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.45); height: 200px;
+  }
+  .slides-track { display: flex; height: 100%; transition: transform 0.55s cubic-bezier(.77,0,.18,1); }
+  .slide {
+    min-width: 100%; height: 100%; display: flex;
+    align-items: center; justify-content: space-between;
+    flex-direction: row; padding: 0 70px 0 50px;
+    gap: 18px; position: relative; overflow: hidden;
+  }
+  .slide-emp {
+    height: 190px; width: auto; max-width: 240px;
+    object-fit: cover; border-radius: 12px; flex-shrink: 0;
+    filter: drop-shadow(0 6px 18px rgba(0,0,0,0.45));
+    z-index: 2; margin-right: 4px;
+  }
+  .slide-left { display: flex; align-items: center; gap: 22px; flex: 1; min-width: 0; }
+  .slide-java      { background: linear-gradient(135deg,#0d1b2a,#1a3a5c,#1565C0); }
+  .slide-python    { background: linear-gradient(135deg,#0d2b1a,#1a5c30,#2e7d32); }
+  .slide-dsa       { background: linear-gradient(135deg,#1a0d2b,#3d1a6e,#6A1B9A); }
+  .slide-sysdesign { background: linear-gradient(135deg,#2b1a0d,#6e3d1a,#BF360C); }
+  .slide-aws       { background: linear-gradient(135deg,#2b200d,#7a5200,#F57F17); }
+  .slide-spring    { background: linear-gradient(135deg,#0d2b20,#1a6e50,#00695C); }
+  .slide-kafka     { background: linear-gradient(135deg,#2b0d0d,#6e1a1a,#b71c1c); }
+  .slide-docker    { background: linear-gradient(135deg,#0d1f2b,#1a5070,#0277BD); }
+  .slide-micro     { background: linear-gradient(135deg,#2b1a2b,#6e1a6e,#6A1B9A); }
+  .slide-sql       { background: linear-gradient(135deg,#0d2b2b,#1a6e6e,#00838F); }
+  .slide-ai        { background: linear-gradient(135deg,#1a2b0d,#4a6e1a,#558B2F); }
+  .slide::before {
+    content:''; position:absolute; width:280px; height:280px;
+    border-radius:50%; background:rgba(255,255,255,0.04); top:-60px; right:-40px;
+  }
+  .slide::after {
+    content:''; position:absolute; width:160px; height:160px;
+    border-radius:50%; background:rgba(255,255,255,0.05); bottom:-50px; left:20px;
+  }
+  .slide-icon { font-size:80px; line-height:1; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4)); flex-shrink:0; z-index:1; }
+  .slide-text { z-index:1; }
+  .slide-title { font-size:30px; font-weight:900; color:#fff; letter-spacing:0.5px; text-shadow:0 2px 8px rgba(0,0,0,0.5); margin-bottom:6px; }
+  .slide-sub   { font-size:14px; color:rgba(255,255,255,0.85); line-height:1.55; max-width:480px; }
+  .slide-tag   { display:inline-block; margin-top:12px; background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.3); color:#fff; font-size:12px; font-weight:700; padding:4px 14px; border-radius:20px; letter-spacing:0.5px; backdrop-filter:blur(4px); }
+  .arrow { position:absolute; top:50%; transform:translateY(-50%); width:44px; height:44px; background:rgba(0,0,0,0.35); border:1.5px solid rgba(255,255,255,0.25); border-radius:50%; color:#fff; font-size:22px; cursor:pointer; z-index:10; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); transition:background 0.2s,transform 0.2s; user-select:none; }
+  .arrow:hover { background:rgba(0,0,0,0.55); transform:translateY(-50%) scale(1.1); }
+  .arrow-left  { left:12px; }
+  .arrow-right { right:12px; }
+  .dots { display:flex; justify-content:center; gap:7px; margin-top:4px; margin-bottom:0; }
+  .dot  { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.25); cursor:pointer; transition:background 0.3s,transform 0.3s; }
+  .dot.active { background:#42A5F5; transform:scale(1.35); }
+</style>
+</head>
+<body>
+<div class="slider-wrapper">
+  <div class="slides-track" id="track">
+    <div class="slide slide-java"><div class="slide-left"><div class="slide-icon">&#9749;</div><div class="slide-text"><div class="slide-title">Core Java &amp; OOP</div><div class="slide-sub">Master Java fundamentals, OOP principles, Collections, Generics, JVM internals, and Java 8+ features like Streams &amp; Lambdas.</div><span class="slide-tag">13 Topics &middot; All Levels</span></div></div>__IMG0__</div>
+    <div class="slide slide-python"><div class="slide-left"><div class="slide-icon">&#128013;</div><div class="slide-text"><div class="slide-title">Python Interview</div><div class="slide-sub">Cover Python core, OOP, Data Structures, Django/Flask, NumPy, Pandas, async programming and ML/AI libraries.</div><span class="slide-tag">8 Topics &middot; All Levels</span></div></div>__IMG1__</div>
+    <div class="slide slide-dsa"><div class="slide-left"><div class="slide-icon">&#128202;</div><div class="slide-text"><div class="slide-title">DSA Problems</div><div class="slide-sub">Tackle arrays, trees, graphs, dynamic programming, sorting &amp; searching. Timed coding challenges with AI evaluation.</div><span class="slide-tag">30&#8211;50 min sessions</span></div></div>__IMG2__</div>
+    <div class="slide slide-sysdesign"><div class="slide-left"><div class="slide-icon">&#127959;&#65039;</div><div class="slide-text"><div class="slide-title">System Design</div><div class="slide-sub">Design scalable systems like URL shorteners, chat apps, ride-sharing platforms. Practice HLD, LLD &amp; capacity estimation.</div><span class="slide-tag">30&#8211;50 min deep sessions</span></div></div>__IMG3__</div>
+    <div class="slide slide-aws"><div class="slide-left"><div class="slide-icon">&#9729;&#65039;</div><div class="slide-text"><div class="slide-title">AWS Cloud</div><div class="slide-sub">EC2, S3, Lambda, RDS, IAM, EKS, CloudFormation &amp; AWS architecture design for solutions architects and developers.</div><span class="slide-tag">8 Topics &middot; Cloud Expert</span></div></div>__IMG4__</div>
+    <div class="slide slide-spring"><div class="slide-left"><div class="slide-icon">&#127807;</div><div class="slide-text"><div class="slide-title">Spring Boot</div><div class="slide-sub">Spring Core, MVC, Data JPA, Security, Cloud, Actuator, Batch &amp; Testing. Perfect for enterprise Java developers.</div><span class="slide-tag">8 Topics &middot; Enterprise Java</span></div></div>__IMG5__</div>
+    <div class="slide slide-kafka"><div class="slide-left"><div class="slide-icon">&#128293;</div><div class="slide-text"><div class="slide-title">Apache Kafka</div><div class="slide-sub">Kafka architecture, producers, consumers, partitions, Kafka Streams, Connect, Schema Registry &amp; performance tuning.</div><span class="slide-tag">8 Topics &middot; Event Streaming</span></div></div>__IMG6__</div>
+    <div class="slide slide-docker"><div class="slide-left"><div class="slide-icon">&#128051;</div><div class="slide-text"><div class="slide-title">DevOps &amp; Docker</div><div class="slide-sub">CI/CD pipelines, Docker containers, Kubernetes, Terraform, Jenkins, monitoring, Linux scripting &amp; GitOps practices.</div><span class="slide-tag">8 Topics &middot; DevOps Pro</span></div></div>__IMG7__</div>
+    <div class="slide slide-micro"><div class="slide-left"><div class="slide-icon">&#128230;</div><div class="slide-text"><div class="slide-title">Microservices</div><div class="slide-sub">Service discovery, API Gateway, Circuit Breaker, Saga pattern, event-driven architecture, gRPC &amp; distributed tracing.</div><span class="slide-tag">8 Topics &middot; Architecture</span></div></div>__IMG8__</div>
+    <div class="slide slide-sql"><div class="slide-left"><div class="slide-icon">&#128451;&#65039;</div><div class="slide-text"><div class="slide-title">SQL &amp; Databases</div><div class="slide-sub">SQL queries, joins, indexing, stored procedures, transactions, window functions, normalization &amp; NoSQL vs SQL comparison.</div><span class="slide-tag">8 Topics &middot; Data Expert</span></div></div>__IMG9__</div>
+    <div class="slide slide-ai"><div class="slide-left"><div class="slide-icon">&#129302;</div><div class="slide-text"><div class="slide-title">AI Agents &amp; LLMs</div><div class="slide-sub">LLM fundamentals, RAG, prompt engineering, AI agent design, vector databases, LangChain, fine-tuning &amp; MLOps.</div><span class="slide-tag">8 Topics &middot; AI/ML Track</span></div></div>__IMG10__</div>
+  </div>
+  <div class="arrow arrow-left" id="prevBtn">&#8249;</div>
+  <div class="arrow arrow-right" id="nextBtn">&#8250;</div>
+</div>
+<div class="dots" id="dots"></div>
+<script>
+  var track=document.getElementById('track');
+  var prevBtn=document.getElementById('prevBtn');
+  var nextBtn=document.getElementById('nextBtn');
+  var dotsEl=document.getElementById('dots');
+  var total=document.querySelectorAll('.slide').length;
+  var current=0; var timer;
+  for(var i=0;i<total;i++){
+    var d=document.createElement('div');
+    d.className='dot'+(i===0?' active':'');
+    d.setAttribute('data-i',i);
+    d.addEventListener('click',(function(idx){ return function(){ goTo(idx); resetTimer(); }; })(i));
+    dotsEl.appendChild(d);
+  }
+  function goTo(n){ current=(n+total)%total; track.style.transform='translateX(-'+(current*100)+'%)'; document.querySelectorAll('.dot').forEach(function(d,idx){ d.classList.toggle('active',idx===current); }); }
+  function next(){ goTo(current+1); }
+  function prev(){ goTo(current-1); }
+  function resetTimer(){ clearInterval(timer); timer=setInterval(next,3500); }
+  nextBtn.addEventListener('click',function(){ next(); resetTimer(); });
+  prevBtn.addEventListener('click',function(){ prev(); resetTimer(); });
+  timer=setInterval(next,3500);
+</script>
+</body>
+</html>
+"""
+    for idx, img in enumerate(_imgs):
+        _slider_html = _slider_html.replace(f'__IMG{idx}__', img)
 
-    col5,col6,col7,col8=st.columns(4)
-
-    with col5:
-        st.markdown('<div class="feature-box">🌱 Spring Boot</div>',unsafe_allow_html=True)
-
-    with col6:
-        st.markdown('<div class="feature-box">🤖 AI Agents</div>',unsafe_allow_html=True)
-
-    with col7:
-        st.markdown('<div class="feature-box">☁ AWS</div>',unsafe_allow_html=True)
-
-    with col8:
-        st.markdown('<div class="feature-box">🐳 Docker</div>',unsafe_allow_html=True)
-
-    col9,col10,col11,col12=st.columns(4)
-
-    with col9:
-        st.markdown('<div class="feature-box">⚙ DevOps</div>',unsafe_allow_html=True)
-
-    with col10:
-        st.markdown('<div class="feature-box">📦 Microservices</div>',unsafe_allow_html=True)
-
-    with col11:
-        st.markdown('<div class="feature-box">🗄 SQL</div>',unsafe_allow_html=True)
-
-    with col12:
-        st.markdown('<div class="feature-box">🔥 Kafka</div>',unsafe_allow_html=True)
-
+    # ── Layout: full-width topic carousel slider ──
+    components.html(_slider_html, height=240)
 
     # Tab switcher
     col_l, col_r, col_f, _ = st.columns([1, 1, 1, 1])
@@ -870,7 +1045,6 @@ Smart Multilingual AI Career Assistant
             else:
                 ok, result = login_user(login_user_input, login_pass_input)
                 if ok:
-                    # Auto-promote if admin email
                     ensure_admin_plan(login_user_input)
                     st.session_state["logged_in"]   = True
                     st.session_state["username"]     = login_user_input
@@ -939,7 +1113,6 @@ Smart Multilingual AI Career Assistant
     elif st.session_state["auth_page"] == "forgot":
         st.markdown("### 🔓 Reset Your Password")
 
-        # Step indicator
         steps = ["1️⃣ Enter Username", "2️⃣ Verify Email", "3️⃣ New Password"]
         step  = st.session_state["reset_step"]
         st.markdown(
@@ -951,7 +1124,6 @@ Smart Multilingual AI Career Assistant
         )
         st.markdown("---")
 
-        # ── STEP 1: Enter Username ──
         if step == 1:
             st.markdown("**Enter your registered username:**")
             with st.form("fp_step1"):
@@ -978,7 +1150,6 @@ Smart Multilingual AI Career Assistant
                 st.session_state["auth_msg"] = ""
                 st.rerun()
 
-        # ── STEP 2: Verify Email ──
         elif step == 2:
             st.markdown(f"**Verify email for account:** `{st.session_state['reset_username']}`")
             with st.form("fp_step2"):
@@ -1002,7 +1173,6 @@ Smart Multilingual AI Career Assistant
                 st.session_state["auth_msg"] = ""
                 st.rerun()
 
-        # ── STEP 3: Set New Password ──
         elif step == 3:
             st.markdown(f"**Set a new password for:** `{st.session_state['reset_username']}`")
             with st.form("fp_step3"):
@@ -1031,7 +1201,6 @@ Smart Multilingual AI Career Assistant
                 st.session_state["auth_msg"] = ""
                 st.rerun()
 
-        # Show messages
         if st.session_state["auth_msg"]:
             if "✅" in st.session_state["auth_msg"]:
                 st.success(st.session_state["auth_msg"])
@@ -1051,6 +1220,7 @@ if "show_admin" not in st.session_state:
     st.session_state["show_admin"] = False
 
 # ── Top bar: Welcome + Plan badge + Upgrade + Logout ──
+st.markdown('<div style="margin-top:80px;"></div>', unsafe_allow_html=True)
 uname   = st.session_state["username"]
 is_guest = uname == "Guest"
 
@@ -1060,15 +1230,8 @@ if not is_guest:
 else:
     active, days_left, plan_key = True, 999, "free_trial"
     plan_info = PLANS["free_trial"]
-st.markdown(
-    """
-    <div style="padding-top:20px;"></div>
-    """,
-    unsafe_allow_html=True
-)
 
-# ── Row 1: Welcome + Plan Badge + Logout ──
-col_w, col_plan, col_logout = st.columns([3, 3, 1])
+col_w, col_plan, col_upgrade, col_admin, col_logout = st.columns([3, 2, 2, 2, 1])
 with col_w:
     icon = "👤" if is_guest else ("👑" if st.session_state.get("is_admin") else "✅")
     st.markdown(f'<p style="color:#90CAF9; margin:0; padding-top:6px;">Welcome, <b>{icon} {uname}</b></p>', unsafe_allow_html=True)
@@ -1085,6 +1248,19 @@ with col_plan:
         )
     else:
         st.markdown('<span class="badge-expired">⚠️ Plan Expired</span>', unsafe_allow_html=True)
+with col_upgrade:
+    if st.button("💳 Plans & Pricing", use_container_width=True):
+        st.session_state["show_pricing"] = not st.session_state["show_pricing"]
+        st.session_state["show_admin"]   = False
+        st.rerun()
+with col_admin:
+    if st.session_state.get("is_admin"):
+        if st.button("👑 Admin Panel", use_container_width=True):
+            st.session_state["show_admin"]   = not st.session_state["show_admin"]
+            st.session_state["show_pricing"] = False
+            st.rerun()
+    else:
+        st.empty()
 with col_logout:
     if st.button("🚪 Logout", use_container_width=True):
         for key in ["logged_in","username","user_email","auth_page","auth_msg",
@@ -1092,26 +1268,6 @@ with col_logout:
             st.session_state[key] = False if key in ["logged_in","is_admin","show_pricing","show_admin"] else ""
         st.session_state["auth_page"] = "login"
         st.rerun()
-
-# ── Row 2: Plans & Pricing + Admin (below for smaller screens) ──
-_btn_cols = [1, 1, 2] if st.session_state.get("is_admin") else [1, 3]
-if st.session_state.get("is_admin"):
-    col_upgrade, col_admin, col_spacer2 = st.columns(_btn_cols)
-else:
-    col_upgrade, col_spacer2 = st.columns(_btn_cols)
-
-with col_upgrade:
-    if st.button("💳 Plans & Pricing", use_container_width=True):
-        st.session_state["show_pricing"] = not st.session_state["show_pricing"]
-        st.session_state["show_admin"]   = False
-        st.rerun()
-
-if st.session_state.get("is_admin"):
-    with col_admin:
-        if st.button("👑 Admin", use_container_width=True):
-            st.session_state["show_admin"]   = not st.session_state["show_admin"]
-            st.session_state["show_pricing"] = False
-            st.rerun()
 
 # ── Show expiry warning ──
 if not is_guest and not active:
@@ -1255,7 +1411,8 @@ if st.session_state.get("show_admin") and st.session_state.get("is_admin"):
         # Plan change dropdown for each user
         plan_options = list(PLANS.keys())
         new_plan = ucols[4].selectbox(
-            "", plan_options,
+            "",
+            plan_options,
             index=plan_options.index(user["plan"]) if user["plan"] in plan_options else 0,
             key=f"admin_plan_{user['username']}",
             label_visibility="collapsed"
@@ -1668,7 +1825,7 @@ with st.sidebar:
 if language_mode in MOCK_INTERVIEW_MODES:
     uploaded_file = None  # not needed in this mode
 
-    st.markdown(f'<div class="interview-header">{language_mode} – AI Interviewer</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="interview-header" style="margin-top:30px;">{language_mode} &#8211; AI Interviewer</div>', unsafe_allow_html=True)
 
     # ── Interview not started yet ──
     if not st.session_state["interview_active"] and not st.session_state["interview_done"]:
