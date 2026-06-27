@@ -1,7 +1,6 @@
 import streamlit as st
 from groq import Groq
 import speech_recognition as sr
-#import pyttsx3
 import threading
 import time
 import streamlit.components.v1 as components
