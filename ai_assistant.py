@@ -1997,84 +1997,34 @@ with col_rec:
     )
 
     if audio:
-
-        st.audio(audio["bytes"], format="audio/wav")
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
-            f.write(audio["bytes"])
-            audio_file = f.name
-
         try:
-            with open(audio_file, "rb") as file:
-
-                transcription = client.audio.transcriptions.create(
-                    file=file,
-                    model="whisper-large-v3",
-                    response_format="text"
-                )
-
+            ...
             st.session_state["voice_answer"] = transcription
             st.session_state["audio_failed"] = False
-            st.success("✅ Speech recognized successfully!")
 
         except Exception as e:
             st.session_state["voice_answer"] = ""
             st.session_state["audio_failed"] = True
             st.error(f"Speech recognition failed: {e}")
 
-        st.rerun()
-
-# ← OUTSIDE with col_rec
 with col_skip:
-
     skip_q = st.button(
         "⏭️ Skip Question",
         use_container_width=True,
         key=f"skip_{idx}"
     )
 
+# <-- Same indentation as "with col_skip"
+if st.session_state["voice_answer"] and not st.session_state.get("audio_failed", False):
 
-# ← OUTSIDE both columns
-if st.session_state.get("audio_failed", False):
+    st.success(f"✅ Recorded: {st.session_state['voice_answer']}")
 
-    st.warning(
-        "⚠️ Could not understand your audio. Please try again or go to the next question."
+    edited = st.text_area(
+        "✏️ Edit if needed:",
+        value=st.session_state["voice_answer"],
+        height=120,
+        key=f"voice_edit_{idx}"
     )
-
-    if st.button(
-        "⏩ Next Question",
-        use_container_width=True,
-        key=f"next_fail_{idx}",
-        type="primary"
-    ):
-
-        st.session_state["interview_answers"].append({
-            "question": current_q,
-            "answer": "[Audio not recognized – skipped]",
-            "feedback": "Audio was not recognized.",
-            "score": 0
-        })
-
-        st.session_state["interview_index"] += 1
-        st.session_state["voice_answer"] = ""
-        st.session_state["audio_failed"] = False
-        st.session_state["question_start_time"] = time.time()
-
-        if st.session_state["interview_index"] >= total:
-            st.session_state["interview_done"] = True
-            st.session_state["interview_active"] = False
-
-        st.rerun()
-
-                # Show successfully recorded answer
-                if st.session_state["voice_answer"] and not st.session_state.get("audio_failed", False):
-                    st.success(f"✅ Recorded: *{st.session_state['voice_answer']}*")
-                    edited = st.text_area(
-                        "✏️ Edit if needed:",
-                        value=st.session_state["voice_answer"],
-                        height=120,
-                        key=f"voice_edit_{idx}"
-                    )
                     st.session_state["voice_answer"] = edited
                     submit_answer = st.button("✅ Submit Answer", use_container_width=True, key=f"sub_{idx}", type="primary")
                 else:
