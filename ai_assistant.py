@@ -1986,8 +1986,7 @@ if language_mode in MOCK_INTERVIEW_MODES:
             else:
                 user_answer = ""
                 skip_q = False
-
-               col_rec, col_skip = st.columns([2, 2])
+col_rec, col_skip = st.columns([2, 2])
 
 with col_rec:
 
@@ -2019,13 +2018,11 @@ with col_rec:
             st.success("✅ Speech recognized successfully!")
 
         except Exception as e:
-
             st.session_state["voice_answer"] = ""
             st.session_state["audio_failed"] = True
             st.error(f"Speech recognition failed: {e}")
 
         st.rerun()
-
 
 # ← OUTSIDE with col_rec
 with col_skip:
