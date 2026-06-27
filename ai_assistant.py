@@ -1,7 +1,7 @@
 import streamlit as st
 from groq import Groq
 import speech_recognition as sr
-import pyttsx3
+#import pyttsx3
 import threading
 import time
 import streamlit.components.v1 as components
@@ -309,35 +309,10 @@ client = Groq(api_key="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"
 # -------------------------------
 # 🎤 Text-to-Speech setup
 # -------------------------------
-engine = pyttsx3.init()
-engine.setProperty("rate", 170)
-engine.setProperty("volume", 0.9)
+#engine = pyttsx3.init()
+#engine.setProperty("rate", 170)
+#engine.setProperty("volume", 0.9)
 
-def speak_async(text, lang="en"):
-    """Speak asynchronously (supports English, Hindi, Spanish)."""
-    def _speak():
-        try:
-            voices = engine.getProperty('voices')
-            if lang == "es":
-                for v in voices:
-                    if "spanish" in v.name.lower() or "es" in v.id.lower():
-                        engine.setProperty("voice", v.id)
-                        break
-            elif lang == "hi":
-                for v in voices:
-                    if "hindi" in v.name.lower() or "hi" in v.id.lower():
-                        engine.setProperty("voice", v.id)
-                        break
-            else:
-                for v in voices:
-                    if "english" in v.name.lower():
-                        engine.setProperty("voice", v.id)
-                        break
-            engine.say(text)
-            engine.runAndWait()
-        except RuntimeError:
-            pass
-    threading.Thread(target=_speak, daemon=True).start()
 
 # -------------------------------
 # 🎨 Page Config + Styles
