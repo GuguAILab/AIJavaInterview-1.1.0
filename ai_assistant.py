@@ -14,7 +14,9 @@ if sys.platform == "win32":
 
 import streamlit as st
 from groq import Groq
-import speech_recognition as sr
+
+# import speech_recognition as sr
+from streamlit_mic_recorder import mic_recorder
 
 import threading
 import time
@@ -2380,68 +2382,103 @@ if language_mode in MOCK_INTERVIEW_MODES:
                 user_answer = ""
                 skip_q = False
 
-                col_rec, col_skip = st.columns([2, 2])
-                with col_rec:
-                    if st.button(
-                        "🎙️ Record Answer", use_container_width=True, key=f"rec_{idx}"
-                    ):
-                        st.session_state["audio_failed"] = False
-                        recognizer = sr.Recognizer()
-                        try:
-                            with sr.Microphone() as source:
-                                st.info("🎤 Listening... Speak your answer!")
-                                recognizer.adjust_for_ambient_noise(
-                                    source, duration=0.5
-                                )
-                                audio = recognizer.listen(source, phrase_time_limit=30)
-                            recognized = recognizer.recognize_google(audio)
-                            st.session_state["voice_answer"] = recognized
-                            st.session_state["audio_failed"] = False
-                        except sr.UnknownValueError:
-                            st.session_state["audio_failed"] = True
-                            st.session_state["voice_answer"] = ""
-                        except sr.RequestError:
-                            st.session_state["audio_failed"] = True
-                            st.session_state["voice_answer"] = ""
-                        except Exception:
-                            st.session_state["audio_failed"] = True
-                            st.session_state["voice_answer"] = ""
-                        st.rerun()
+                # ── Browser-based mic recording (no PyAudio needed) ──
+                st.markdown("🎙️ **Click the mic below to record your answer:**")
+                audio_bytes = st.audio_input(
+                    "Record your answer", key=f"audio_input_{idx}"
+                )
 
-                with col_skip:
+                col_skip2, _ = st.columns([1, 3])
+                with col_skip2:
                     skip_q = st.button(
                         "⏭️ Skip Question", use_container_width=True, key=f"skip_{idx}"
                     )
 
-                # ── Audio failed: show warning + Next Question button ──
+                if audio_bytes is not None:
+                    st.session_state["audio_failed"] = False
+                    st.session_state["audio_error_msg"] = ""
+                    with st.spinner("🔍 Transcribing your speech…"):
+                        try:
+                            import tempfile
+
+                            with tempfile.NamedTemporaryFile(
+                                delete=False, suffix=".wav"
+                            ) as tmp:
+                                tmp.write(audio_bytes.read())
+                                temp_audio = tmp.name
+
+                            with open(temp_audio, "rb") as audio_file:
+
+                                transcription = client.audio.transcriptions.create(
+                                    file=audio_file,
+                                    model="whisper-large-v3",
+                                    response_format="text",
+                                )
+
+                                st.session_state["voice_answer"] = transcription
+                                st.session_state["audio_failed"] = False
+                                st.session_state["audio_error_msg"] = ""
+
+                        except Exception as e:
+                            st.session_state["audio_failed"] = True
+                            st.session_state["voice_answer"] = ""
+                            st.session_state["audio_error_msg"] = (
+                                f"🎤 Speech recognition failed: {e}"
+                            )
+                # ── Audio failed: warning + typed fallback ──
                 if st.session_state.get("audio_failed", False):
-                    st.warning(
-                        "⚠️ Could not understand your audio. Please try again or go to the next question."
+                    err_msg = st.session_state.get(
+                        "audio_error_msg", "⚠️ Could not understand audio."
                     )
-                    if st.button(
-                        "⏩ Next Question",
-                        use_container_width=True,
-                        key=f"next_fail_{idx}",
-                        type="primary",
-                    ):
-                        st.session_state["interview_answers"].append(
-                            {
-                                "question": current_q,
-                                "answer": "[Audio not recognized – skipped]",
-                                "feedback": "Audio was not recognized. Question was skipped automatically.",
-                                "score": 0,
-                            }
-                        )
-                        st.session_state["interview_index"] += 1
-                        st.session_state["voice_answer"] = ""
-                        st.session_state["audio_failed"] = False
-                        st.session_state["question_start_time"] = (
-                            time.time()
-                        )  # reset timer
-                        if st.session_state["interview_index"] >= total:
-                            st.session_state["interview_done"] = True
-                            st.session_state["interview_active"] = False
-                        st.rerun()
+                    st.warning(err_msg)
+                    st.markdown("**💬 Type your answer below instead:**")
+                    typed_fallback = st.text_area(
+                        "Your answer (typed):",
+                        value="",
+                        height=130,
+                        placeholder="Type your answer here and click Submit…",
+                        key=f"fallback_type_{idx}",
+                    )
+                    col_fb1, col_fb2 = st.columns(2)
+                    with col_fb1:
+                        if st.button(
+                            "✅ Submit Typed Answer",
+                            use_container_width=True,
+                            key=f"sub_typed_{idx}",
+                            type="primary",
+                        ):
+                            if typed_fallback.strip():
+                                st.session_state["voice_answer"] = (
+                                    typed_fallback.strip()
+                                )
+                                st.session_state["audio_failed"] = False
+                                st.session_state["audio_error_msg"] = ""
+                                st.rerun()
+                            else:
+                                st.error("Please type something before submitting.")
+                    with col_fb2:
+                        if st.button(
+                            "⏩ Skip This Question",
+                            use_container_width=True,
+                            key=f"next_fail_{idx}",
+                        ):
+                            st.session_state["interview_answers"].append(
+                                {
+                                    "question": current_q,
+                                    "answer": "[Audio not recognized – skipped]",
+                                    "feedback": "Audio was not recognized. Question was skipped.",
+                                    "score": 0,
+                                }
+                            )
+                            st.session_state["interview_index"] += 1
+                            st.session_state["voice_answer"] = ""
+                            st.session_state["audio_failed"] = False
+                            st.session_state["audio_error_msg"] = ""
+                            st.session_state["question_start_time"] = time.time()
+                            if st.session_state["interview_index"] >= total:
+                                st.session_state["interview_done"] = True
+                                st.session_state["interview_active"] = False
+                            st.rerun()
 
                 # Show successfully recorded answer
                 if st.session_state["voice_answer"] and not st.session_state.get(
@@ -2685,28 +2722,44 @@ elif "uploaded_file" in dir() and uploaded_file:
 # ============================================================
 if language_mode not in MOCK_INTERVIEW_MODES:
 
-    # Voice recognition helper
-    def record_voice():
-        recognizer = sr.Recognizer()
-        with sr.Microphone() as source:
-            st.info("🎤 Listening... Speak now!")
-            audio = recognizer.listen(source, phrase_time_limit=8)
-            st.success("✅ Voice captured.")
-            try:
-                return recognizer.recognize_google(audio)
-            except sr.UnknownValueError:
-                return "Sorry, I couldn't understand your voice."
-            except sr.RequestError:
-                return "Speech recognition service unavailable."
-
     # Input handling
     prompt = None
     if input_mode == "💬 Type":
         prompt = st.chat_input("Type your message here...")
     elif input_mode == "🎙️ Speak":
-        if st.button("🎙️ Record Voice"):
-            prompt = record_voice()
-            st.text_area("Recognized Speech:", prompt or "", height=100)
+
+        st.markdown("🎙️ **Record your voice message:**")
+
+    voice_audio = st.audio_input("Speak your message", key="chat_voice_input")
+
+    if voice_audio is not None:
+
+        with st.spinner("🔍 Transcribing..."):
+
+            try:
+
+                import tempfile
+
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+                    tmp.write(voice_audio.read())
+                    temp_audio = tmp.name
+
+                with open(temp_audio, "rb") as audio_file:
+
+                    transcription = client.audio.transcriptions.create(
+                        file=audio_file,
+                        model="whisper-large-v3",
+                        response_format="text",
+                    )
+
+                prompt = transcription
+
+                st.success(f"🎤 Recognized: {prompt}")
+
+            except Exception as e:
+
+                st.error(f"Speech recognition failed: {e}")
+                prompt = None
 
     # Display chat messages
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
