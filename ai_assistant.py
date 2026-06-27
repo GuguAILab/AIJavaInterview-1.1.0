@@ -1,6 +1,7 @@
 import streamlit as st
 from groq import Groq
 import speech_recognition as sr
+
 import threading
 import time
 import streamlit.components.v1 as components
@@ -308,9 +309,9 @@ client = Groq(api_key="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"
 # -------------------------------
 # 🎤 Text-to-Speech setup
 # -------------------------------
-##engine = pyttsx3.init()
-##engine.setProperty("rate", 170)
-##engine.setProperty("volume", 0.9)
+#engine = pyttsx3.init()
+#engine.setProperty("rate", 170)
+#engine.setProperty("volume", 0.9)
 
 def speak_async(text, lang="en"):
     """Speak asynchronously (supports English, Hindi, Spanish)."""
@@ -651,11 +652,29 @@ if "reset_username" not in st.session_state:
 # ============================================================
 if not st.session_state["logged_in"]:
 
-    st.markdown("""
-<div class="hero-card">
+    # Encode Nit.png and Robot.png as base64 for embedding in HTML
+    import base64
+    _nit_img_tag = ""
+    _nit_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Nit.png")
+    if os.path.exists(_nit_path):
+        with open(_nit_path, "rb") as _f:
+            _nit_b64 = base64.b64encode(_f.read()).decode("utf-8")
+        _nit_img_tag = f'<img src="data:image/png;base64,{_nit_b64}" style="position:absolute;top:10px;right:14px;width:84px;height:84px;object-fit:contain;border-radius:10px;opacity:0.92;" alt="Nit Logo"/>'
+
+    _robot_img_tag = ""
+    _robot_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Robot.png")
+    if os.path.exists(_robot_path):
+        with open(_robot_path, "rb") as _f:
+            _robot_b64 = base64.b64encode(_f.read()).decode("utf-8")
+        _robot_img_tag = f'<img src="data:image/png;base64,{_robot_b64}" style="position:absolute;top:10px;left:14px;width:84px;height:84px;object-fit:contain;border-radius:10px;opacity:0.92;" alt="Robot Logo"/>'
+
+    st.markdown(f"""
+<div class="hero-card" style="position:relative;">
+{_nit_img_tag}
+{_robot_img_tag}
 
 <div style="display:flex; align-items:center; justify-content:center; margin-bottom:0.3rem;">
-  <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin-right:4px;">
+  <svg width="50" height="50" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin-right:4px;">
     <path d="M30 18 Q27 12 30 6 Q33 12 30 18Z" fill="#cc0000" opacity="0.7"/>
     <path d="M40 15 Q37 8 40 2 Q43 8 40 15Z" fill="#cc0000" opacity="0.7"/>
     <path d="M50 18 Q47 12 50 6 Q53 12 50 18Z" fill="#cc0000" opacity="0.7"/>
@@ -666,7 +685,7 @@ if not st.session_state["logged_in"]:
     <path d="M75 42 Q92 42 92 55 Q92 68 75 68" stroke="#b71c1c" stroke-width="6" fill="none" stroke-linecap="round"/>
     <path d="M35 50 Q40 44 45 50 Q50 56 55 50 Q60 44 65 50" stroke="white" stroke-width="2.5" fill="none" opacity="0.6" stroke-linecap="round"/>
   </svg>
-  <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin-right:8px;">
+  <svg width="50" height="50" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin-right:8px;">
     <path d="M10 88 Q50 78 90 88" stroke="#cc0000" stroke-width="4" fill="none" stroke-linecap="round"/>
     <ellipse cx="52" cy="48" rx="28" ry="33" fill="#1565C0"/>
     <ellipse cx="52" cy="48" rx="24" ry="29" fill="#1976D2"/>
@@ -1047,7 +1066,9 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-col_w, col_plan, col_upgrade, col_admin, col_logout = st.columns([3, 3, 3, 1, 1])
+
+# ── Row 1: Welcome + Plan Badge + Logout ──
+col_w, col_plan, col_logout = st.columns([3, 3, 1])
 with col_w:
     icon = "👤" if is_guest else ("👑" if st.session_state.get("is_admin") else "✅")
     st.markdown(f'<p style="color:#90CAF9; margin:0; padding-top:6px;">Welcome, <b>{icon} {uname}</b></p>', unsafe_allow_html=True)
@@ -1064,17 +1085,6 @@ with col_plan:
         )
     else:
         st.markdown('<span class="badge-expired">⚠️ Plan Expired</span>', unsafe_allow_html=True)
-with col_upgrade:
-    if st.button("💳 Plans & Pricing", use_container_width=True):
-        st.session_state["show_pricing"] = not st.session_state["show_pricing"]
-        st.session_state["show_admin"]   = False
-        st.rerun()
-with col_admin:
-    if st.session_state.get("is_admin"):
-        if st.button("👑 Admin", use_container_width=True):
-            st.session_state["show_admin"]   = not st.session_state["show_admin"]
-            st.session_state["show_pricing"] = False
-            st.rerun()
 with col_logout:
     if st.button("🚪 Logout", use_container_width=True):
         for key in ["logged_in","username","user_email","auth_page","auth_msg",
@@ -1082,6 +1092,26 @@ with col_logout:
             st.session_state[key] = False if key in ["logged_in","is_admin","show_pricing","show_admin"] else ""
         st.session_state["auth_page"] = "login"
         st.rerun()
+
+# ── Row 2: Plans & Pricing + Admin (below for smaller screens) ──
+_btn_cols = [1, 1, 2] if st.session_state.get("is_admin") else [1, 3]
+if st.session_state.get("is_admin"):
+    col_upgrade, col_admin, col_spacer2 = st.columns(_btn_cols)
+else:
+    col_upgrade, col_spacer2 = st.columns(_btn_cols)
+
+with col_upgrade:
+    if st.button("💳 Plans & Pricing", use_container_width=True):
+        st.session_state["show_pricing"] = not st.session_state["show_pricing"]
+        st.session_state["show_admin"]   = False
+        st.rerun()
+
+if st.session_state.get("is_admin"):
+    with col_admin:
+        if st.button("👑 Admin", use_container_width=True):
+            st.session_state["show_admin"]   = not st.session_state["show_admin"]
+            st.session_state["show_pricing"] = False
+            st.rerun()
 
 # ── Show expiry warning ──
 if not is_guest and not active:
