@@ -308,10 +308,35 @@ client = Groq(api_key="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"
 # -------------------------------
 # 🎤 Text-to-Speech setup
 # -------------------------------
-#engine = pyttsx3.init()
-#engine.setProperty("rate", 170)
-#engine.setProperty("volume", 0.9)
+##engine = pyttsx3.init()
+##engine.setProperty("rate", 170)
+##engine.setProperty("volume", 0.9)
 
+def speak_async(text, lang="en"):
+    """Speak asynchronously (supports English, Hindi, Spanish)."""
+    def _speak():
+        try:
+            voices = engine.getProperty('voices')
+            if lang == "es":
+                for v in voices:
+                    if "spanish" in v.name.lower() or "es" in v.id.lower():
+                        engine.setProperty("voice", v.id)
+                        break
+            elif lang == "hi":
+                for v in voices:
+                    if "hindi" in v.name.lower() or "hi" in v.id.lower():
+                        engine.setProperty("voice", v.id)
+                        break
+            else:
+                for v in voices:
+                    if "english" in v.name.lower():
+                        engine.setProperty("voice", v.id)
+                        break
+            engine.say(text)
+            engine.runAndWait()
+        except RuntimeError:
+            pass
+    threading.Thread(target=_speak, daemon=True).start()
 
 # -------------------------------
 # 🎨 Page Config + Styles
@@ -320,8 +345,18 @@ st.set_page_config(page_title="AI Java Interview", page_icon="☕", layout="wide
 
 st.markdown("""
 <style>
-body { background-color: #0b1725; }
-.main { background: #101b2d; border-radius: 14px; padding: 2rem; }
+/* ── Remove Streamlit default top padding ── */
+.block-container {
+    padding-top: 2rem !important;
+    padding-bottom: 0.5rem !important;
+}
+section[data-testid="stSidebar"] > div {
+    padding-top: 0.5rem !important;
+}
+#MainMenu { visibility: hidden; }
+header[data-testid="stHeader"] { height: 0rem; }
+body { background-color: #1f2937; }
+.main { background: #2d3748; border-radius: 14px; padding: 1rem; }
 .header {
     background: linear-gradient(90deg, #1E88E5 0%, #43A047 100%);
     padding: 1rem 2rem; border-radius: 10px;
@@ -340,7 +375,7 @@ body { background-color: #0b1725; }
 .assistant { background: #1E88E5; color: white;
              text-align: left; margin-right: auto; }
 .sidebar-content {
-    background: #101b2d;
+    background: #2d3748;
     padding: 1.2rem;
     border-radius: 14px;
     box-shadow: 0px 0px 10px rgba(0,0,0,0.25);
@@ -373,7 +408,7 @@ body { background-color: #0b1725; }
 .auth-container {
     max-width: 420px;
     margin: 3rem auto;
-    background: #101b2d;
+    background: #2d3748;
     border-radius: 18px;
     padding: 2.5rem 2rem;
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
@@ -416,7 +451,7 @@ body { background-color: #0b1725; }
     padding: 1.4rem 1.2rem;
     margin-bottom: 1rem;
     border: 2px solid rgba(255,255,255,0.08);
-    background: #101b2d;
+    background: #2d3748;
     transition: border 0.2s;
 }
 .plan-card:hover { border: 2px solid #42A5F5; }
@@ -439,7 +474,7 @@ body { background-color: #0b1725; }
     background:#37474F; color:#CFD8DC;
 }
 .subscription-bar {
-    background:#101b2d; border:1px solid #1E3A5F;
+    background:#2d3748; border:1px solid #4a5568;
     border-radius:10px; padding:0.6rem 1.2rem;
     margin-bottom:1rem; display:flex; align-items:center;
     font-size:0.9rem; color:#90CAF9;
@@ -526,80 +561,74 @@ body { background-color: #0b1725; }
     letter-spacing: 2px;
     animation: blink 0.8s step-start infinite;
 }
+/* ==========================================
+   Hero Banner
+==========================================*/
+
+.hero-card{
+background:linear-gradient(135deg,#0B1725,#132A45);
+padding:14px 20px;
+border-radius:10px;
+border:2px solid #1E88E5;
+box-shadow:0px 0px 12px rgba(30,136,229,.25);
+margin-bottom:12px;
+}
+
+.hero-title{
+font-size:20px;
+font-weight:900;
+text-align:center;
+color:#42A5F5;
+margin-bottom:4px;
+}
+
+.hero-subtitle{
+text-align:center;
+font-size:11px;
+color:#ECEFF1;
+margin-bottom:2px;
+}
+
+.company-text{
+text-align:center;
+font-size:13px;
+font-weight:bold;
+color:#FFD54F;
+margin-bottom:2px;
+}
+
+.feature-box{
+background:#1B2D4A;
+padding:15px;
+border-radius:12px;
+text-align:center;
+font-size:14px;
+font-weight:bold;
+color:white;
+border:1px solid #42A5F5;
+margin:5px;
+transition:0.3s;
+}
+
+.feature-box:hover{
+background:#1565C0;
+transform:scale(1.05);
+}
+
+.stats-box{
+background:#101b2d;
+border:1px solid #42A5F5;
+border-radius:12px;
+padding:15px;
+text-align:center;
+color:white;
+margin-top:15px;
+}
 @keyframes blink { 50% { opacity: 0.4; } }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<div style="display:flex; align-items:center; justify-content:center;
-            background: linear-gradient(135deg, #0b1725 0%, #101b2d 100%);
-            border-bottom: 2px solid #1E3A5F;
-            padding: 1rem 2rem; margin-bottom: 1.2rem; border-radius: 12px;">
 
-  <!-- Java coffee cup SVG (red with steam, like official Java logo) -->
-  <svg width="72" height="72" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin-right:6px;">
-    <!-- Steam wisps -->
-    <path d="M30 18 Q27 12 30 6 Q33 12 30 18Z" fill="#cc0000" opacity="0.7"/>
-    <path d="M40 15 Q37 8 40 2 Q43 8 40 15Z" fill="#cc0000" opacity="0.7"/>
-    <path d="M50 18 Q47 12 50 6 Q53 12 50 18Z" fill="#cc0000" opacity="0.7"/>
-    <!-- Cup body -->
-    <path d="M20 30 L25 80 Q25 85 35 85 L65 85 Q75 85 75 80 L80 30 Z" fill="#cc0000"/>
-    <path d="M22 30 L27 78 Q27 82 37 82 L63 82 Q73 82 73 78 L78 30 Z" fill="#e53935"/>
-    <!-- Cup rim -->
-    <rect x="18" y="26" width="64" height="8" rx="4" fill="#b71c1c"/>
-    <!-- Cup base -->
-    <ellipse cx="50" cy="85" rx="25" ry="5" fill="#b71c1c"/>
-    <!-- Handle -->
-    <path d="M75 42 Q92 42 92 55 Q92 68 75 68" stroke="#b71c1c" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <!-- Java steam highlight -->
-    <path d="M35 50 Q40 44 45 50 Q50 56 55 50 Q60 44 65 50" stroke="white" stroke-width="2.5" fill="none" opacity="0.6" stroke-linecap="round"/>
-  </svg>
-
-  <!-- AI Brain / Human Head SVG (blue tones like screenshot) -->
-  <svg width="72" height="72" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin-right:16px;">
-    <!-- Red swoosh arc at bottom (like Java logo base) -->
-    <path d="M10 88 Q50 78 90 88" stroke="#cc0000" stroke-width="4" fill="none" stroke-linecap="round"/>
-    <!-- Head silhouette -->
-    <ellipse cx="52" cy="48" rx="28" ry="33" fill="#1565C0"/>
-    <ellipse cx="52" cy="48" rx="24" ry="29" fill="#1976D2"/>
-    <!-- Neck -->
-    <rect x="44" y="76" width="16" height="10" rx="4" fill="#1565C0"/>
-    <!-- Brain network nodes inside head -->
-    <circle cx="44" cy="36" r="3.5" fill="#90CAF9"/>
-    <circle cx="58" cy="32" r="3" fill="#90CAF9"/>
-    <circle cx="63" cy="45" r="3.5" fill="#90CAF9"/>
-    <circle cx="55" cy="56" r="3" fill="#90CAF9"/>
-    <circle cx="42" cy="52" r="3" fill="#90CAF9"/>
-    <circle cx="50" cy="42" r="2.5" fill="#BBDEFB"/>
-    <!-- Network connections -->
-    <line x1="44" y1="36" x2="58" y2="32" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
-    <line x1="58" y1="32" x2="63" y2="45" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
-    <line x1="63" y1="45" x2="55" y2="56" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
-    <line x1="55" y1="56" x2="42" y2="52" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
-    <line x1="42" y1="52" x2="44" y2="36" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
-    <line x1="44" y1="36" x2="50" y2="42" stroke="#64B5F6" stroke-width="1" opacity="0.7"/>
-    <line x1="58" y1="32" x2="50" y2="42" stroke="#64B5F6" stroke-width="1" opacity="0.7"/>
-    <line x1="63" y1="45" x2="50" y2="42" stroke="#64B5F6" stroke-width="1" opacity="0.7"/>
-  </svg>
-
-  <!-- Title text: "AI Java Interview" matching screenshot gradient -->
-  <div style="display:flex; flex-direction:column; justify-content:center;">
-    <span style="
-      font-size: 2.4rem;
-      font-weight: 900;
-      letter-spacing: 1px;
-      background: linear-gradient(90deg, #1565C0 0%, #42A5F5 40%, #c8860a 70%, #8B4513 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.1;
-      font-family: Georgia, 'Times New Roman', serif;
-    ">AI Java Interview</span>
-    <span style="color:#90A4AE; font-size:0.82rem; letter-spacing:2px; margin-top:2px;">
-      Smart Multilingual AI Assistant
-    </span>
-  </div>
-</div>
-""", unsafe_allow_html=True)
 
 # ── Auth session state ──
 if "logged_in" not in st.session_state:
@@ -623,45 +652,161 @@ if "reset_username" not in st.session_state:
 if not st.session_state["logged_in"]:
 
     st.markdown("""
-    <div style="display:flex; align-items:center; justify-content:center; margin-bottom:0.5rem;">
-      <svg width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin-right:4px;">
-        <path d="M30 18 Q27 12 30 6 Q33 12 30 18Z" fill="#cc0000" opacity="0.7"/>
-        <path d="M40 15 Q37 8 40 2 Q43 8 40 15Z" fill="#cc0000" opacity="0.7"/>
-        <path d="M50 18 Q47 12 50 6 Q53 12 50 18Z" fill="#cc0000" opacity="0.7"/>
-        <path d="M20 30 L25 80 Q25 85 35 85 L65 85 Q75 85 75 80 L80 30 Z" fill="#cc0000"/>
-        <path d="M22 30 L27 78 Q27 82 37 82 L63 82 Q73 82 73 78 L78 30 Z" fill="#e53935"/>
-        <rect x="18" y="26" width="64" height="8" rx="4" fill="#b71c1c"/>
-        <ellipse cx="50" cy="85" rx="25" ry="5" fill="#b71c1c"/>
-        <path d="M75 42 Q92 42 92 55 Q92 68 75 68" stroke="#b71c1c" stroke-width="6" fill="none" stroke-linecap="round"/>
-        <path d="M35 50 Q40 44 45 50 Q50 56 55 50 Q60 44 65 50" stroke="white" stroke-width="2.5" fill="none" opacity="0.6" stroke-linecap="round"/>
-      </svg>
-      <svg width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin-right:12px;">
-        <path d="M10 88 Q50 78 90 88" stroke="#cc0000" stroke-width="4" fill="none" stroke-linecap="round"/>
-        <ellipse cx="52" cy="48" rx="28" ry="33" fill="#1565C0"/>
-        <ellipse cx="52" cy="48" rx="24" ry="29" fill="#1976D2"/>
-        <rect x="44" y="76" width="16" height="10" rx="4" fill="#1565C0"/>
-        <circle cx="44" cy="36" r="3.5" fill="#90CAF9"/>
-        <circle cx="58" cy="32" r="3" fill="#90CAF9"/>
-        <circle cx="63" cy="45" r="3.5" fill="#90CAF9"/>
-        <circle cx="55" cy="56" r="3" fill="#90CAF9"/>
-        <circle cx="42" cy="52" r="3" fill="#90CAF9"/>
-        <circle cx="50" cy="42" r="2.5" fill="#BBDEFB"/>
-        <line x1="44" y1="36" x2="58" y2="32" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
-        <line x1="58" y1="32" x2="63" y2="45" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
-        <line x1="63" y1="45" x2="55" y2="56" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
-        <line x1="55" y1="56" x2="42" y2="52" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
-        <line x1="42" y1="52" x2="44" y2="36" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
-      </svg>
-      <span style="
-        font-size:2rem; font-weight:900; font-family:Georgia,serif;
-        background:linear-gradient(90deg,#1565C0 0%,#42A5F5 40%,#c8860a 70%,#8B4513 100%);
-        -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
-        AI Java Interview
-      </span>
-    </div>
-    """, unsafe_allow_html=True)
-    st.markdown('<div class="auth-title">Smart Multilingual AI Assistant</div>', unsafe_allow_html=True)
-    st.markdown('<div class="auth-subtitle">Java Mock Interview · Multilingual Chat · Log Analysis</div>', unsafe_allow_html=True)
+<div class="hero-card">
+
+<div style="display:flex; align-items:center; justify-content:center; margin-bottom:0.3rem;">
+  <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin-right:4px;">
+    <path d="M30 18 Q27 12 30 6 Q33 12 30 18Z" fill="#cc0000" opacity="0.7"/>
+    <path d="M40 15 Q37 8 40 2 Q43 8 40 15Z" fill="#cc0000" opacity="0.7"/>
+    <path d="M50 18 Q47 12 50 6 Q53 12 50 18Z" fill="#cc0000" opacity="0.7"/>
+    <path d="M20 30 L25 80 Q25 85 35 85 L65 85 Q75 85 75 80 L80 30 Z" fill="#cc0000"/>
+    <path d="M22 30 L27 78 Q27 82 37 82 L63 82 Q73 82 73 78 L78 30 Z" fill="#e53935"/>
+    <rect x="18" y="26" width="64" height="8" rx="4" fill="#b71c1c"/>
+    <ellipse cx="50" cy="85" rx="25" ry="5" fill="#b71c1c"/>
+    <path d="M75 42 Q92 42 92 55 Q92 68 75 68" stroke="#b71c1c" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M35 50 Q40 44 45 50 Q50 56 55 50 Q60 44 65 50" stroke="white" stroke-width="2.5" fill="none" opacity="0.6" stroke-linecap="round"/>
+  </svg>
+  <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin-right:8px;">
+    <path d="M10 88 Q50 78 90 88" stroke="#cc0000" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <ellipse cx="52" cy="48" rx="28" ry="33" fill="#1565C0"/>
+    <ellipse cx="52" cy="48" rx="24" ry="29" fill="#1976D2"/>
+    <rect x="44" y="76" width="16" height="10" rx="4" fill="#1565C0"/>
+    <circle cx="44" cy="36" r="3.5" fill="#90CAF9"/>
+    <circle cx="58" cy="32" r="3" fill="#90CAF9"/>
+    <circle cx="63" cy="45" r="3.5" fill="#90CAF9"/>
+    <circle cx="55" cy="56" r="3" fill="#90CAF9"/>
+    <circle cx="42" cy="52" r="3" fill="#90CAF9"/>
+    <circle cx="50" cy="42" r="2.5" fill="#BBDEFB"/>
+    <line x1="44" y1="36" x2="58" y2="32" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
+    <line x1="58" y1="32" x2="63" y2="45" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
+    <line x1="63" y1="45" x2="55" y2="56" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
+    <line x1="55" y1="56" x2="42" y2="52" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
+    <line x1="42" y1="52" x2="44" y2="36" stroke="#42A5F5" stroke-width="1.5" opacity="0.8"/>
+  </svg>
+  <div class="hero-title" style="margin:0;">☕ AI Mock Interview Platform</div>
+</div>
+
+<div class="hero-subtitle">
+Smart Multilingual AI Career Assistant
+</div>
+
+<hr style="margin:3px 0;">
+
+<div class="company-text">
+🔥 Prepare for Top Product Companies
+</div>
+
+<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:6px;">
+
+  <!-- Google -->
+  <div style="display:flex; align-items:center; gap:4px; background:#fff; border-radius:8px; padding:3px 10px;">
+    <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.1 0 5.8 1.1 8 2.9l6-6C34.5 3.1 29.6 1 24 1 14.8 1 6.9 6.6 3.4 14.6l7 5.4C12.1 13.6 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9C43.8 37.5 46.5 31.4 46.5 24.5z"/><path fill="#FBBC05" d="M10.4 28.6A14.7 14.7 0 0 1 9.5 24c0-1.6.3-3.2.8-4.6l-7-5.4A23.9 23.9 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.8-6.2z"/><path fill="#34A853" d="M24 47c5.5 0 10.2-1.8 13.6-4.9l-7.6-5.9c-1.8 1.2-4.1 1.9-6 1.9-6.4 0-11.8-4.3-13.7-10.1l-7.8 6.2C6.9 41.4 14.8 47 24 47z"/></svg>
+    <span style="font-size:11px; font-weight:700; color:#333;">Google</span>
+  </div>
+
+  <!-- Amazon -->
+  <div style="display:flex; align-items:center; gap:4px; background:#FF9900; border-radius:8px; padding:3px 10px;">
+    <span style="font-size:11px; font-weight:700; color:#fff;">amazon</span>
+  </div>
+
+  <!-- JPMorgan -->
+  <div style="display:flex; align-items:center; gap:4px; background:#003087; border-radius:8px; padding:3px 10px;">
+    <span style="font-size:11px; font-weight:700; color:#fff;">JPMorgan</span>
+  </div>
+
+  <!-- HP -->
+  <div style="display:flex; align-items:center; gap:4px; background:#0096D6; border-radius:8px; padding:3px 10px;">
+    <span style="font-size:11px; font-weight:700; color:#fff;">HP</span>
+  </div>
+
+  <!-- Apple -->
+  <div style="display:flex; align-items:center; gap:4px; background:#000; border-radius:8px; padding:3px 10px;">
+    <span style="font-size:13px; color:#fff;"></span>
+    <span style="font-size:11px; font-weight:700; color:#fff;">Apple</span>
+  </div>
+
+  <!-- Netflix -->
+  <div style="display:flex; align-items:center; gap:4px; background:#E50914; border-radius:8px; padding:3px 10px;">
+    <span style="font-size:11px; font-weight:700; color:#fff;">NETFLIX</span>
+  </div>
+
+  <!-- Uber -->
+  <div style="display:flex; align-items:center; gap:4px; background:#000; border-radius:8px; padding:3px 10px;">
+    <span style="font-size:11px; font-weight:700; color:#fff;">Uber</span>
+  </div>
+
+  <!-- Adobe -->
+  <div style="display:flex; align-items:center; gap:4px; background:#FF0000; border-radius:8px; padding:3px 10px;">
+    <span style="font-size:11px; font-weight:700; color:#fff;">Adobe</span>
+  </div>
+
+  <!-- Flipkart -->
+  <div style="display:flex; align-items:center; gap:4px; background:#2874F0; border-radius:8px; padding:3px 10px;">
+    <span style="font-size:11px; font-weight:700; color:#fff;">Flipkart</span>
+  </div>
+
+  <!-- TCS -->
+  <div style="display:flex; align-items:center; gap:4px; background:#005B8E; border-radius:8px; padding:3px 10px;">
+    <span style="font-size:11px; font-weight:700; color:#fff;">TCS</span>
+  </div>
+
+  <!-- Infosys -->
+  <div style="display:flex; align-items:center; gap:4px; background:#007CC2; border-radius:8px; padding:3px 10px;">
+    <span style="font-size:11px; font-weight:700; color:#fff;">Infosys</span>
+  </div>
+
+  <!-- Wipro -->
+  <div style="display:flex; align-items:center; gap:4px; background:#341C5C; border-radius:8px; padding:3px 10px;">
+    <span style="font-size:11px; font-weight:700; color:#fff;">Wipro</span>
+  </div>
+
+</div>
+
+</div>
+""", unsafe_allow_html=True)
+
+    col1,col2,col3,col4=st.columns(4)
+
+    with col1:
+        st.markdown('<div class="feature-box">☕ Java</div>',unsafe_allow_html=True)
+
+    with col2:
+        st.markdown('<div class="feature-box">🐍 Python</div>',unsafe_allow_html=True)
+
+    with col3:
+        st.markdown('<div class="feature-box">📊 DSA</div>',unsafe_allow_html=True)
+
+    with col4:
+        st.markdown('<div class="feature-box">🏗️ System Design</div>',unsafe_allow_html=True)
+
+    col5,col6,col7,col8=st.columns(4)
+
+    with col5:
+        st.markdown('<div class="feature-box">🌱 Spring Boot</div>',unsafe_allow_html=True)
+
+    with col6:
+        st.markdown('<div class="feature-box">🤖 AI Agents</div>',unsafe_allow_html=True)
+
+    with col7:
+        st.markdown('<div class="feature-box">☁ AWS</div>',unsafe_allow_html=True)
+
+    with col8:
+        st.markdown('<div class="feature-box">🐳 Docker</div>',unsafe_allow_html=True)
+
+    col9,col10,col11,col12=st.columns(4)
+
+    with col9:
+        st.markdown('<div class="feature-box">⚙ DevOps</div>',unsafe_allow_html=True)
+
+    with col10:
+        st.markdown('<div class="feature-box">📦 Microservices</div>',unsafe_allow_html=True)
+
+    with col11:
+        st.markdown('<div class="feature-box">🗄 SQL</div>',unsafe_allow_html=True)
+
+    with col12:
+        st.markdown('<div class="feature-box">🔥 Kafka</div>',unsafe_allow_html=True)
+
 
     # Tab switcher
     col_l, col_r, col_f, _ = st.columns([1, 1, 1, 1])
@@ -686,11 +831,11 @@ if not st.session_state["logged_in"]:
             st.session_state["reset_username"] = ""
             st.rerun()
 
-    st.markdown("---")
+    st.markdown("<hr style='margin:4px 0 6px 0;'>", unsafe_allow_html=True)
 
     # ── LOGIN FORM ──
     if st.session_state["auth_page"] == "login":
-        st.markdown("### 🔑 Login to your account")
+        st.markdown("<p style='font-size:15px; font-weight:700; margin:0 0 4px 0;'>🔑 Login to your account</p>", unsafe_allow_html=True)
         with st.form("login_form", clear_on_submit=False):
             login_user_input = st.text_input("👤 Username", placeholder="Enter your username")
             login_pass_input = st.text_input("🔒 Password", type="password", placeholder="Enter your password")
@@ -1108,7 +1253,70 @@ if "messages" not in st.session_state:
         {"role": "system", "content": "You are a multilingual AI assistant (English, Hindi, Spanish). You can translate, analyze logs, and assist with Groq APIs."}
     ]
 
-# ── Java Mock Interview Session State ──
+# ── Mock Interview Modes & Topics (global) ──
+MOCK_INTERVIEW_MODES = [
+    "☕ Java Mock Interview",
+    "🐍 Python Mock Interview",
+    "⚙️ DevOps Mock Interview",
+    "☁️ AWS Mock Interview",
+    "🔥 Kafka Mock Interview",
+    "📦 Microservices Mock Interview",
+    "🌱 Spring Boot Mock Interview",
+    "🤖 AI Agents Mock Interview",
+    "🗄️ SQL Mock Interview",
+]
+
+MOCK_INTERVIEW_TOPICS = {
+    "☕ Java Mock Interview": [
+        "Core Java", "OOP & Design Patterns", "Collections & Generics",
+        "Multithreading & Concurrency", "JVM & Memory Management",
+        "Spring Boot", "Java 8+ (Streams, Lambdas)", "Exception Handling",
+        "Data Structures & Algorithms (Java)", "Microservices",
+        "System Design", "DSA Problems", "Mixed / Full Stack Java",
+    ],
+    "🐍 Python Mock Interview": [
+        "Core Python", "OOP in Python", "Data Structures (Python)",
+        "Python Libraries (NumPy/Pandas)", "Django / Flask",
+        "Python for ML/AI", "Async & Concurrency", "Testing in Python",
+    ],
+    "⚙️ DevOps Mock Interview": [
+        "CI/CD Pipelines", "Docker & Containers", "Kubernetes (K8s)",
+        "Terraform & IaC", "Jenkins / GitLab CI",
+        "Monitoring & Logging", "Linux & Shell Scripting", "Git & Version Control",
+    ],
+    "☁️ AWS Mock Interview": [
+        "EC2 & VPC", "S3 & Storage", "Lambda & Serverless",
+        "RDS & DynamoDB", "IAM & Security",
+        "EKS & ECS", "CloudFormation & CDK", "AWS Architecture Design",
+    ],
+    "🔥 Kafka Mock Interview": [
+        "Kafka Architecture", "Producers & Consumers", "Topics & Partitions",
+        "Kafka Streams", "Kafka Connect",
+        "Schema Registry", "Kafka Security", "Kafka Tuning & Ops",
+    ],
+    "📦 Microservices Mock Interview": [
+        "Microservices Architecture", "Service Discovery", "API Gateway",
+        "Circuit Breaker Pattern", "Event-Driven Architecture",
+        "Saga Pattern", "gRPC & REST APIs", "Distributed Tracing",
+    ],
+    "🌱 Spring Boot Mock Interview": [
+        "Spring Core & DI", "Spring MVC", "Spring Data JPA",
+        "Spring Security", "Spring Cloud",
+        "Spring Boot Testing", "Spring Actuator & Monitoring", "Spring Batch",
+    ],
+    "🤖 AI Agents Mock Interview": [
+        "LLM Fundamentals", "RAG (Retrieval Augmented Generation)", "Prompt Engineering",
+        "AI Agent Design", "Vector Databases",
+        "LangChain / LlamaIndex", "Fine-tuning & RLHF", "MLOps",
+    ],
+    "🗄️ SQL Mock Interview": [
+        "SQL Basics & Queries", "Joins & Subqueries", "Indexing & Performance",
+        "Stored Procedures & Functions", "Transactions & ACID",
+        "Database Design & Normalization", "Window Functions", "NoSQL vs SQL",
+    ],
+}
+
+# ── Mock Interview Session State ──
 if "interview_active" not in st.session_state:
     st.session_state["interview_active"] = False
 if "interview_questions" not in st.session_state:
@@ -1161,25 +1369,29 @@ with st.sidebar:
     language_mode = st.selectbox(
         "",
         [
+            "☕ Java Mock Interview",
+            "🐍 Python Mock Interview",
+            "⚙️ DevOps Mock Interview",
+            "☁️ AWS Mock Interview",
+            "🔥 Kafka Mock Interview",
+            "📦 Microservices Mock Interview",
+            "🌱 Spring Boot Mock Interview",
+            "🤖 AI Agents Mock Interview",
+            "🗄️ SQL Mock Interview",
             "English ↔ Hindi Tutor",
             "English ↔ Spanish Tutor",
             "System Assistant",
             "Customer Support (Groq APIs)",
-            "☕ Java Mock Interview",
         ],
+        index=0,
         label_visibility="collapsed"
     )
 
-    # ── Java Interview Sidebar Controls ──
-    if language_mode == "☕ Java Mock Interview":
+
+    # ── Mock Interview Sidebar Controls ──
+    if language_mode in MOCK_INTERVIEW_MODES:
         st.markdown('<div class="section-label">🎯 Interview Topic</div>', unsafe_allow_html=True)
-        _all_topics = [
-            "Core Java", "OOP & Design Patterns", "Collections & Generics",
-            "Multithreading & Concurrency", "JVM & Memory Management",
-            "Spring Boot", "Java 8+ (Streams, Lambdas)", "Exception Handling",
-            "Data Structures & Algorithms (Java)", "Microservices",
-            "System Design", "DSA Problems", "Mixed / Full Stack Java",
-        ]
+        _all_topics = MOCK_INTERVIEW_TOPICS.get(language_mode, [])
         _allowed_topics = _plan.get("topics_allowed") or _all_topics
         if len(_allowed_topics) < len(_all_topics):
             st.caption(f"🔒 {len(_allowed_topics)}/{len(_all_topics)} topics available. 💳 Upgrade for all.")
@@ -1321,7 +1533,7 @@ with st.sidebar:
                         )
                     prompt = (
                         f"[Session:{session_id} Seed:{random_seed} Time:{timestamp}]\n"
-                        f"You are an expert Java interviewer. Generate exactly {n} UNIQUE fresh Java interview questions "
+                        f"You are an expert {topic} interviewer. Generate exactly {n} UNIQUE fresh interview questions "
                         f"for topic: '{topic}' at difficulty: '{level}'.\n"
                         f"Session angle: {angle}\n"
                         f"Rules:\n"
@@ -1334,7 +1546,7 @@ with st.sidebar:
                     res = client.chat.completions.create(
                         model="llama-3.1-8b-instant",
                         messages=[
-                            {"role": "system", "content": "You are a senior Java technical interviewer with expertise in Core Java, Microservices, System Design, DSA, Spring Boot, and all Java topics. Generate completely unique, realistic interview questions every time."},
+                            {"role": "system", "content": f"You are a senior technical interviewer with deep expertise in {topic}. Generate completely unique, realistic interview questions every time."},
                             {"role": "user", "content": prompt}
                         ],
                         stream=False,
@@ -1418,10 +1630,10 @@ with st.sidebar:
 # ============================================================
 # ☕  JAVA MOCK INTERVIEW PANEL
 # ============================================================
-if language_mode == "☕ Java Mock Interview":
+if language_mode in MOCK_INTERVIEW_MODES:
     uploaded_file = None  # not needed in this mode
 
-    st.markdown('<div class="interview-header">☕ Java Mock Interview – AI Interviewer</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="interview-header">{language_mode} – AI Interviewer</div>', unsafe_allow_html=True)
 
     # ── Interview not started yet ──
     if not st.session_state["interview_active"] and not st.session_state["interview_done"]:
@@ -1821,7 +2033,7 @@ elif 'uploaded_file' in dir() and uploaded_file:
 # ============================================================
 # 💬 General Chat (non-interview modes)
 # ============================================================
-if language_mode != "☕ Java Mock Interview":
+if language_mode not in MOCK_INTERVIEW_MODES:
 
     # Voice recognition helper
     def record_voice():
