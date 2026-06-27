@@ -1042,7 +1042,7 @@ else:
     active, days_left, plan_key = True, 999, "free_trial"
     plan_info = PLANS["free_trial"]
 
-col_w, col_plan, col_upgrade, col_admin, col_logout = st.columns([3, 2, 2, 1, 1])
+col_w, col_plan, col_upgrade, col_admin, col_logout = st.columns([3, 3, 3, 1, 1])
 with col_w:
     icon = "👤" if is_guest else ("👑" if st.session_state.get("is_admin") else "✅")
     st.markdown(f'<p style="color:#90CAF9; margin:0; padding-top:6px;">Welcome, <b>{icon} {uname}</b></p>', unsafe_allow_html=True)
