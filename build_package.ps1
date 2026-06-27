@@ -4,7 +4,7 @@
 # ============================================================
 
 param(
-    [string]$Version = "1.2.0",
+    [string]$Version = "1.3.0",
     [string]$OutputDir = "$PSScriptRoot\dist"
 )
 
@@ -66,6 +66,17 @@ Build Date: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
 Platform: Windows
 Python: 3.9+
 URL: http://localhost:8501/JavaAIMockInterview/
+
+CHANGELOG v1.3.0
+----------------
++ 9 Mock Interview modes: Java, Python, DevOps, AWS, Kafka, Microservices, Spring Boot, AI Agents, SQL
++ 585+ questions in Question Bank across all topics and difficulty levels
++ Company logos on login page: Google, Amazon, Microsoft, Meta, Apple, Netflix, Uber, Adobe, Flipkart, TCS, Infosys, Wipro
++ Default mode set to Java Mock Interview
++ Grey theme for main background
++ Reduced hero card size, compact UI improvements
++ Dynamic AI question generation per technology topic
++ Interview header dynamically shows selected mode
 
 CHANGELOG v1.2.0
 ----------------
