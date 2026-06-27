@@ -1,0 +1,38 @@
+﻿AI Java Interview Assistant
+Version: 1.2.0
+Build Date: 2026-06-26 13:54:37
+Platform: Windows
+Python: 3.9+
+URL: http://localhost:8501/JavaAIMockInterview/
+
+CHANGELOG v1.2.0
+----------------
++ Admin system: amara.goodwill@gmail.com auto-promoted to Admin
++ Admin Dashboard: User management, plan control, stats, plan distribution chart
++ Admin can change any user's plan from the dashboard
++ SyntaxError fix: _all_topics list closure bug resolved
++ Plan enforcement: topics/questions/source restricted per plan
++ Subscription bar: shows plan badge + days left on top bar
++ run_app.bat: improved with server background start + auto browser open
++ Base URL: /JavaAIMockInterview/ across all launchers
+
+CHANGELOG v1.1.0
+----------------
++ Microservices topic (45 questions: Junior/Mid/Senior)
++ System Design topic (45 questions: Junior/Mid/Senior)
++ DSA Problems topic (45 questions: Junior/Mid/Senior)
++ Smart timer: System Design and DSA auto-set to 30-50 min per question
++ Topic-aware timer colour thresholds
++ Mixed mode: combine Question Bank + AI Generated questions
++ Login / Sign Up / Forgot Password (3-step reset flow)
++ Custom red mug icon (app_icon.ico)
++ Every session generates different questions
++ Voice input improvements
+
+PLANS
+-----
+Free Trial    : 3 days   | 5Q  | Core Java only | AI only
+Basic         : 99/month | 10Q | 5 topics       | AI + Bank
+Premium       : 299/month| 15Q | All 13 topics  | All modes
+Professional  : 499/month| 15Q | All 13 topics  | All + Priority AI
+Admin         : Unlimited| All | All features   | No restrictions

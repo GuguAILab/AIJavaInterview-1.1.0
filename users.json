@@ -1,0 +1,15 @@
+{
+  "Gugu": {
+    "password": "ddfbacbbce8fecb92a417b5bd7f9130d0882cc34adfb17e20626b1aff835cb2b",
+    "email": "amara.goodwill@gmail.com",
+    "created": "2026-06-26 14:04:56",
+    "plan": "admin",
+    "subscription": {
+      "plan": "admin",
+      "activated": "2026-06-26T14:05:12.256944",
+      "expires": "2126-06-02T14:05:12.256944",
+      "auto_renew": false
+    },
+    "role": "admin"
+  }
+}
