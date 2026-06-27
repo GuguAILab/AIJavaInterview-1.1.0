@@ -14,8 +14,7 @@ if sys.platform == "win32":
 
 import streamlit as st
 from groq import Groq
-#import speech_recognition as sr
-from streamlit_mic_recorder import mic_recorder
+import speech_recognition as sr
 
 import threading
 import time
@@ -28,8 +27,11 @@ import uuid
 # -------------------------------
 # 🔐 Auth System
 # -------------------------------
-USERS_FILE         = os.path.join(os.path.dirname(os.path.abspath(__file__)), "users.json")
-QUESTION_BANK_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "question_bank.json")
+USERS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "users.json")
+QUESTION_BANK_FILE = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "question_bank.json"
+)
+
 
 def load_question_bank():
     if os.path.exists(QUESTION_BANK_FILE):
@@ -37,10 +39,11 @@ def load_question_bank():
             return json.load(f)
     return {}
 
+
 def get_bank_questions(topic, difficulty, num_questions):
     """Return a shuffled random subset from the question bank."""
     bank = load_question_bank()
-    topic_bank     = bank.get(topic, {})
+    topic_bank = bank.get(topic, {})
     difficulty_key = difficulty  # e.g. "Junior (0-2 yrs)"
     # Try exact match first, then partial match
     questions = topic_bank.get(difficulty_key, [])
@@ -58,13 +61,15 @@ def get_bank_questions(topic, difficulty, num_questions):
     for q in pool[:num_questions]:
         # Remove leading "1. ", "2. " etc.
         clean = q.strip()
-        if clean and clean[0].isdigit() and '.' in clean[:3]:
-            clean = clean.split('.', 1)[1].strip()
+        if clean and clean[0].isdigit() and "." in clean[:3]:
+            clean = clean.split(".", 1)[1].strip()
         result.append(clean)
     return result
 
+
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
 
 def load_users():
     if os.path.exists(USERS_FILE):
@@ -72,9 +77,11 @@ def load_users():
             return json.load(f)
     return {}
 
+
 def save_users(users):
     with open(USERS_FILE, "w", encoding="utf-8") as f:
         json.dump(users, f, indent=2, ensure_ascii=False)
+
 
 def register_user(username, password, email):
     users = load_users()
@@ -87,10 +94,11 @@ def register_user(username, password, email):
     users[username] = {
         "password": hash_password(password),
         "email": email,
-        "created": time.strftime("%Y-%m-%d %H:%M:%S")
+        "created": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
     save_users(users)
     return True, "✅ Account created successfully! Please log in."
+
 
 def login_user(username, password):
     users = load_users()
@@ -100,6 +108,7 @@ def login_user(username, password):
         return False, "❌ Incorrect password."
     return True, users[username]["email"]
 
+
 def verify_email_for_reset(username, email):
     """Check username exists and email matches for password reset."""
     users = load_users()
@@ -108,6 +117,7 @@ def verify_email_for_reset(username, email):
     if users[username]["email"].strip().lower() != email.strip().lower():
         return False, "❌ Email does not match our records."
     return True, "✅ Identity verified."
+
 
 def reset_password(username, new_password):
     """Reset password for a verified user."""
@@ -121,59 +131,87 @@ def reset_password(username, new_password):
     save_users(users)
     return True, "✅ Password reset successfully! Please log in with your new password."
 
+
 # ───────────────────────────────────────────────────────
 # 💳 SUBSCRIPTION PLANS
 # ───────────────────────────────────────────────────
 PLANS = {
     "free_trial": {
-        "name":        "🆓 Free Trial",
-        "price":       "₹0",
-        "duration":    3,        # days
-        "badge":       "#607D8B",
-        "features":    ["3-day access", "5 questions/session", "AI Generated only",
-                        "Core Java topic only", "No voice input"],
+        "name": "🆓 Free Trial",
+        "price": "₹0",
+        "duration": 3,  # days
+        "badge": "#607D8B",
+        "features": [
+            "3-day access",
+            "5 questions/session",
+            "AI Generated only",
+            "Core Java topic only",
+            "No voice input",
+        ],
         "max_questions": 5,
         "topics_allowed": ["Core Java"],
-        "ai_only":     True,
-        "voice":       False,
+        "ai_only": True,
+        "voice": False,
     },
     "basic": {
-        "name":        "⭐ Basic Plan",
-        "price":       "₹99/month",
-        "duration":    30,
-        "badge":       "#1565C0",
-        "features":    ["30-day access", "10 questions/session", "AI + Question Bank",
-                        "5 topics", "Voice input"],
+        "name": "⭐ Basic Plan",
+        "price": "₹99/month",
+        "duration": 30,
+        "badge": "#1565C0",
+        "features": [
+            "30-day access",
+            "10 questions/session",
+            "AI + Question Bank",
+            "5 topics",
+            "Voice input",
+        ],
         "max_questions": 10,
-        "topics_allowed": ["Core Java", "OOP & Design Patterns",
-                           "Collections & Generics", "Exception Handling",
-                           "Java 8+ (Streams, Lambdas)"],
-        "ai_only":     False,
-        "voice":       True,
+        "topics_allowed": [
+            "Core Java",
+            "OOP & Design Patterns",
+            "Collections & Generics",
+            "Exception Handling",
+            "Java 8+ (Streams, Lambdas)",
+        ],
+        "ai_only": False,
+        "voice": True,
     },
     "premium": {
-        "name":        "💎 Premium Plan",
-        "price":       "₹299/month",
-        "duration":    30,
-        "badge":       "#6A1B9A",
-        "features":    ["30-day access", "15 questions/session", "All sources",
-                        "All 13 topics", "Voice input", "Mixed mode"],
+        "name": "💎 Premium Plan",
+        "price": "₹299/month",
+        "duration": 30,
+        "badge": "#6A1B9A",
+        "features": [
+            "30-day access",
+            "15 questions/session",
+            "All sources",
+            "All 13 topics",
+            "Voice input",
+            "Mixed mode",
+        ],
         "max_questions": 15,
-        "topics_allowed": None,   # None = all topics
-        "ai_only":     False,
-        "voice":       True,
+        "topics_allowed": None,  # None = all topics
+        "ai_only": False,
+        "voice": True,
     },
     "professional": {
-        "name":        "🚀 Professional",
-        "price":       "₹499/month",
-        "duration":    30,
-        "badge":       "#BF360C",
-        "features":    ["30-day access", "Unlimited questions/session", "All sources",
-                        "All 13 topics", "Voice + TTS", "Priority AI", "System Design & DSA 30-50 min"],
+        "name": "🚀 Professional",
+        "price": "₹499/month",
+        "duration": 30,
+        "badge": "#BF360C",
+        "features": [
+            "30-day access",
+            "Unlimited questions/session",
+            "All sources",
+            "All 13 topics",
+            "Voice + TTS",
+            "Priority AI",
+            "System Design & DSA 30-50 min",
+        ],
         "max_questions": 15,
         "topics_allowed": None,
-        "ai_only":     False,
-        "voice":       True,
+        "ai_only": False,
+        "voice": True,
     },
 }
 
@@ -181,33 +219,44 @@ PLANS = {
 # 🔑 ADMIN CONFIGURATION
 # ───────────────────────────────────────────────────
 ADMIN_CONFIG = {
-    "email":    "amara.goodwill@gmail.com",   # Only this email gets admin access
-    "username": "admin",                       # Preferred admin username (optional)
+    "email": "amara.goodwill@gmail.com",  # Only this email gets admin access
+    "username": "admin",  # Preferred admin username (optional)
 }
 
 # Admin gets a special unlimited plan
 PLANS["admin"] = {
-    "name":           "👑 Admin",
-    "price":          "Free",
-    "duration":       36500,   # 100 years
-    "badge":          "#F57F17",
-    "features":       ["Unlimited access", "All topics", "All features",
-                       "User management", "Analytics", "No restrictions"],
-    "max_questions":  15,
-    "topics_allowed": None,    # All topics
-    "ai_only":        False,
-    "voice":          True,
+    "name": "👑 Admin",
+    "price": "Free",
+    "duration": 36500,  # 100 years
+    "badge": "#F57F17",
+    "features": [
+        "Unlimited access",
+        "All topics",
+        "All features",
+        "User management",
+        "Analytics",
+        "No restrictions",
+    ],
+    "max_questions": 15,
+    "topics_allowed": None,  # All topics
+    "ai_only": False,
+    "voice": True,
 }
+
 
 def is_admin(username):
     """Returns True if the user's email matches the admin email."""
     users = load_users()
-    user  = users.get(username, {})
-    return user.get("email", "").strip().lower() == ADMIN_CONFIG["email"].strip().lower()
+    user = users.get(username, {})
+    return (
+        user.get("email", "").strip().lower() == ADMIN_CONFIG["email"].strip().lower()
+    )
+
 
 def ensure_admin_plan(username):
     """If user is admin, auto-promote to admin plan with no expiry."""
     from datetime import datetime, timedelta
+
     users = load_users()
     if username not in users:
         return
@@ -215,16 +264,18 @@ def ensure_admin_plan(username):
         users[username]["plan"] = "admin"
         users[username]["role"] = "admin"
         users[username]["subscription"] = {
-            "plan":       "admin",
-            "activated":  datetime.now().isoformat(),
-            "expires":    (datetime.now() + timedelta(days=36500)).isoformat(),
+            "plan": "admin",
+            "activated": datetime.now().isoformat(),
+            "expires": (datetime.now() + timedelta(days=36500)).isoformat(),
             "auto_renew": False,
         }
         save_users(users)
 
+
 def get_all_users_summary():
     """Return list of user dicts for admin dashboard."""
     from datetime import datetime
+
     users = load_users()
     summary = []
     for uname, data in users.items():
@@ -232,38 +283,43 @@ def get_all_users_summary():
         try:
             exp = datetime.fromisoformat(sub.get("expires", ""))
             days_left = max(0, (exp - datetime.now()).days)
-            expired   = days_left == 0
+            expired = days_left == 0
         except Exception:
             days_left = 0
-            expired   = True
-        summary.append({
-            "username":  uname,
-            "email":     data.get("email", ""),
-            "plan":      data.get("plan", "free_trial"),
-            "role":      data.get("role", "user"),
-            "days_left": days_left,
-            "expired":   expired,
-            "created":   data.get("created", ""),
-        })
+            expired = True
+        summary.append(
+            {
+                "username": uname,
+                "email": data.get("email", ""),
+                "plan": data.get("plan", "free_trial"),
+                "role": data.get("role", "user"),
+                "days_left": days_left,
+                "expired": expired,
+                "created": data.get("created", ""),
+            }
+        )
     return summary
     """Return the current plan key for a user ('free_trial','basic','premium','professional')."""
     users = load_users()
     return users.get(username, {}).get("plan", "free_trial")
+
 
 def get_subscription(username):
     """Return full subscription dict for a user."""
     users = load_users()
     return users.get(username, {}).get("subscription", None)
 
+
 def is_subscription_active(username):
     """Returns (active: bool, days_left: int, plan_key: str)."""
     users = load_users()
-    user  = users.get(username, {})
-    sub   = user.get("subscription", None)
+    user = users.get(username, {})
+    sub = user.get("subscription", None)
     if not sub:
         return False, 0, "free_trial"
     try:
         from datetime import datetime, timezone
+
         exp = datetime.fromisoformat(sub["expires"])
         now = datetime.now()
         diff = (exp - now).days
@@ -271,23 +327,26 @@ def is_subscription_active(username):
     except Exception:
         return False, 0, "free_trial"
 
+
 def activate_plan(username, plan_key):
     """Activate a plan for a user (simulated — no real payment)."""
     from datetime import datetime, timedelta
+
     users = load_users()
     if username not in users:
         return False, "User not found."
     duration = PLANS[plan_key]["duration"]
-    expires  = (datetime.now() + timedelta(days=duration)).isoformat()
+    expires = (datetime.now() + timedelta(days=duration)).isoformat()
     users[username]["plan"] = plan_key
     users[username]["subscription"] = {
-        "plan":       plan_key,
-        "activated":  datetime.now().isoformat(),
-        "expires":    expires,
+        "plan": plan_key,
+        "activated": datetime.now().isoformat(),
+        "expires": expires,
         "auto_renew": True,
     }
     save_users(users)
     return True, f"✅ {PLANS[plan_key]['name']} activated! Expires in {duration} days."
+
 
 def register_user(username, password, email):
     users = load_users()
@@ -298,22 +357,27 @@ def register_user(username, password, email):
     if "@" not in email:
         return False, "⚠️ Please enter a valid email address."
     from datetime import datetime, timedelta
+
     # Auto-start 3-day free trial on registration
     trial_expires = (datetime.now() + timedelta(days=3)).isoformat()
     users[username] = {
-        "password":     hash_password(password),
-        "email":        email,
-        "created":      time.strftime("%Y-%m-%d %H:%M:%S"),
-        "plan":         "free_trial",
+        "password": hash_password(password),
+        "email": email,
+        "created": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "plan": "free_trial",
         "subscription": {
-            "plan":       "free_trial",
-            "activated":  datetime.now().isoformat(),
-            "expires":    trial_expires,
+            "plan": "free_trial",
+            "activated": datetime.now().isoformat(),
+            "expires": trial_expires,
             "auto_renew": False,
         },
     }
     save_users(users)
-    return True, "✅ Account created! Your **3-day Free Trial** has started. Please log in."
+    return (
+        True,
+        "✅ Account created! Your **3-day Free Trial** has started. Please log in.",
+    )
+
 
 # -------------------------------
 # 🔧 Initialize Groq Client
@@ -323,15 +387,17 @@ client = Groq(api_key="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"
 # -------------------------------
 # 🎤 Text-to-Speech setup
 # -------------------------------
-#engine = pyttsx3.init()
-#engine.setProperty("rate", 170)
-#engine.setProperty("volume", 0.9)
+# engine = pyttsx3.init()
+# engine.setProperty("rate", 170)
+# engine.setProperty("volume", 0.9)
+
 
 def speak_async(text, lang="en"):
     """Speak asynchronously (supports English, Hindi, Spanish)."""
+
     def _speak():
         try:
-            voices = engine.getProperty('voices')
+            voices = engine.getProperty("voices")
             if lang == "es":
                 for v in voices:
                     if "spanish" in v.name.lower() or "es" in v.id.lower():
@@ -351,7 +417,9 @@ def speak_async(text, lang="en"):
             engine.runAndWait()
         except RuntimeError:
             pass
+
     threading.Thread(target=_speak, daemon=True).start()
+
 
 # -------------------------------
 # 🎨 Page Config + Styles
@@ -361,7 +429,8 @@ st.set_page_config(page_title="AI Java Interview", page_icon="☕", layout="wide
 # Force UTF-8 charset in the browser (fixes emoji rendering on Windows)
 st.markdown('<meta charset="UTF-8">', unsafe_allow_html=True)
 
-st.markdown("""
+st.markdown(
+    """
 <style>
 /* ── Remove Streamlit default top padding ── */
 .block-container {
@@ -654,8 +723,9 @@ iframe { display: block; margin: 0 !important; padding: 0 !important; }
 .element-container { margin: 0 !important; padding: 0 !important; }
 
 </style>
-""", unsafe_allow_html=True)
-
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ── Auth session state ──
@@ -666,11 +736,13 @@ if "username" not in st.session_state:
 if "user_email" not in st.session_state:
     st.session_state["user_email"] = ""
 if "auth_page" not in st.session_state:
-    st.session_state["auth_page"] = "login"   # "login", "signup", "forgot"
+    st.session_state["auth_page"] = "login"  # "login", "signup", "forgot"
 if "auth_msg" not in st.session_state:
     st.session_state["auth_msg"] = ""
 if "reset_step" not in st.session_state:
-    st.session_state["reset_step"] = 1   # 1=enter username, 2=verify email, 3=new password
+    st.session_state["reset_step"] = (
+        1  # 1=enter username, 2=verify email, 3=new password
+    )
 if "reset_username" not in st.session_state:
     st.session_state["reset_username"] = ""
 
@@ -681,6 +753,7 @@ if not st.session_state["logged_in"]:
 
     # Encode Nit.png and Robot.png as base64 for embedding in HTML
     import base64
+
     _nit_img_tag = ""
     _nit_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Nit.png")
     if os.path.exists(_nit_path):
@@ -695,7 +768,8 @@ if not st.session_state["logged_in"]:
             _robot_b64 = base64.b64encode(_f.read()).decode("utf-8")
         _robot_img_tag = f'<img src="data:image/png;base64,{_robot_b64}" style="position:absolute;top:36px;left:14px;width:80px;height:80px;object-fit:contain;border-radius:10px;opacity:0.92;" alt="Robot Logo"/>'
 
-    st.markdown(f"""
+    st.markdown(
+        f"""
 <div class="hero-card" style="position:relative;">
 {_nit_img_tag}
 {_robot_img_tag}
@@ -809,35 +883,58 @@ Smart Multilingual AI Career Assistant
 </div>
 
 </div>
-""", unsafe_allow_html=True)
+""",
+        unsafe_allow_html=True,
+    )
 
     # ── Encode emp images for slider ──
     import base64 as _b64
+
     def _enc(fname):
         p = os.path.join(os.path.dirname(os.path.abspath(__file__)), fname)
         if os.path.exists(p):
-            with open(p,"rb") as f: return _b64.b64encode(f.read()).decode()
+            with open(p, "rb") as f:
+                return _b64.b64encode(f.read()).decode()
         return ""
-    _e1,_e2,_e3 = _enc("emp1.png"), _enc("emp2.png"), _enc("emp3.png")
+
+    _e1, _e2, _e3 = _enc("emp1.png"), _enc("emp2.png"), _enc("emp3.png")
+
     def _itag(b64, alt=""):
-        if b64: return f'<img src="data:image/png;base64,{b64}" class="slide-emp" alt="{alt}"/>'
+        if b64:
+            return f'<img src="data:image/png;base64,{b64}" class="slide-emp" alt="{alt}"/>'
         return ""
-    _imgs = [_itag(_e1,"emp1"),_itag(_e2,"emp2"),_itag(_e3,"emp3"),
-             _itag(_e1,"emp1"),_itag(_e2,"emp2"),_itag(_e3,"emp3"),
-             _itag(_e1,"emp1"),_itag(_e2,"emp2"),_itag(_e3,"emp3"),
-             _itag(_e1,"emp1"),_itag(_e2,"emp2")]
+
+    _imgs = [
+        _itag(_e1, "emp1"),
+        _itag(_e2, "emp2"),
+        _itag(_e3, "emp3"),
+        _itag(_e1, "emp1"),
+        _itag(_e2, "emp2"),
+        _itag(_e3, "emp3"),
+        _itag(_e1, "emp1"),
+        _itag(_e2, "emp2"),
+        _itag(_e3, "emp3"),
+        _itag(_e1, "emp1"),
+        _itag(_e2, "emp2"),
+    ]
 
     # ── Encode left-panel images (int1, int2, bit, nitrkl) ──
-    _li1 = _enc("int1.png"); _li2 = _enc("int2.png")
-    _li3 = _enc("bit.png");  _li4 = _enc("Nitrkl.png")
-    _left_srcs_js = ",".join([
-        f'"{s}"' for s in [
-            f"data:image/png;base64,{_li1}" if _li1 else "",
-            f"data:image/png;base64,{_li2}" if _li2 else "",
-            f"data:image/png;base64,{_li3}" if _li3 else "",
-            f"data:image/png;base64,{_li4}" if _li4 else "",
-        ] if s
-    ])
+    _li1 = _enc("int1.png")
+    _li2 = _enc("int2.png")
+    _li3 = _enc("bit.png")
+    _li4 = _enc("Nitrkl.png")
+    _left_srcs_js = ",".join(
+        [
+            f'"{s}"'
+            for s in [
+                f"data:image/png;base64,{_li1}" if _li1 else "",
+                f"data:image/png;base64,{_li2}" if _li2 else "",
+                f"data:image/png;base64,{_li3}" if _li3 else "",
+                f"data:image/png;base64,{_li4}" if _li4 else "",
+            ]
+            if s
+        ]
+    )
     _left_panel_html = """
 <!DOCTYPE html><html><head>
 <style>
@@ -890,8 +987,6 @@ Smart Multilingual AI Career Assistant
   reset();
 </script></body></html>
 """.replace("__LEFT_IMGS__", _left_srcs_js)
-
-
 
     # ── Topic Carousel Slider ──
     _slider_html = """
@@ -998,7 +1093,7 @@ Smart Multilingual AI Career Assistant
 </html>
 """
     for idx, img in enumerate(_imgs):
-        _slider_html = _slider_html.replace(f'__IMG{idx}__', img)
+        _slider_html = _slider_html.replace(f"__IMG{idx}__", img)
 
     # ── Layout: full-width topic carousel slider ──
     components.html(_slider_html, height=240)
@@ -1006,20 +1101,33 @@ Smart Multilingual AI Career Assistant
     # Tab switcher
     col_l, col_r, col_f, _ = st.columns([1, 1, 1, 1])
     with col_l:
-        if st.button("🔑 Login", use_container_width=True,
-                     type="primary" if st.session_state["auth_page"] == "login" else "secondary"):
+        if st.button(
+            "🔑 Login",
+            use_container_width=True,
+            type="primary" if st.session_state["auth_page"] == "login" else "secondary",
+        ):
             st.session_state["auth_page"] = "login"
             st.session_state["auth_msg"] = ""
             st.rerun()
     with col_r:
-        if st.button("📝 Sign Up", use_container_width=True,
-                     type="primary" if st.session_state["auth_page"] == "signup" else "secondary"):
+        if st.button(
+            "📝 Sign Up",
+            use_container_width=True,
+            type=(
+                "primary" if st.session_state["auth_page"] == "signup" else "secondary"
+            ),
+        ):
             st.session_state["auth_page"] = "signup"
             st.session_state["auth_msg"] = ""
             st.rerun()
     with col_f:
-        if st.button("🔓 Forgot Password", use_container_width=True,
-                     type="primary" if st.session_state["auth_page"] == "forgot" else "secondary"):
+        if st.button(
+            "🔓 Forgot Password",
+            use_container_width=True,
+            type=(
+                "primary" if st.session_state["auth_page"] == "forgot" else "secondary"
+            ),
+        ):
             st.session_state["auth_page"] = "forgot"
             st.session_state["auth_msg"] = ""
             st.session_state["reset_step"] = 1
@@ -1030,15 +1138,26 @@ Smart Multilingual AI Career Assistant
 
     # ── LOGIN FORM ──
     if st.session_state["auth_page"] == "login":
-        st.markdown("<p style='font-size:15px; font-weight:700; margin:0 0 4px 0;'>🔑 Login to your account</p>", unsafe_allow_html=True)
+        st.markdown(
+            "<p style='font-size:15px; font-weight:700; margin:0 0 4px 0;'>🔑 Login to your account</p>",
+            unsafe_allow_html=True,
+        )
         with st.form("login_form", clear_on_submit=False):
-            login_user_input = st.text_input("👤 Username", placeholder="Enter your username")
-            login_pass_input = st.text_input("🔒 Password", type="password", placeholder="Enter your password")
+            login_user_input = st.text_input(
+                "👤 Username", placeholder="Enter your username"
+            )
+            login_pass_input = st.text_input(
+                "🔒 Password", type="password", placeholder="Enter your password"
+            )
             col1, col2 = st.columns([1, 1])
             with col1:
-                login_btn = st.form_submit_button("✅ Login", use_container_width=True, type="primary")
+                login_btn = st.form_submit_button(
+                    "✅ Login", use_container_width=True, type="primary"
+                )
             with col2:
-                guest_btn = st.form_submit_button("👁️ Guest Mode", use_container_width=True)
+                guest_btn = st.form_submit_button(
+                    "👁️ Guest Mode", use_container_width=True
+                )
 
         if login_btn:
             if not login_user_input or not login_pass_input:
@@ -1047,11 +1166,11 @@ Smart Multilingual AI Career Assistant
                 ok, result = login_user(login_user_input, login_pass_input)
                 if ok:
                     ensure_admin_plan(login_user_input)
-                    st.session_state["logged_in"]   = True
-                    st.session_state["username"]     = login_user_input
-                    st.session_state["user_email"]   = result
-                    st.session_state["is_admin"]     = is_admin(login_user_input)
-                    st.session_state["auth_msg"]     = ""
+                    st.session_state["logged_in"] = True
+                    st.session_state["username"] = login_user_input
+                    st.session_state["user_email"] = result
+                    st.session_state["is_admin"] = is_admin(login_user_input)
+                    st.session_state["auth_msg"] = ""
                     st.rerun()
                 else:
                     st.session_state["auth_msg"] = result
@@ -1078,17 +1197,26 @@ Smart Multilingual AI Career Assistant
                 st.session_state["reset_step"] = 1
                 st.session_state["reset_username"] = ""
                 st.rerun()
-        st.markdown('<p style="color:#90A4AE; text-align:center;">Don\'t have an account? Click <b>Sign Up</b> above.</p>', unsafe_allow_html=True)
+        st.markdown(
+            '<p style="color:#90A4AE; text-align:center;">Don\'t have an account? Click <b>Sign Up</b> above.</p>',
+            unsafe_allow_html=True,
+        )
 
     # ── SIGN UP FORM ──
     elif st.session_state["auth_page"] == "signup":
         st.markdown("### 📝 Create a new account")
         with st.form("signup_form", clear_on_submit=False):
             su_username = st.text_input("👤 Username", placeholder="Choose a username")
-            su_email    = st.text_input("📧 Email", placeholder="your@email.com")
-            su_pass     = st.text_input("🔒 Password", type="password", placeholder="Min 6 characters")
-            su_pass2    = st.text_input("🔒 Confirm Password", type="password", placeholder="Repeat password")
-            signup_btn  = st.form_submit_button("🚀 Create Account", use_container_width=True, type="primary")
+            su_email = st.text_input("📧 Email", placeholder="your@email.com")
+            su_pass = st.text_input(
+                "🔒 Password", type="password", placeholder="Min 6 characters"
+            )
+            su_pass2 = st.text_input(
+                "🔒 Confirm Password", type="password", placeholder="Repeat password"
+            )
+            signup_btn = st.form_submit_button(
+                "🚀 Create Account", use_container_width=True, type="primary"
+            )
 
         if signup_btn:
             if not su_username or not su_email or not su_pass or not su_pass2:
@@ -1108,20 +1236,23 @@ Smart Multilingual AI Career Assistant
             else:
                 st.error(st.session_state["auth_msg"])
 
-        st.markdown('<p style="color:#90A4AE; text-align:center;">Already have an account? Click <b>Login</b> above.</p>', unsafe_allow_html=True)
+        st.markdown(
+            '<p style="color:#90A4AE; text-align:center;">Already have an account? Click <b>Login</b> above.</p>',
+            unsafe_allow_html=True,
+        )
 
     # ── FORGOT PASSWORD FLOW ──
     elif st.session_state["auth_page"] == "forgot":
         st.markdown("### 🔓 Reset Your Password")
 
         steps = ["1️⃣ Enter Username", "2️⃣ Verify Email", "3️⃣ New Password"]
-        step  = st.session_state["reset_step"]
+        step = st.session_state["reset_step"]
         st.markdown(
             f'<p style="color:#90CAF9; font-size:0.95rem;">'
             f'{"✅ " if step > 1 else "▶ "}{steps[0]} &nbsp;&nbsp;'
             f'{"✅ " if step > 2 else ("▶ " if step == 2 else "⬜ ")}{steps[1]} &nbsp;&nbsp;'
             f'{"✅ " if step > 3 else ("▶ " if step == 3 else "⬜ ")}{steps[2]}</p>',
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
         st.markdown("---")
 
@@ -1131,9 +1262,13 @@ Smart Multilingual AI Career Assistant
                 fp_username = st.text_input("👤 Username", placeholder="Your username")
                 col1, col2 = st.columns([1, 1])
                 with col1:
-                    next1 = st.form_submit_button("Next ▶", use_container_width=True, type="primary")
+                    next1 = st.form_submit_button(
+                        "Next ▶", use_container_width=True, type="primary"
+                    )
                 with col2:
-                    back1 = st.form_submit_button("◀ Back to Login", use_container_width=True)
+                    back1 = st.form_submit_button(
+                        "◀ Back to Login", use_container_width=True
+                    )
             if next1:
                 if not fp_username.strip():
                     st.session_state["auth_msg"] = "⚠️ Please enter your username."
@@ -1152,19 +1287,27 @@ Smart Multilingual AI Career Assistant
                 st.rerun()
 
         elif step == 2:
-            st.markdown(f"**Verify email for account:** `{st.session_state['reset_username']}`")
+            st.markdown(
+                f"**Verify email for account:** `{st.session_state['reset_username']}`"
+            )
             with st.form("fp_step2"):
-                fp_email = st.text_input("📧 Registered Email", placeholder="Enter your email address")
+                fp_email = st.text_input(
+                    "📧 Registered Email", placeholder="Enter your email address"
+                )
                 col1, col2 = st.columns([1, 1])
                 with col1:
-                    next2 = st.form_submit_button("Verify ▶", use_container_width=True, type="primary")
+                    next2 = st.form_submit_button(
+                        "Verify ▶", use_container_width=True, type="primary"
+                    )
                 with col2:
                     back2 = st.form_submit_button("◀ Back", use_container_width=True)
             if next2:
                 if not fp_email.strip():
                     st.session_state["auth_msg"] = "⚠️ Please enter your email."
                 else:
-                    ok, msg = verify_email_for_reset(st.session_state["reset_username"], fp_email.strip())
+                    ok, msg = verify_email_for_reset(
+                        st.session_state["reset_username"], fp_email.strip()
+                    )
                     st.session_state["auth_msg"] = msg
                     if ok:
                         st.session_state["reset_step"] = 3
@@ -1175,13 +1318,23 @@ Smart Multilingual AI Career Assistant
                 st.rerun()
 
         elif step == 3:
-            st.markdown(f"**Set a new password for:** `{st.session_state['reset_username']}`")
+            st.markdown(
+                f"**Set a new password for:** `{st.session_state['reset_username']}`"
+            )
             with st.form("fp_step3"):
-                new_pass  = st.text_input("🔒 New Password", type="password", placeholder="Min 6 characters")
-                new_pass2 = st.text_input("🔒 Confirm New Password", type="password", placeholder="Repeat new password")
+                new_pass = st.text_input(
+                    "🔒 New Password", type="password", placeholder="Min 6 characters"
+                )
+                new_pass2 = st.text_input(
+                    "🔒 Confirm New Password",
+                    type="password",
+                    placeholder="Repeat new password",
+                )
                 col1, col2 = st.columns([1, 1])
                 with col1:
-                    reset_btn = st.form_submit_button("✅ Reset Password", use_container_width=True, type="primary")
+                    reset_btn = st.form_submit_button(
+                        "✅ Reset Password", use_container_width=True, type="primary"
+                    )
                 with col2:
                     back3 = st.form_submit_button("◀ Back", use_container_width=True)
             if reset_btn:
@@ -1190,7 +1343,9 @@ Smart Multilingual AI Career Assistant
                 elif new_pass != new_pass2:
                     st.session_state["auth_msg"] = "⚠️ Passwords do not match."
                 else:
-                    ok, msg = reset_password(st.session_state["reset_username"], new_pass)
+                    ok, msg = reset_password(
+                        st.session_state["reset_username"], new_pass
+                    )
                     st.session_state["auth_msg"] = msg
                     if ok:
                         st.session_state["reset_step"] = 1
@@ -1208,7 +1363,7 @@ Smart Multilingual AI Career Assistant
             else:
                 st.error(st.session_state["auth_msg"])
 
-    st.stop()   # ← Block the rest of the app until logged in
+    st.stop()  # ← Block the rest of the app until logged in
 
 # ── Subscription session state ──
 if "show_pricing" not in st.session_state:
@@ -1222,7 +1377,7 @@ if "show_admin" not in st.session_state:
 
 # ── Top bar: Welcome + Plan badge + Upgrade + Logout ──
 st.markdown('<div style="margin-top:80px;"></div>', unsafe_allow_html=True)
-uname   = st.session_state["username"]
+uname = st.session_state["username"]
 is_guest = uname == "Guest"
 
 if not is_guest:
@@ -1235,7 +1390,10 @@ else:
 col_w, col_plan, col_upgrade, col_admin, col_logout = st.columns([3, 2, 2, 2, 1])
 with col_w:
     icon = "👤" if is_guest else ("👑" if st.session_state.get("is_admin") else "✅")
-    st.markdown(f'<p style="color:#90CAF9; margin:0; padding-top:6px;">Welcome, <b>{icon} {uname}</b></p>', unsafe_allow_html=True)
+    st.markdown(
+        f'<p style="color:#90CAF9; margin:0; padding-top:6px;">Welcome, <b>{icon} {uname}</b></p>',
+        unsafe_allow_html=True,
+    )
 with col_plan:
     if is_guest:
         st.markdown('<span class="badge-trial">👤 Guest</span>', unsafe_allow_html=True)
@@ -1245,34 +1403,51 @@ with col_plan:
             f'<span style="display:inline-block;padding:0.25rem 0.8rem;border-radius:20px;'
             f'background:{badge_color};color:white;font-weight:700;font-size:0.82rem;">'
             f'{plan_info["name"]} — {days_left}d left</span>',
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
     else:
-        st.markdown('<span class="badge-expired">⚠️ Plan Expired</span>', unsafe_allow_html=True)
+        st.markdown(
+            '<span class="badge-expired">⚠️ Plan Expired</span>', unsafe_allow_html=True
+        )
 with col_upgrade:
     if st.button("💳 Plans & Pricing", use_container_width=True):
         st.session_state["show_pricing"] = not st.session_state["show_pricing"]
-        st.session_state["show_admin"]   = False
+        st.session_state["show_admin"] = False
         st.rerun()
 with col_admin:
     if st.session_state.get("is_admin"):
         if st.button("👑 Admin Panel", use_container_width=True):
-            st.session_state["show_admin"]   = not st.session_state["show_admin"]
+            st.session_state["show_admin"] = not st.session_state["show_admin"]
             st.session_state["show_pricing"] = False
             st.rerun()
     else:
         st.empty()
 with col_logout:
     if st.button("🚪 Logout", use_container_width=True):
-        for key in ["logged_in","username","user_email","auth_page","auth_msg",
-                    "show_pricing","sub_msg","is_admin","show_admin"]:
-            st.session_state[key] = False if key in ["logged_in","is_admin","show_pricing","show_admin"] else ""
+        for key in [
+            "logged_in",
+            "username",
+            "user_email",
+            "auth_page",
+            "auth_msg",
+            "show_pricing",
+            "sub_msg",
+            "is_admin",
+            "show_admin",
+        ]:
+            st.session_state[key] = (
+                False
+                if key in ["logged_in", "is_admin", "show_pricing", "show_admin"]
+                else ""
+            )
         st.session_state["auth_page"] = "login"
         st.rerun()
 
 # ── Show expiry warning ──
 if not is_guest and not active:
-    st.error("⚠️ Your subscription has expired. Please upgrade to continue using the app.")
+    st.error(
+        "⚠️ Your subscription has expired. Please upgrade to continue using the app."
+    )
 
 # ──────────────────────────────────────────────────────────────
 # 💳 PRICING PAGE
@@ -1280,26 +1455,42 @@ if not is_guest and not active:
 if st.session_state["show_pricing"]:
     st.markdown("---")
     st.markdown("## 💳 Plans & Pricing")
-    st.markdown("Choose a plan that suits your preparation needs. All plans include the AI Java Interview Assistant.")
+    st.markdown(
+        "Choose a plan that suits your preparation needs. All plans include the AI Java Interview Assistant."
+    )
 
     plan_cols = st.columns(4)
     plan_keys = ["free_trial", "basic", "premium", "professional"]
     plan_colors = ["#37474F", "#1565C0", "#6A1B9A", "#BF360C"]
-    plan_btns  = ["Start Free Trial", "Subscribe ₹99/mo", "Subscribe ₹299/mo", "Subscribe ₹499/mo"]
+    plan_btns = [
+        "Start Free Trial",
+        "Subscribe ₹99/mo",
+        "Subscribe ₹299/mo",
+        "Subscribe ₹499/mo",
+    ]
 
     for i, (pk, pc, pb) in enumerate(zip(plan_keys, plan_colors, plan_btns)):
         p = PLANS[pk]
         with plan_cols[i]:
             # Highlight current plan
-            border = "3px solid #FFD54F" if pk == plan_key else "1px solid rgba(255,255,255,0.1)"
+            border = (
+                "3px solid #FFD54F"
+                if pk == plan_key
+                else "1px solid rgba(255,255,255,0.1)"
+            )
             current_tag = " ✅ Current" if pk == plan_key else ""
             st.markdown(
                 f'<div style="background:#101b2d;border:{border};border-radius:14px;padding:1.2rem;">'
                 f'<div style="font-size:1.1rem;font-weight:800;color:{pc};">{p["name"]}{current_tag}</div>'
                 f'<div style="font-size:1.6rem;font-weight:900;color:#FFD54F;margin:0.4rem 0;">{p["price"]}</div>'
-                + "".join([f'<div style="color:#B0BEC5;font-size:0.85rem;margin:0.2rem 0;">✔ {f}</div>' for f in p["features"]])
-                + '</div>',
-                unsafe_allow_html=True
+                + "".join(
+                    [
+                        f'<div style="color:#B0BEC5;font-size:0.85rem;margin:0.2rem 0;">✔ {f}</div>'
+                        for f in p["features"]
+                    ]
+                )
+                + "</div>",
+                unsafe_allow_html=True,
             )
             if pk == "free_trial":
                 duration_label = "3 Days Free"
@@ -1307,7 +1498,12 @@ if st.session_state["show_pricing"]:
                 duration_label = f"{p['duration']} Days Access"
 
             if not is_guest:
-                if st.button(f"{pb}", key=f"plan_btn_{pk}", use_container_width=True, type="primary" if pk != plan_key else "secondary"):
+                if st.button(
+                    f"{pb}",
+                    key=f"plan_btn_{pk}",
+                    use_container_width=True,
+                    type="primary" if pk != plan_key else "secondary",
+                ):
                     ok, msg = activate_plan(uname, pk)
                     st.session_state["sub_msg"] = msg
                     st.session_state["show_pricing"] = False
@@ -1321,7 +1517,8 @@ if st.session_state["show_pricing"]:
         else:
             st.error(st.session_state["sub_msg"])
 
-    st.markdown("""
+    st.markdown(
+        """
     <div style="background:#0d2137;border-radius:10px;padding:1rem;margin-top:1rem;color:#90A4AE;font-size:0.85rem;">
     <b style="color:#42A5F5;">💳 Payment Info (Demo Mode)</b><br>
     • Free Trial: 3 days, no card required<br>
@@ -1330,7 +1527,9 @@ if st.session_state["show_pricing"]:
     • Accepted: Credit card, Debit card, UPI, Net Banking<br>
     • <i>Note: This is a demo — click any button to simulate activation.</i>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     if st.button("✖ Close Pricing", use_container_width=False):
         st.session_state["show_pricing"] = False
@@ -1338,35 +1537,40 @@ if st.session_state["show_pricing"]:
 
     st.markdown("---")
     if not active and not is_guest:
-        st.stop()   # Block app if plan expired
+        st.stop()  # Block app if plan expired
 
 # ──────────────────────────────────────────────────────────────
 # 👑 ADMIN DASHBOARD
 # ──────────────────────────────────────────────────────────────
 if st.session_state.get("show_admin") and st.session_state.get("is_admin"):
     st.markdown("---")
-    st.markdown("""
+    st.markdown(
+        """
     <div style="background:linear-gradient(90deg,#F57F17,#FF8F00);padding:0.8rem 1.5rem;
     border-radius:10px;color:white;font-size:1.2rem;font-weight:800;margin-bottom:1rem;">
     👑 Admin Dashboard — AI Java Interview
-    </div>""", unsafe_allow_html=True)
+    </div>""",
+        unsafe_allow_html=True,
+    )
 
-    st.markdown(f"**Admin:** `{ADMIN_CONFIG['email']}`  |  **Access:** Unlimited  |  **Role:** Super Admin")
+    st.markdown(
+        f"**Admin:** `{ADMIN_CONFIG['email']}`  |  **Access:** Unlimited  |  **Role:** Super Admin"
+    )
     st.markdown("---")
 
     # ── Stats ──
     all_users = get_all_users_summary()
-    total_u   = len(all_users)
-    active_u  = sum(1 for u in all_users if not u["expired"])
+    total_u = len(all_users)
+    active_u = sum(1 for u in all_users if not u["expired"])
     expired_u = sum(1 for u in all_users if u["expired"])
     plan_counts = {}
     for u in all_users:
         plan_counts[u["plan"]] = plan_counts.get(u["plan"], 0) + 1
 
     s1, s2, s3, s4 = st.columns(4)
-    s1.metric("👥 Total Users",    total_u)
-    s2.metric("✅ Active Plans",   active_u)
-    s3.metric("❌ Expired Plans",  expired_u)
+    s1.metric("👥 Total Users", total_u)
+    s2.metric("✅ Active Plans", active_u)
+    s3.metric("❌ Expired Plans", expired_u)
     s4.metric("👑 Admin Accounts", sum(1 for u in all_users if u["role"] == "admin"))
 
     st.markdown("---")
@@ -1381,7 +1585,7 @@ if st.session_state.get("show_admin") and st.session_state.get("is_admin"):
             f'<span style="color:#90CAF9;width:160px;display:inline-block;">{pname}</span>'
             f'<span style="background:#1E88E5;display:inline-block;width:{bar_w}%;height:16px;border-radius:4px;vertical-align:middle;"></span>'
             f'&nbsp;<b style="color:white;">{cnt}</b></div>',
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
     st.markdown("---")
@@ -1389,39 +1593,60 @@ if st.session_state.get("show_admin") and st.session_state.get("is_admin"):
     # ── User Management Table ──
     st.markdown("### 👥 User Management")
 
-    search_u = st.text_input("🔍 Search by username or email", placeholder="Type to filter...")
-    filtered = [u for u in all_users if
-                search_u.lower() in u["username"].lower() or
-                search_u.lower() in u["email"].lower()] if search_u else all_users
+    search_u = st.text_input(
+        "🔍 Search by username or email", placeholder="Type to filter..."
+    )
+    filtered = (
+        [
+            u
+            for u in all_users
+            if search_u.lower() in u["username"].lower()
+            or search_u.lower() in u["email"].lower()
+        ]
+        if search_u
+        else all_users
+    )
 
     for user in filtered:
         ucols = st.columns([2, 3, 2, 2, 2])
         ucols[0].markdown(f"**{user['username']}**")
-        ucols[1].markdown(f"<span style='color:#90A4AE;font-size:0.85rem'>{user['email']}</span>", unsafe_allow_html=True)
+        ucols[1].markdown(
+            f"<span style='color:#90A4AE;font-size:0.85rem'>{user['email']}</span>",
+            unsafe_allow_html=True,
+        )
         pname = PLANS.get(user["plan"], {}).get("name", user["plan"])
         if user["expired"]:
-            ucols[2].markdown(f'<span class="badge-expired">{pname}</span>', unsafe_allow_html=True)
+            ucols[2].markdown(
+                f'<span class="badge-expired">{pname}</span>', unsafe_allow_html=True
+            )
         else:
             badge_c = PLANS.get(user["plan"], {}).get("badge", "#607D8B")
             ucols[2].markdown(
                 f'<span style="background:{badge_c};color:white;padding:2px 8px;border-radius:10px;font-size:0.8rem;">{pname}</span>',
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
-        ucols[3].markdown(f"<span style='color:#90A4AE;font-size:0.82rem'>{user['days_left']}d left</span>", unsafe_allow_html=True)
+        ucols[3].markdown(
+            f"<span style='color:#90A4AE;font-size:0.82rem'>{user['days_left']}d left</span>",
+            unsafe_allow_html=True,
+        )
 
         # Plan change dropdown for each user
         plan_options = list(PLANS.keys())
         new_plan = ucols[4].selectbox(
             "",
             plan_options,
-            index=plan_options.index(user["plan"]) if user["plan"] in plan_options else 0,
+            index=(
+                plan_options.index(user["plan"]) if user["plan"] in plan_options else 0
+            ),
             key=f"admin_plan_{user['username']}",
-            label_visibility="collapsed"
+            label_visibility="collapsed",
         )
         if new_plan != user["plan"]:
             ok, msg = activate_plan(user["username"], new_plan)
             if ok:
-                st.success(f"✅ {user['username']} plan updated to {PLANS[new_plan]['name']}")
+                st.success(
+                    f"✅ {user['username']} plan updated to {PLANS[new_plan]['name']}"
+                )
                 st.rerun()
 
     st.markdown("---")
@@ -1437,13 +1662,15 @@ else:
     _plan = PLANS["free_trial"]
 
 
-
 # -------------------------------
 # 💬 Chat State
 # -------------------------------
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        {"role": "system", "content": "You are a multilingual AI assistant (English, Hindi, Spanish). You can translate, analyze logs, and assist with Groq APIs."}
+        {
+            "role": "system",
+            "content": "You are a multilingual AI assistant (English, Hindi, Spanish). You can translate, analyze logs, and assist with Groq APIs.",
+        }
     ]
 
 # ── Mock Interview Modes & Topics (global) ──
@@ -1461,51 +1688,99 @@ MOCK_INTERVIEW_MODES = [
 
 MOCK_INTERVIEW_TOPICS = {
     "☕ Java Mock Interview": [
-        "Core Java", "OOP & Design Patterns", "Collections & Generics",
-        "Multithreading & Concurrency", "JVM & Memory Management",
-        "Spring Boot", "Java 8+ (Streams, Lambdas)", "Exception Handling",
-        "Data Structures & Algorithms (Java)", "Microservices",
-        "System Design", "DSA Problems", "Mixed / Full Stack Java",
+        "Core Java",
+        "OOP & Design Patterns",
+        "Collections & Generics",
+        "Multithreading & Concurrency",
+        "JVM & Memory Management",
+        "Spring Boot",
+        "Java 8+ (Streams, Lambdas)",
+        "Exception Handling",
+        "Data Structures & Algorithms (Java)",
+        "Microservices",
+        "System Design",
+        "DSA Problems",
+        "Mixed / Full Stack Java",
     ],
     "🐍 Python Mock Interview": [
-        "Core Python", "OOP in Python", "Data Structures (Python)",
-        "Python Libraries (NumPy/Pandas)", "Django / Flask",
-        "Python for ML/AI", "Async & Concurrency", "Testing in Python",
+        "Core Python",
+        "OOP in Python",
+        "Data Structures (Python)",
+        "Python Libraries (NumPy/Pandas)",
+        "Django / Flask",
+        "Python for ML/AI",
+        "Async & Concurrency",
+        "Testing in Python",
     ],
     "⚙️ DevOps Mock Interview": [
-        "CI/CD Pipelines", "Docker & Containers", "Kubernetes (K8s)",
-        "Terraform & IaC", "Jenkins / GitLab CI",
-        "Monitoring & Logging", "Linux & Shell Scripting", "Git & Version Control",
+        "CI/CD Pipelines",
+        "Docker & Containers",
+        "Kubernetes (K8s)",
+        "Terraform & IaC",
+        "Jenkins / GitLab CI",
+        "Monitoring & Logging",
+        "Linux & Shell Scripting",
+        "Git & Version Control",
     ],
     "☁️ AWS Mock Interview": [
-        "EC2 & VPC", "S3 & Storage", "Lambda & Serverless",
-        "RDS & DynamoDB", "IAM & Security",
-        "EKS & ECS", "CloudFormation & CDK", "AWS Architecture Design",
+        "EC2 & VPC",
+        "S3 & Storage",
+        "Lambda & Serverless",
+        "RDS & DynamoDB",
+        "IAM & Security",
+        "EKS & ECS",
+        "CloudFormation & CDK",
+        "AWS Architecture Design",
     ],
     "🔥 Kafka Mock Interview": [
-        "Kafka Architecture", "Producers & Consumers", "Topics & Partitions",
-        "Kafka Streams", "Kafka Connect",
-        "Schema Registry", "Kafka Security", "Kafka Tuning & Ops",
+        "Kafka Architecture",
+        "Producers & Consumers",
+        "Topics & Partitions",
+        "Kafka Streams",
+        "Kafka Connect",
+        "Schema Registry",
+        "Kafka Security",
+        "Kafka Tuning & Ops",
     ],
     "📦 Microservices Mock Interview": [
-        "Microservices Architecture", "Service Discovery", "API Gateway",
-        "Circuit Breaker Pattern", "Event-Driven Architecture",
-        "Saga Pattern", "gRPC & REST APIs", "Distributed Tracing",
+        "Microservices Architecture",
+        "Service Discovery",
+        "API Gateway",
+        "Circuit Breaker Pattern",
+        "Event-Driven Architecture",
+        "Saga Pattern",
+        "gRPC & REST APIs",
+        "Distributed Tracing",
     ],
     "🌱 Spring Boot Mock Interview": [
-        "Spring Core & DI", "Spring MVC", "Spring Data JPA",
-        "Spring Security", "Spring Cloud",
-        "Spring Boot Testing", "Spring Actuator & Monitoring", "Spring Batch",
+        "Spring Core & DI",
+        "Spring MVC",
+        "Spring Data JPA",
+        "Spring Security",
+        "Spring Cloud",
+        "Spring Boot Testing",
+        "Spring Actuator & Monitoring",
+        "Spring Batch",
     ],
     "🤖 AI Agents Mock Interview": [
-        "LLM Fundamentals", "RAG (Retrieval Augmented Generation)", "Prompt Engineering",
-        "AI Agent Design", "Vector Databases",
-        "LangChain / LlamaIndex", "Fine-tuning & RLHF", "MLOps",
+        "LLM Fundamentals",
+        "RAG (Retrieval Augmented Generation)",
+        "Prompt Engineering",
+        "AI Agent Design",
+        "Vector Databases",
+        "LangChain / LlamaIndex",
+        "Fine-tuning & RLHF",
+        "MLOps",
     ],
     "🗄️ SQL Mock Interview": [
-        "SQL Basics & Queries", "Joins & Subqueries", "Indexing & Performance",
-        "Stored Procedures & Functions", "Transactions & ACID",
-        "Database Design & Normalization", "Window Functions", "NoSQL vs SQL",
+        "SQL Basics & Queries",
+        "Joins & Subqueries",
+        "Indexing & Performance",
+        "Stored Procedures & Functions",
+        "Transactions & ACID",
+        "Database Design & Normalization",
+        "Window Functions",
+        "NoSQL vs SQL",
     ],
 }
 
@@ -1517,7 +1792,9 @@ if "interview_questions" not in st.session_state:
 if "interview_index" not in st.session_state:
     st.session_state["interview_index"] = 0
 if "interview_answers" not in st.session_state:
-    st.session_state["interview_answers"] = []   # list of {"question","answer","feedback","score"}
+    st.session_state["interview_answers"] = (
+        []
+    )  # list of {"question","answer","feedback","score"}
 if "interview_done" not in st.session_state:
     st.session_state["interview_done"] = False
 if "interview_difficulty" not in st.session_state:
@@ -1537,7 +1814,7 @@ if "question_start_time" not in st.session_state:
 if "timer_minutes" not in st.session_state:
     st.session_state["timer_minutes"] = 4
 if "question_history" not in st.session_state:
-    st.session_state["question_history"] = []   # tracks all previously asked questions
+    st.session_state["question_history"] = []  # tracks all previously asked questions
 if "question_source" not in st.session_state:
     st.session_state["question_source"] = "🤖 AI Generated"
 if "question_source_label" not in st.session_state:
@@ -1550,15 +1827,25 @@ if "bank_count" not in st.session_state:
 # -------------------------------
 with st.sidebar:
     st.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
-    st.markdown('<div class="sidebar-title">⚙️ Configuration</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="sidebar-title">⚙️ Configuration</div>', unsafe_allow_html=True
+    )
 
-    st.markdown('<div class="section-label">🎤 Input Mode</div>', unsafe_allow_html=True)
-    input_mode = st.radio("", ["💬 Type", "🎙️ Speak"], horizontal=True, label_visibility="collapsed")
+    st.markdown(
+        '<div class="section-label">🎤 Input Mode</div>', unsafe_allow_html=True
+    )
+    input_mode = st.radio(
+        "", ["💬 Type", "🎙️ Speak"], horizontal=True, label_visibility="collapsed"
+    )
 
-    st.markdown('<div class="section-label">🔈 Voice Output</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-label">🔈 Voice Output</div>', unsafe_allow_html=True
+    )
     voice_enabled = st.toggle("Enable Voice", value=True)
 
-    st.markdown('<div class="section-label">🌍 Assistant Mode</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-label">🌍 Assistant Mode</div>', unsafe_allow_html=True
+    )
     language_mode = st.selectbox(
         "",
         [
@@ -1577,43 +1864,55 @@ with st.sidebar:
             "Customer Support (Groq APIs)",
         ],
         index=0,
-        label_visibility="collapsed"
+        label_visibility="collapsed",
     )
-
 
     # ── Mock Interview Sidebar Controls ──
     if language_mode in MOCK_INTERVIEW_MODES:
-        st.markdown('<div class="section-label">🎯 Interview Topic</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-label">🎯 Interview Topic</div>',
+            unsafe_allow_html=True,
+        )
         _all_topics = MOCK_INTERVIEW_TOPICS.get(language_mode, [])
         _allowed_topics = _plan.get("topics_allowed") or _all_topics
         if len(_allowed_topics) < len(_all_topics):
-            st.caption(f"🔒 {len(_allowed_topics)}/{len(_all_topics)} topics available. 💳 Upgrade for all.")
+            st.caption(
+                f"🔒 {len(_allowed_topics)}/{len(_all_topics)} topics available. 💳 Upgrade for all."
+            )
         st.session_state["interview_topic"] = st.selectbox(
-            "",
-            _allowed_topics,
-            label_visibility="collapsed"
+            "", _allowed_topics, label_visibility="collapsed"
         )
 
-        st.markdown('<div class="section-label">📊 Difficulty Level</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-label">📊 Difficulty Level</div>',
+            unsafe_allow_html=True,
+        )
         st.session_state["interview_difficulty"] = st.selectbox(
             "",
             ["Junior (0-2 yrs)", "Mid-level (2-5 yrs)", "Senior (5+ yrs)"],
-            label_visibility="collapsed"
+            label_visibility="collapsed",
         )
 
         num_questions = st.slider(
             "Number of Questions",
             min_value=3,
             max_value=_plan["max_questions"],
-            value=min(5, _plan["max_questions"])
+            value=min(5, _plan["max_questions"]),
         )
         if _plan["max_questions"] < 15:
-            st.caption(f"🔒 Your plan allows up to **{_plan['max_questions']}** questions. Upgrade for more.")
+            st.caption(
+                f"🔒 Your plan allows up to **{_plan['max_questions']}** questions. Upgrade for more."
+            )
 
         # ── Question Source (restrict AI-only for Free Trial) ──
-        st.markdown('<div class="section-label">📚 Question Source</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-label">📚 Question Source</div>',
+            unsafe_allow_html=True,
+        )
         if _plan["ai_only"]:
-            st.caption("🔒 Free Trial: AI Generated only. Upgrade for Question Bank & Mixed mode.")
+            st.caption(
+                "🔒 Free Trial: AI Generated only. Upgrade for Question Bank & Mixed mode."
+            )
             st.session_state["question_source"] = "🤖 AI Generated"
         else:
             st.session_state["question_source"] = st.radio(
@@ -1621,14 +1920,14 @@ with st.sidebar:
                 ["🤖 AI Generated", "📖 Question Bank", "🔀 Mixed (Bank + AI)"],
                 horizontal=True,
                 label_visibility="collapsed",
-                key="q_source_radio"
+                key="q_source_radio",
             )
 
         # Show bank availability info
-        bank      = load_question_bank()
+        bank = load_question_bank()
         topic_key = st.session_state.get("interview_topic", "Core Java")
-        diff_key  = st.session_state.get("interview_difficulty", "Junior (0-2 yrs)")
-        avail_q   = bank.get(topic_key, {}).get(diff_key, [])
+        diff_key = st.session_state.get("interview_difficulty", "Junior (0-2 yrs)")
+        avail_q = bank.get(topic_key, {}).get(diff_key, [])
         if not avail_q:
             for k in bank.get(topic_key, {}):
                 if diff_key.split()[0].lower() in k.lower():
@@ -1639,10 +1938,15 @@ with st.sidebar:
             if avail_q:
                 st.caption(f"✅ {len(avail_q)} questions available in bank.")
             else:
-                st.caption("⚠️ No bank questions for this topic/level — will use AI instead.")
+                st.caption(
+                    "⚠️ No bank questions for this topic/level — will use AI instead."
+                )
 
         elif st.session_state["question_source"] == "🔀 Mixed (Bank + AI)":
-            st.markdown('<div class="section-label">⚖️ Questions from Bank</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="section-label">⚖️ Questions from Bank</div>',
+                unsafe_allow_html=True,
+            )
             max_from_bank = min(len(avail_q), num_questions - 1) if avail_q else 0
             if max_from_bank > 0:
                 st.session_state["bank_count"] = st.slider(
@@ -1650,34 +1954,60 @@ with st.sidebar:
                     min_value=1,
                     max_value=max_from_bank,
                     value=min(max_from_bank, max(1, num_questions // 2)),
-                    key="bank_count_slider"
+                    key="bank_count_slider",
                 )
                 ai_count = num_questions - st.session_state["bank_count"]
-                st.caption(f"📖 **{st.session_state['bank_count']}** from Bank  +  🤖 **{ai_count}** from AI  =  **{num_questions}** total")
+                st.caption(
+                    f"📖 **{st.session_state['bank_count']}** from Bank  +  🤖 **{ai_count}** from AI  =  **{num_questions}** total"
+                )
             else:
-                st.caption("⚠️ No bank questions available — all questions will be AI generated.")
+                st.caption(
+                    "⚠️ No bank questions available — all questions will be AI generated."
+                )
                 st.session_state["bank_count"] = 0
 
-        st.markdown('<div class="section-label">⏱️ Time Per Question</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-label">⏱️ Time Per Question</div>',
+            unsafe_allow_html=True,
+        )
 
         # Auto-set smart default based on topic
         _topic_now = st.session_state.get("interview_topic", "Core Java")
         _deep_topics = ["System Design", "DSA Problems"]
         if _topic_now in _deep_topics:
-            _time_options  = ["30 minutes", "40 minutes", "45 minutes", "50 minutes",
-                              "20 minutes", "15 minutes", "10 minutes", "5 minutes"]
-            _default_index = 0   # 30 min default
-            st.info(f"⏳ **{_topic_now}** questions require deep thinking — default set to **30 min**.")
+            _time_options = [
+                "30 minutes",
+                "40 minutes",
+                "45 minutes",
+                "50 minutes",
+                "20 minutes",
+                "15 minutes",
+                "10 minutes",
+                "5 minutes",
+            ]
+            _default_index = 0  # 30 min default
+            st.info(
+                f"⏳ **{_topic_now}** questions require deep thinking — default set to **30 min**."
+            )
         else:
-            _time_options  = ["4 minutes", "5 minutes", "3 minutes", "2 minutes",
-                              "10 minutes", "15 minutes", "20 minutes", "30 minutes"]
-            _default_index = 0   # 4 min default
+            _time_options = [
+                "4 minutes",
+                "5 minutes",
+                "3 minutes",
+                "2 minutes",
+                "10 minutes",
+                "15 minutes",
+                "20 minutes",
+                "30 minutes",
+            ]
+            _default_index = 0  # 4 min default
 
         _selected_time = st.selectbox(
-            "", _time_options,
+            "",
+            _time_options,
             index=_default_index,
             label_visibility="collapsed",
-            key="timer_select"
+            key="timer_select",
         )
         st.session_state["timer_minutes"] = int(_selected_time.split()[0])
 
@@ -1700,9 +2030,9 @@ with st.sidebar:
                     """Generate n fresh AI questions."""
                     if n <= 0:
                         return []
-                    session_id  = str(uuid.uuid4())[:8]
+                    session_id = str(uuid.uuid4())[:8]
                     random_seed = random.randint(1000, 9999)
-                    timestamp   = time.strftime("%H%M%S")
+                    timestamp = time.strftime("%H%M%S")
                     angles = [
                         "focus on edge cases and tricky scenarios",
                         "focus on real-world project experience",
@@ -1715,7 +2045,7 @@ with st.sidebar:
                         "include scenario-based problem solving",
                         "mix theory with hands-on coding questions",
                     ]
-                    angle   = random.choice(angles)
+                    angle = random.choice(angles)
                     history = st.session_state["question_history"][-30:]
                     avoid_block = ""
                     if history:
@@ -1739,8 +2069,11 @@ with st.sidebar:
                     res = client.chat.completions.create(
                         model="llama-3.1-8b-instant",
                         messages=[
-                            {"role": "system", "content": f"You are a senior technical interviewer with deep expertise in {topic}. Generate completely unique, realistic interview questions every time."},
-                            {"role": "user", "content": prompt}
+                            {
+                                "role": "system",
+                                "content": f"You are a senior technical interviewer with deep expertise in {topic}. Generate completely unique, realistic interview questions every time.",
+                            },
+                            {"role": "user", "content": prompt},
                         ],
                         stream=False,
                         temperature=1.0,
@@ -1748,37 +2081,44 @@ with st.sidebar:
                     )
                     raw = res.choices[0].message.content.strip()
                     ai_qs = [
-                        l.strip() for l in raw.split("\n")
+                        l.strip()
+                        for l in raw.split("\n")
                         if l.strip() and l.strip()[0].isdigit()
                     ]
                     # strip numbering
                     cleaned = []
                     for q in ai_qs:
-                        if q and q[0].isdigit() and '.' in q[:3]:
-                            q = q.split('.', 1)[1].strip()
+                        if q and q[0].isdigit() and "." in q[:3]:
+                            q = q.split(".", 1)[1].strip()
                         cleaned.append(q)
                     st.session_state["question_history"].extend(cleaned)
-                    st.session_state["question_history"] = st.session_state["question_history"][-100:]
+                    st.session_state["question_history"] = st.session_state[
+                        "question_history"
+                    ][-100:]
                     return cleaned[:n]
 
                 # ── SOURCE: Question Bank only ──
                 if st.session_state["question_source"] == "📖 Question Bank":
                     lines = get_bank_questions(topic, level, num_questions)
                     if lines:
-                        st.session_state["question_source_label"] = f"📖 Bank ({len(lines)}Q)"
+                        st.session_state["question_source_label"] = (
+                            f"📖 Bank ({len(lines)}Q)"
+                        )
                     else:
                         st.warning("No bank questions found — falling back to AI.")
                         lines = generate_ai_questions(num_questions, topic, level)
-                        st.session_state["question_source_label"] = f"🤖 AI ({len(lines)}Q)"
+                        st.session_state["question_source_label"] = (
+                            f"🤖 AI ({len(lines)}Q)"
+                        )
 
                 # ── SOURCE: Mixed (Bank + AI) ──
                 elif st.session_state["question_source"] == "🔀 Mixed (Bank + AI)":
                     bank_n = st.session_state.get("bank_count", 3)
-                    ai_n   = num_questions - bank_n
+                    ai_n = num_questions - bank_n
                     bank_qs = get_bank_questions(topic, level, bank_n)
                     # If bank has fewer than requested, top up with AI
                     actual_bank = len(bank_qs)
-                    actual_ai   = num_questions - actual_bank
+                    actual_ai = num_questions - actual_bank
                     ai_qs = generate_ai_questions(actual_ai, topic, level)
                     # Combine and shuffle so bank/AI questions are intermixed
                     combined = bank_qs + ai_qs
@@ -1799,7 +2139,10 @@ with st.sidebar:
                 st.session_state["question_start_time"] = time.time()
             st.rerun()
 
-        if st.session_state["interview_active"] and not st.session_state["interview_done"]:
+        if (
+            st.session_state["interview_active"]
+            and not st.session_state["interview_done"]
+        ):
             if st.button("❌ End Interview Now", use_container_width=True):
                 st.session_state["interview_done"] = True
                 st.session_state["interview_active"] = False
@@ -1807,17 +2150,28 @@ with st.sidebar:
 
         # Clear question history
         if st.session_state["question_history"]:
-            st.markdown(f'<div class="section-label">📚 Question History ({len(st.session_state["question_history"])} stored)</div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="section-label">📚 Question History ({len(st.session_state["question_history"])} stored)</div>',
+                unsafe_allow_html=True,
+            )
             if st.button("🗑️ Clear History (get all-new Qs)", use_container_width=True):
                 st.session_state["question_history"] = []
                 st.success("History cleared!")
 
     else:
-        st.markdown('<div class="section-label">📁 Upload Log/Text File</div>', unsafe_allow_html=True)
-        st.markdown('<div class="upload-box">Drag and drop file here<br><small>TXT, LOG, CSV (max 200MB)</small></div>', unsafe_allow_html=True)
-        uploaded_file = st.file_uploader("", type=["txt", "log", "csv"], label_visibility="collapsed")
+        st.markdown(
+            '<div class="section-label">📁 Upload Log/Text File</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<div class="upload-box">Drag and drop file here<br><small>TXT, LOG, CSV (max 200MB)</small></div>',
+            unsafe_allow_html=True,
+        )
+        uploaded_file = st.file_uploader(
+            "", type=["txt", "log", "csv"], label_visibility="collapsed"
+        )
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 # ============================================================
@@ -1826,14 +2180,24 @@ with st.sidebar:
 if language_mode in MOCK_INTERVIEW_MODES:
     uploaded_file = None  # not needed in this mode
 
-    st.markdown(f'<div class="interview-header" style="margin-top:30px;">{language_mode} &#8211; AI Interviewer</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="interview-header" style="margin-top:30px;">{language_mode} &#8211; AI Interviewer</div>',
+        unsafe_allow_html=True,
+    )
 
     # ── Interview not started yet ──
-    if not st.session_state["interview_active"] and not st.session_state["interview_done"]:
-        st.info("👈 Configure your interview in the sidebar and click **🚀 Start New Interview** to begin.")
+    if (
+        not st.session_state["interview_active"]
+        and not st.session_state["interview_done"]
+    ):
+        st.info(
+            "👈 Configure your interview in the sidebar and click **🚀 Start New Interview** to begin."
+        )
 
     # ── Interview in progress ──
-    elif st.session_state["interview_active"] and not st.session_state["interview_done"]:
+    elif (
+        st.session_state["interview_active"] and not st.session_state["interview_done"]
+    ):
         questions = st.session_state["interview_questions"]
         idx = st.session_state["interview_index"]
         total = len(questions)
@@ -1848,7 +2212,9 @@ if language_mode in MOCK_INTERVIEW_MODES:
             # Progress bar
             progress_val = idx / total
             src_label = st.session_state.get("question_source_label", "")
-            st.markdown(f"**Question {idx + 1} of {total}** — Topic: `{st.session_state['interview_topic']}` | Level: `{st.session_state['interview_difficulty']}` | Source: `{src_label}`")
+            st.markdown(
+                f"**Question {idx + 1} of {total}** — Topic: `{st.session_state['interview_topic']}` | Level: `{st.session_state['interview_difficulty']}` | Source: `{src_label}`"
+            )
             st.progress(progress_val)
 
             # ── Countdown Timer ──
@@ -1856,41 +2222,44 @@ if language_mode in MOCK_INTERVIEW_MODES:
                 st.session_state["question_start_time"] = time.time()
 
             timer_limit = st.session_state["timer_minutes"] * 60  # seconds
-            elapsed     = time.time() - st.session_state["question_start_time"]
-            remaining   = max(0, timer_limit - elapsed)
-            mins_left   = int(remaining // 60)
-            secs_left   = int(remaining % 60)
-            pct_left    = remaining / timer_limit
+            elapsed = time.time() - st.session_state["question_start_time"]
+            remaining = max(0, timer_limit - elapsed)
+            mins_left = int(remaining // 60)
+            secs_left = int(remaining % 60)
+            pct_left = remaining / timer_limit
 
             # Topic-aware colour thresholds
             # System Design / DSA Problems: green until 40%, orange until 15%, red last 15%
             # Regular topics: green until 50%, orange until 20%, red last 20%
             _cur_topic = st.session_state.get("interview_topic", "")
-            _is_deep   = _cur_topic in ["System Design", "DSA Problems"]
-            green_thresh  = 0.40 if _is_deep else 0.50
+            _is_deep = _cur_topic in ["System Design", "DSA Problems"]
+            green_thresh = 0.40 if _is_deep else 0.50
             orange_thresh = 0.15 if _is_deep else 0.20
 
             if pct_left > green_thresh:
                 timer_color = "#1b5e20"
-                text_color  = "#A5D6A7"
-                timer_icon  = "🟢"
+                text_color = "#A5D6A7"
+                timer_icon = "🟢"
             elif pct_left > orange_thresh:
                 timer_color = "#e65100"
-                text_color  = "#FFE0B2"
-                timer_icon  = "🟠"
+                text_color = "#FFE0B2"
+                timer_icon = "🟠"
             else:
                 timer_color = "#b71c1c"
-                text_color  = "#FFCDD2"
-                timer_icon  = "🔴"
+                text_color = "#FFCDD2"
+                timer_icon = "🔴"
 
             # Topic timer context label
             if _is_deep:
                 timer_label = f"⏳ {_cur_topic} — Take your time to think deeply!"
             else:
-                timer_label = f"⏱️ Answer within {st.session_state['timer_minutes']} minutes"
+                timer_label = (
+                    f"⏱️ Answer within {st.session_state['timer_minutes']} minutes"
+                )
 
             # JavaScript live countdown (runs in browser, no page reload)
-            components.html(f"""
+            components.html(
+                f"""
             <div style="font-family:sans-serif; margin-bottom:4px;">
               <span style="color:#90A4AE; font-size:0.82rem;">{timer_label}</span>
             </div>
@@ -1931,22 +2300,29 @@ if language_mode in MOCK_INTERVIEW_MODES:
                 }}
                 setTimeout(tick, 1000);
             </script>
-            """, height=100)
+            """,
+                height=100,
+            )
 
             # ── Server-side auto-advance when time is up ──
             if remaining <= 0:
                 current_q_timeout = questions[idx]
                 _topic_msg = "Time is up! Moving to the next question."
-                if st.session_state.get("interview_topic", "") in ["System Design", "DSA Problems"]:
+                if st.session_state.get("interview_topic", "") in [
+                    "System Design",
+                    "DSA Problems",
+                ]:
                     _topic_msg = f"Time is up! {st.session_state['timer_minutes']} minutes have passed. Moving to the next question."
                 speak_async(_topic_msg)
                 st.warning(f"⏰ {_topic_msg}")
-                st.session_state["interview_answers"].append({
-                    "question": current_q_timeout,
-                    "answer": "[Time expired – no answer submitted]",
-                    "feedback": "The time limit was reached and no answer was submitted for this question.",
-                    "score": 0
-                })
+                st.session_state["interview_answers"].append(
+                    {
+                        "question": current_q_timeout,
+                        "answer": "[Time expired – no answer submitted]",
+                        "feedback": "The time limit was reached and no answer was submitted for this question.",
+                        "score": 0,
+                    }
+                )
                 st.session_state["interview_index"] += 1
                 st.session_state["voice_answer"] = ""
                 st.session_state["audio_failed"] = False
@@ -1959,16 +2335,31 @@ if language_mode in MOCK_INTERVIEW_MODES:
 
             # Show all previous Q&A
             for prev in st.session_state["interview_answers"]:
-                st.markdown(f'<div class="question-box">❓ {prev["question"]}</div>', unsafe_allow_html=True)
-                st.markdown(f'<div class="chat-message user" style="max-width:100%;margin:0 0 0.5rem 0;">💬 {prev["answer"]}</div>', unsafe_allow_html=True)
+                st.markdown(
+                    f'<div class="question-box">❓ {prev["question"]}</div>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown(
+                    f'<div class="chat-message user" style="max-width:100%;margin:0 0 0.5rem 0;">💬 {prev["answer"]}</div>',
+                    unsafe_allow_html=True,
+                )
                 score_class = "score-badge" if prev["score"] >= 6 else "score-badge-low"
-                st.markdown(f'<span class="{score_class}">Score: {prev["score"]}/10</span>', unsafe_allow_html=True)
-                st.markdown(f'<div class="feedback-box">🤖 {prev["feedback"]}</div>', unsafe_allow_html=True)
+                st.markdown(
+                    f'<span class="{score_class}">Score: {prev["score"]}/10</span>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown(
+                    f'<div class="feedback-box">🤖 {prev["feedback"]}</div>',
+                    unsafe_allow_html=True,
+                )
                 st.markdown("---")
 
             # Current question
             current_q = questions[idx]
-            st.markdown(f'<div class="question-box">❓ {current_q}</div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="question-box">❓ {current_q}</div>',
+                unsafe_allow_html=True,
+            )
 
             # Answer input
             if input_mode == "💬 Type":
@@ -1976,105 +2367,100 @@ if language_mode in MOCK_INTERVIEW_MODES:
                     "✍️ Your Answer:",
                     placeholder="Type your Java answer here... (explain concept, write code, or describe approach)",
                     height=180,
-                    key=f"answer_input_{idx}"
+                    key=f"answer_input_{idx}",
                 )
                 col1, col2 = st.columns([1, 3])
                 with col1:
-                    submit_answer = st.button("✅ Submit Answer", use_container_width=True)
+                    submit_answer = st.button(
+                        "✅ Submit Answer", use_container_width=True
+                    )
                 with col2:
                     skip_q = st.button("⏭️ Skip Question", use_container_width=True)
             else:
                 user_answer = ""
                 skip_q = False
 
-                # ── Browser-based mic recording (no PyAudio needed) ──
-                st.markdown("🎙️ **Click the mic below to record your answer:**")
-                audio_bytes = st.audio_input("Record your answer", key=f"audio_input_{idx}")
-
-                col_skip2, _ = st.columns([1, 3])
-                with col_skip2:
-                    skip_q = st.button("⏭️ Skip Question", use_container_width=True, key=f"skip_{idx}")
-
-                if audio_bytes is not None:
-                    st.session_state["audio_failed"] = False
-                    st.session_state["audio_error_msg"] = ""
-                    with st.spinner("🔍 Transcribing your speech…"):
+                col_rec, col_skip = st.columns([2, 2])
+                with col_rec:
+                    if st.button(
+                        "🎙️ Record Answer", use_container_width=True, key=f"rec_{idx}"
+                    ):
+                        st.session_state["audio_failed"] = False
+                        recognizer = sr.Recognizer()
                         try:
-                            import io
-                            recognizer = sr.Recognizer()
-                            audio_data = audio_bytes.read() if hasattr(audio_bytes, "read") else bytes(audio_bytes)
-                            with sr.AudioFile(io.BytesIO(audio_data)) as source:
-                                audio = recognizer.record(source)
-                            recognized = recognizer.recognize_google(audio, language="en-IN")
+                            with sr.Microphone() as source:
+                                st.info("🎤 Listening... Speak your answer!")
+                                recognizer.adjust_for_ambient_noise(
+                                    source, duration=0.5
+                                )
+                                audio = recognizer.listen(source, phrase_time_limit=30)
+                            recognized = recognizer.recognize_google(audio)
                             st.session_state["voice_answer"] = recognized
                             st.session_state["audio_failed"] = False
-                            st.session_state["audio_error_msg"] = ""
-                            st.rerun()
                         except sr.UnknownValueError:
                             st.session_state["audio_failed"] = True
                             st.session_state["voice_answer"] = ""
-                            st.session_state["audio_error_msg"] = "🔇 Speech was unclear. Please record again and speak louder."
-                            st.rerun()
-                        except sr.RequestError as e:
+                        except sr.RequestError:
                             st.session_state["audio_failed"] = True
                             st.session_state["voice_answer"] = ""
-                            st.session_state["audio_error_msg"] = f"🌐 Network error: {e}"
-                            st.rerun()
-                        except Exception as e:
+                        except Exception:
                             st.session_state["audio_failed"] = True
                             st.session_state["voice_answer"] = ""
-                            st.session_state["audio_error_msg"] = f"❌ Error: {str(e)[:120]}. Type below."
-                            st.rerun()
-                # ── Audio failed: warning + typed fallback ──
-                if st.session_state.get("audio_failed", False):
-                    err_msg = st.session_state.get("audio_error_msg", "⚠️ Could not understand audio.")
-                    st.warning(err_msg)
-                    st.markdown("**💬 Type your answer below instead:**")
-                    typed_fallback = st.text_area(
-                        "Your answer (typed):",
-                        value="", height=130,
-                        placeholder="Type your answer here and click Submit…",
-                        key=f"fallback_type_{idx}"
+                        st.rerun()
+
+                with col_skip:
+                    skip_q = st.button(
+                        "⏭️ Skip Question", use_container_width=True, key=f"skip_{idx}"
                     )
-                    col_fb1, col_fb2 = st.columns(2)
-                    with col_fb1:
-                        if st.button("✅ Submit Typed Answer", use_container_width=True, key=f"sub_typed_{idx}", type="primary"):
-                            if typed_fallback.strip():
-                                st.session_state["voice_answer"] = typed_fallback.strip()
-                                st.session_state["audio_failed"] = False
-                                st.session_state["audio_error_msg"] = ""
-                                st.rerun()
-                            else:
-                                st.error("Please type something before submitting.")
-                    with col_fb2:
-                        if st.button("⏩ Skip This Question", use_container_width=True, key=f"next_fail_{idx}"):
-                            st.session_state["interview_answers"].append({
+
+                # ── Audio failed: show warning + Next Question button ──
+                if st.session_state.get("audio_failed", False):
+                    st.warning(
+                        "⚠️ Could not understand your audio. Please try again or go to the next question."
+                    )
+                    if st.button(
+                        "⏩ Next Question",
+                        use_container_width=True,
+                        key=f"next_fail_{idx}",
+                        type="primary",
+                    ):
+                        st.session_state["interview_answers"].append(
+                            {
                                 "question": current_q,
                                 "answer": "[Audio not recognized – skipped]",
-                                "feedback": "Audio was not recognized. Question was skipped.",
-                                "score": 0
-                            })
-                            st.session_state["interview_index"] += 1
-                            st.session_state["voice_answer"] = ""
-                            st.session_state["audio_failed"] = False
-                            st.session_state["audio_error_msg"] = ""
-                            st.session_state["question_start_time"] = time.time()
-                            if st.session_state["interview_index"] >= total:
-                                st.session_state["interview_done"] = True
-                                st.session_state["interview_active"] = False
-                            st.rerun()
+                                "feedback": "Audio was not recognized. Question was skipped automatically.",
+                                "score": 0,
+                            }
+                        )
+                        st.session_state["interview_index"] += 1
+                        st.session_state["voice_answer"] = ""
+                        st.session_state["audio_failed"] = False
+                        st.session_state["question_start_time"] = (
+                            time.time()
+                        )  # reset timer
+                        if st.session_state["interview_index"] >= total:
+                            st.session_state["interview_done"] = True
+                            st.session_state["interview_active"] = False
+                        st.rerun()
 
                 # Show successfully recorded answer
-                if st.session_state["voice_answer"] and not st.session_state.get("audio_failed", False):
+                if st.session_state["voice_answer"] and not st.session_state.get(
+                    "audio_failed", False
+                ):
                     st.success(f"✅ Recorded: *{st.session_state['voice_answer']}*")
                     edited = st.text_area(
                         "✏️ Edit if needed:",
                         value=st.session_state["voice_answer"],
                         height=120,
-                        key=f"voice_edit_{idx}"
+                        key=f"voice_edit_{idx}",
                     )
                     st.session_state["voice_answer"] = edited
-                    submit_answer = st.button("✅ Submit Answer", use_container_width=True, key=f"sub_{idx}", type="primary")
+                    submit_answer = st.button(
+                        "✅ Submit Answer",
+                        use_container_width=True,
+                        key=f"sub_{idx}",
+                        type="primary",
+                    )
                 else:
                     submit_answer = False
 
@@ -2101,7 +2487,7 @@ if language_mode in MOCK_INTERVIEW_MODES:
                     eval_result = client.chat.completions.create(
                         model="llama-3.1-8b-instant",
                         messages=[{"role": "user", "content": eval_prompt}],
-                        stream=False
+                        stream=False,
                     )
                     eval_text = eval_result.choices[0].message.content.strip()
 
@@ -2110,23 +2496,34 @@ if language_mode in MOCK_INTERVIEW_MODES:
                 for line in eval_text.split("\n"):
                     if line.startswith("SCORE:"):
                         try:
-                            score_val = int(line.replace("SCORE:", "").strip().split()[0])
+                            score_val = int(
+                                line.replace("SCORE:", "").strip().split()[0]
+                            )
                         except Exception:
                             score_val = 5
 
-                st.session_state["interview_answers"].append({
-                    "question": current_q,
-                    "answer": final_answer,
-                    "feedback": eval_text,
-                    "score": score_val
-                })
+                st.session_state["interview_answers"].append(
+                    {
+                        "question": current_q,
+                        "answer": final_answer,
+                        "feedback": eval_text,
+                        "score": score_val,
+                    }
+                )
                 st.session_state["interview_index"] += 1
                 st.session_state["voice_answer"] = ""
                 st.session_state["audio_failed"] = False
-                st.session_state["question_start_time"] = time.time()  # reset timer for next question
+                st.session_state["question_start_time"] = (
+                    time.time()
+                )  # reset timer for next question
 
                 if voice_enabled and not skip_q:
-                    speak_async(f"Score: {score_val} out of 10. " + eval_text.replace("SCORE:", "").replace("FEEDBACK:", "").replace("TIP:", "")[:300])
+                    speak_async(
+                        f"Score: {score_val} out of 10. "
+                        + eval_text.replace("SCORE:", "")
+                        .replace("FEEDBACK:", "")
+                        .replace("TIP:", "")[:300]
+                    )
 
                 # Auto-end if last question
                 if st.session_state["interview_index"] >= total:
@@ -2151,7 +2548,9 @@ if language_mode in MOCK_INTERVIEW_MODES:
 
             st.markdown('<div class="final-report">', unsafe_allow_html=True)
             st.markdown("## 📊 Interview Report Card")
-            st.markdown(f"**Topic:** {st.session_state['interview_topic']}  |  **Level:** {st.session_state['interview_difficulty']}")
+            st.markdown(
+                f"**Topic:** {st.session_state['interview_topic']}  |  **Level:** {st.session_state['interview_difficulty']}"
+            )
             st.markdown(f"**Questions Attempted:** {total_q}")
 
             col1, col2, col3 = st.columns(3)
@@ -2160,9 +2559,13 @@ if language_mode in MOCK_INTERVIEW_MODES:
             col3.metric("📉 Lowest Score", f"{min(scores)}/10")
 
             if passed:
-                st.success("🎉 **PASSED!** Great performance! You demonstrated solid Java knowledge.")
+                st.success(
+                    "🎉 **PASSED!** Great performance! You demonstrated solid Java knowledge."
+                )
             else:
-                st.error("❌ **Needs Improvement.** Review the weak areas and practice more.")
+                st.error(
+                    "❌ **Needs Improvement.** Review the weak areas and practice more."
+                )
 
             st.markdown("---")
 
@@ -2171,9 +2574,17 @@ if language_mode in MOCK_INTERVIEW_MODES:
             for i, rec in enumerate(answers):
                 with st.expander(f"Q{i+1}: {rec['question'][:80]}...", expanded=False):
                     st.markdown(f"**Your Answer:** {rec['answer']}")
-                    score_class = "score-badge" if rec["score"] >= 6 else "score-badge-low"
-                    st.markdown(f'<span class="{score_class}">Score: {rec["score"]}/10</span>', unsafe_allow_html=True)
-                    st.markdown(f'<div class="feedback-box">{rec["feedback"]}</div>', unsafe_allow_html=True)
+                    score_class = (
+                        "score-badge" if rec["score"] >= 6 else "score-badge-low"
+                    )
+                    st.markdown(
+                        f'<span class="{score_class}">Score: {rec["score"]}/10</span>',
+                        unsafe_allow_html=True,
+                    )
+                    st.markdown(
+                        f'<div class="feedback-box">{rec["feedback"]}</div>',
+                        unsafe_allow_html=True,
+                    )
 
             # AI Overall Feedback
             st.markdown("---")
@@ -2186,7 +2597,9 @@ if language_mode in MOCK_INTERVIEW_MODES:
                     f"Questions & Scores:\n"
                 )
                 for i, rec in enumerate(answers):
-                    summary_prompt += f"{i+1}. Q: {rec['question']} | Score: {rec['score']}/10\n"
+                    summary_prompt += (
+                        f"{i+1}. Q: {rec['question']} | Score: {rec['score']}/10\n"
+                    )
                 summary_prompt += (
                     "\nProvide:\n"
                     "1. Overall strengths (2-3 points)\n"
@@ -2198,15 +2611,21 @@ if language_mode in MOCK_INTERVIEW_MODES:
                 final_analysis = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[{"role": "user", "content": summary_prompt}],
-                    stream=False
+                    stream=False,
                 )
                 analysis_text = final_analysis.choices[0].message.content.strip()
-                st.markdown(f'<div class="feedback-box">{analysis_text}</div>', unsafe_allow_html=True)
+                st.markdown(
+                    f'<div class="feedback-box">{analysis_text}</div>',
+                    unsafe_allow_html=True,
+                )
 
                 if voice_enabled:
-                    speak_async(f"Interview complete. Your average score is {avg_score:.1f} out of 10. " + analysis_text[:400])
+                    speak_async(
+                        f"Interview complete. Your average score is {avg_score:.1f} out of 10. "
+                        + analysis_text[:400]
+                    )
 
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
             st.markdown("---")
             if st.button("🔄 Start New Interview", use_container_width=True):
@@ -2221,7 +2640,7 @@ if language_mode in MOCK_INTERVIEW_MODES:
 # ============================================================
 # 📁 File Upload Analysis (non-interview modes)
 # ============================================================
-elif 'uploaded_file' in dir() and uploaded_file:
+elif "uploaded_file" in dir() and uploaded_file:
     st.info("🔍 Analyzing uploaded log/data file...")
     file_content = uploaded_file.read().decode("utf-8", errors="ignore")[:8000]
     analysis_prompt = f"""
@@ -2240,13 +2659,20 @@ elif 'uploaded_file' in dir() and uploaded_file:
         stream = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
-                {"role": "system", "content": "You are a log and performance analysis expert."},
-                {"role": "user", "content": analysis_prompt}
+                {
+                    "role": "system",
+                    "content": "You are a log and performance analysis expert.",
+                },
+                {"role": "user", "content": analysis_prompt},
             ],
-            stream=True
+            stream=True,
         )
         for chunk in stream:
-            if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
+            if (
+                chunk.choices
+                and chunk.choices[0].delta
+                and chunk.choices[0].delta.content
+            ):
                 response += chunk.choices[0].delta.content
                 placeholder.markdown(response + "▌")
         placeholder.markdown(response)
@@ -2259,39 +2685,46 @@ elif 'uploaded_file' in dir() and uploaded_file:
 # ============================================================
 if language_mode not in MOCK_INTERVIEW_MODES:
 
+    # Voice recognition helper
+    def record_voice():
+        recognizer = sr.Recognizer()
+        with sr.Microphone() as source:
+            st.info("🎤 Listening... Speak now!")
+            audio = recognizer.listen(source, phrase_time_limit=8)
+            st.success("✅ Voice captured.")
+            try:
+                return recognizer.recognize_google(audio)
+            except sr.UnknownValueError:
+                return "Sorry, I couldn't understand your voice."
+            except sr.RequestError:
+                return "Speech recognition service unavailable."
+
     # Input handling
     prompt = None
     if input_mode == "💬 Type":
         prompt = st.chat_input("Type your message here...")
     elif input_mode == "🎙️ Speak":
-        st.markdown("🎙️ **Record your voice message:**")
-        voice_audio = st.audio_input("Speak your message", key="chat_voice_input")
-        if voice_audio is not None:
-            with st.spinner("🔍 Transcribing…"):
-                try:
-                    import io
-                    recognizer = sr.Recognizer()
-                    audio_data = voice_audio.read() if hasattr(voice_audio, "read") else bytes(voice_audio)
-                    with sr.AudioFile(io.BytesIO(audio_data)) as source:
-                        audio_rec = recognizer.record(source)
-                    prompt = recognizer.recognize_google(audio_rec, language="en-IN")
-                    st.info(f"🎤 Recognized: *{prompt}*")
-                except Exception as e:
-                    st.warning(f"⚠️ Could not transcribe: {e}. Please type instead.")
-                    prompt = None
+        if st.button("🎙️ Record Voice"):
+            prompt = record_voice()
+            st.text_area("Recognized Speech:", prompt or "", height=100)
 
     # Display chat messages
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
     for msg in st.session_state["messages"]:
         if msg["role"] != "system":
             role_class = "user" if msg["role"] == "user" else "assistant"
-            st.markdown(f'<div class="chat-message {role_class}">{msg["content"]}</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="chat-message {role_class}">{msg["content"]}</div>',
+                unsafe_allow_html=True,
+            )
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # Process AI Response
     if prompt:
         st.session_state["messages"].append({"role": "user", "content": prompt})
-        st.markdown(f'<div class="chat-message user">{prompt}</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="chat-message user">{prompt}</div>', unsafe_allow_html=True
+        )
 
         if language_mode == "English ↔ Hindi Tutor":
             system_prompt = "Translate smoothly between English and Hindi, and explain pronunciation if helpful."
@@ -2305,18 +2738,23 @@ if language_mode not in MOCK_INTERVIEW_MODES:
         else:
             system_prompt = "You are a system and performance assistant."
 
-        messages_list = [{"role": "system", "content": system_prompt}, {"role": "user", "content": prompt}]
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt},
+        ]
 
         with st.chat_message("assistant"):
             placeholder = st.empty()
             response = ""
             stream = client.chat.completions.create(
-                model="llama-3.1-8b-instant",
-                messages=messages_list,
-                stream=True
+                model="llama-3.1-8b-instant", messages=messages, stream=True
             )
             for chunk in stream:
-                if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
+                if (
+                    chunk.choices
+                    and chunk.choices[0].delta
+                    and chunk.choices[0].delta.content
+                ):
                     response += chunk.choices[0].delta.content
                     placeholder.markdown(response + "▌")
             placeholder.markdown(response)
@@ -2325,7 +2763,12 @@ if language_mode not in MOCK_INTERVIEW_MODES:
 
         if voice_enabled:
             if language_mode == "English ↔ Spanish Tutor":
-                lang = "es" if any(c in prompt for c in "áéíóúñ¿¡") or "translate to spanish" in prompt.lower() else "en"
+                lang = (
+                    "es"
+                    if any(c in prompt for c in "áéíóúñ¿¡")
+                    or "translate to spanish" in prompt.lower()
+                    else "en"
+                )
             elif language_mode == "English ↔ Hindi Tutor":
                 lang = "hi"
             else:
