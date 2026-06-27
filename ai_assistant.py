@@ -2023,9 +2023,8 @@ if language_mode in MOCK_INTERVIEW_MODES:
                         except Exception as e:
                             st.session_state["audio_failed"] = True
                             st.session_state["voice_answer"] = ""
-                            st.session_state["audio_error_msg"] = f"❌ Error: {str(e)[:120]}. Type your answer below."
+                            st.session_state["audio_error_msg"] = f"❌ Error: {str(e)[:120]}. Type below."
                             st.rerun()
-
                 # ── Audio failed: warning + typed fallback ──
                 if st.session_state.get("audio_failed", False):
                     err_msg = st.session_state.get("audio_error_msg", "⚠️ Could not understand audio.")
@@ -2274,8 +2273,8 @@ if language_mode not in MOCK_INTERVIEW_MODES:
                     recognizer = sr.Recognizer()
                     audio_data = voice_audio.read() if hasattr(voice_audio, "read") else bytes(voice_audio)
                     with sr.AudioFile(io.BytesIO(audio_data)) as source:
-                        audio = recognizer.record(source)
-                    prompt = recognizer.recognize_google(audio, language="en-IN")
+                        audio_rec = recognizer.record(source)
+                    prompt = recognizer.recognize_google(audio_rec, language="en-IN")
                     st.info(f"🎤 Recognized: *{prompt}*")
                 except Exception as e:
                     st.warning(f"⚠️ Could not transcribe: {e}. Please type instead.")
@@ -2306,14 +2305,14 @@ if language_mode not in MOCK_INTERVIEW_MODES:
         else:
             system_prompt = "You are a system and performance assistant."
 
-        messages = [{"role": "system", "content": system_prompt}, {"role": "user", "content": prompt}]
+        messages_list = [{"role": "system", "content": system_prompt}, {"role": "user", "content": prompt}]
 
         with st.chat_message("assistant"):
             placeholder = st.empty()
             response = ""
             stream = client.chat.completions.create(
                 model="llama-3.1-8b-instant",
-                messages=messages,
+                messages=messages_list,
                 stream=True
             )
             for chunk in stream:
