@@ -15,6 +15,7 @@ if sys.platform == "win32":
 import streamlit as st
 from groq import Groq
 #import speech_recognition as sr
+from streamlit_mic_recorder import mic_recorder
 
 import threading
 import time
@@ -29,10 +30,7 @@ import uuid
 # -------------------------------
 USERS_FILE         = os.path.join(os.path.dirname(os.path.abspath(__file__)), "users.json")
 QUESTION_BANK_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "question_bank.json")
-sr.Recognizer()
-sr.Microphone()
-recognizer.listen()
-recognizer.recognize_google()
+
 def load_question_bank():
     if os.path.exists(QUESTION_BANK_FILE):
         with open(QUESTION_BANK_FILE, "r", encoding="utf-8") as f:
@@ -1990,28 +1988,45 @@ if language_mode in MOCK_INTERVIEW_MODES:
                 skip_q = False
 
                 col_rec, col_skip = st.columns([2, 2])
-                with col_rec:
-                    if st.button("🎙️ Record Answer", use_container_width=True, key=f"rec_{idx}"):
-                        st.session_state["audio_failed"] = False
-                        recognizer = sr.Recognizer()
-                        try:
-                            with sr.Microphone() as source:
-                                st.info("🎤 Listening... Speak your answer!")
-                                recognizer.adjust_for_ambient_noise(source, duration=0.5)
-                                audio = recognizer.listen(source, phrase_time_limit=30)
-                            recognized = recognizer.recognize_google(audio)
-                            st.session_state["voice_answer"] = recognized
-                            st.session_state["audio_failed"] = False
-                        except sr.UnknownValueError:
-                            st.session_state["audio_failed"] = True
-                            st.session_state["voice_answer"] = ""
-                        except sr.RequestError:
-                            st.session_state["audio_failed"] = True
-                            st.session_state["voice_answer"] = ""
-                        except Exception:
-                            st.session_state["audio_failed"] = True
-                            st.session_state["voice_answer"] = ""
-                        st.rerun()
+
+with col_rec:
+
+    audio = mic_recorder(
+        start_prompt="🎙️ Record Answer",
+        stop_prompt="⏹️ Stop Recording",
+        key=f"mic_{idx}"
+    )
+
+    if audio:
+
+        st.audio(audio["bytes"], format="audio/wav")
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
+            f.write(audio["bytes"])
+            audio_file = f.name
+
+        try:
+            with open(audio_file, "rb") as file:
+
+                transcription = client.audio.transcriptions.create(
+                    file=file,
+                    model="whisper-large-v3",
+                    response_format="text"
+                )
+
+            st.session_state["voice_answer"] = transcription
+            st.session_state["audio_failed"] = False
+
+            st.success("✅ Speech recognized successfully!")
+
+        except Exception as e:
+
+            st.session_state["voice_answer"] = ""
+            st.session_state["audio_failed"] = True
+
+            st.error(f"Speech recognition failed : {e}")
+
+        st.rerun()
 
                 with col_skip:
                     skip_q = st.button("⏭️ Skip Question", use_container_width=True, key=f"skip_{idx}")
@@ -2231,18 +2246,40 @@ elif 'uploaded_file' in dir() and uploaded_file:
 if language_mode not in MOCK_INTERVIEW_MODES:
 
     # Voice recognition helper
-    def record_voice():
-        recognizer = sr.Recognizer()
-        with sr.Microphone() as source:
-            st.info("🎤 Listening... Speak now!")
-            audio = recognizer.listen(source, phrase_time_limit=8)
-            st.success("✅ Voice captured.")
-            try:
-                return recognizer.recognize_google(audio)
-            except sr.UnknownValueError:
-                return "Sorry, I couldn't understand your voice."
-            except sr.RequestError:
-                return "Speech recognition service unavailable."
+def record_voice(key="voice_input"):
+    """
+    Records audio using browser microphone and
+    converts speech to text using Groq Whisper.
+    Compatible with Streamlit Community Cloud.
+    """
+
+    audio = mic_recorder(
+        start_prompt="🎤 Speak",
+        stop_prompt="⏹ Stop",
+        key=key
+    )
+
+    if not audio:
+        return None
+
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+            tmp.write(audio["bytes"])
+            temp_audio = tmp.name
+
+        with open(temp_audio, "rb") as audio_file:
+
+            transcript = client.audio.transcriptions.create(
+                file=audio_file,
+                model="whisper-large-v3",
+                response_format="text"
+            )
+
+        return transcript
+
+    except Exception as e:
+        st.error(f"Speech recognition failed: {e}")
+        return None
 
     # Input handling
     prompt = None
