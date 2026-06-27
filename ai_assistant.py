@@ -14,7 +14,7 @@ if sys.platform == "win32":
 
 import streamlit as st
 from groq import Groq
-import speech_recognition as sr
+#import speech_recognition as sr
 
 import threading
 import time
@@ -29,7 +29,10 @@ import uuid
 # -------------------------------
 USERS_FILE         = os.path.join(os.path.dirname(os.path.abspath(__file__)), "users.json")
 QUESTION_BANK_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "question_bank.json")
-
+sr.Recognizer()
+sr.Microphone()
+recognizer.listen()
+recognizer.recognize_google()
 def load_question_bank():
     if os.path.exists(QUESTION_BANK_FILE):
         with open(QUESTION_BANK_FILE, "r", encoding="utf-8") as f:
