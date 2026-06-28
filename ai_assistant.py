@@ -26,6 +26,9 @@ import hashlib
 import random
 import uuid
 
+# ── Resume Agent module (resume_agent.py must be in the same folder) ──
+from resume_agent import RESUME_AGENT_MODE, render_resume_agent
+
 # -------------------------------
 # 🔐 Auth System
 # -------------------------------
@@ -1860,6 +1863,7 @@ with st.sidebar:
             "🌱 Spring Boot Mock Interview",
             "🤖 AI Agents Mock Interview",
             "🗄️ SQL Mock Interview",
+            RESUME_AGENT_MODE,
             "English ↔ Hindi Tutor",
             "English ↔ Spanish Tutor",
             "System Assistant",
@@ -2160,6 +2164,8 @@ with st.sidebar:
                 st.session_state["question_history"] = []
                 st.success("History cleared!")
 
+    elif language_mode == RESUME_AGENT_MODE:
+        uploaded_file = None  # Resume Agent has its own uploader in the main panel
     else:
         st.markdown(
             '<div class="section-label">📁 Upload Log/Text File</div>',
@@ -2718,9 +2724,21 @@ elif "uploaded_file" in dir() and uploaded_file:
         speak_async(response)
 
 # ============================================================
+# 📄 Resume Agent Panel
+# ============================================================
+if language_mode == RESUME_AGENT_MODE:
+    uploaded_file = None
+    render_resume_agent(
+        client,
+        model="llama-3.1-8b-instant",
+        voice_enabled=voice_enabled,
+        speak_async=speak_async,
+    )
+
+# ============================================================
 # 💬 General Chat (non-interview modes)
 # ============================================================
-if language_mode not in MOCK_INTERVIEW_MODES:
+if language_mode not in MOCK_INTERVIEW_MODES and language_mode != RESUME_AGENT_MODE:
 
     # Input handling
     prompt = None
