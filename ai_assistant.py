@@ -1942,7 +1942,7 @@ with st.sidebar:
 
         if st.session_state["question_source"] == "📖 Question Bank":
             if avail_q:
-                st.caption(f"✅ {5k+} questions available in bank.")
+                st.caption(f"✅ {5000} questions available in bank.")
             else:
                 st.caption(
                     "⚠️ No bank questions for this topic/level — will use AI instead."
