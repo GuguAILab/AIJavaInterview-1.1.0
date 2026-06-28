@@ -146,45 +146,7 @@
       "40. Why was CMS deprecated and removed, and what does G1 (and later ZGC) do differently to improve pause times?"
     ]
   },
-  "OOP & Design Patterns": {
-    "Junior (0-2 yrs)": [
-      "1. What are the four pillars of Object-Oriented Programming?",
-      "2. What is encapsulation? Give a Java example.",
-      "3. What is abstraction and how is it achieved in Java?",
-      "4. What is the Singleton design pattern? Write a basic example.",
-      "5. What is the Factory design pattern?",
-      "6. What is the difference between has-a and is-a relationships?",
-      "7. What is a design pattern? Why are they useful?",
-      "8. What is the Builder pattern and when would you use it?",
-      "9. Explain the Observer design pattern.",
-      "10. What is coupling and cohesion in OOP?"
-    ],
-    "Mid-level (2-5 yrs)": [
-      "1. Explain the Strategy design pattern with a Java example.",
-      "2. What is the Decorator pattern? How does it differ from inheritance?",
-      "3. What is the difference between Factory Method and Abstract Factory?",
-      "4. What is the Command design pattern?",
-      "5. How does the Template Method pattern work?",
-      "6. When would you use the Proxy pattern?",
-      "7. Explain the Composite design pattern.",
-      "8. What is the Facade pattern and when is it useful?",
-      "9. What is the difference between Adapter and Bridge patterns?",
-      "10. How do you apply the Open/Closed Principle in practice?"
-    ],
-    "Senior (5+ yrs)": [
-      "1. How would you refactor a God Object using OOP principles?",
-      "2. What are anti-patterns? Name three common Java anti-patterns.",
-      "3. How does the Event Sourcing pattern relate to OOP?",
-      "4. When would you choose composition over inheritance in a real project?",
-      "5. How do you implement the Chain of Responsibility pattern in Java?",
-      "6. Explain the Flyweight pattern and its memory benefits.",
-      "7. How does Dependency Injection relate to the SOLID principles?",
-      "8. Describe a scenario where you combined multiple design patterns.",
-      "9. What is the Visitor pattern and when does it shine?",
-      "10. How does the Interpreter pattern work?"
-    ]
-  },
-  "Collections & Generics": {
+    "Collections & Generics": {
     "Junior (0-2 yrs)": [
       "1. What is the Java Collections Framework?",
       "2. What is the difference between List, Set, and Map?",
@@ -195,7 +157,21 @@
       "7. What are generics and why are they useful?",
       "8. What does the diamond operator <> do in Java?",
       "9. What is a LinkedHashMap?",
-      "10. How does Collections.sort() work?"
+      "10. How does Collections.sort() work?",
+      "11. Write code to remove duplicate elements from an ArrayList.",
+      "12. Write code to iterate over a Map and print each key and value.",
+      "13. Write code to find the maximum value in a List of integers.",
+      "14. Write code to convert an array to a List, and a List back to an array.",
+      "15. What is the output of: List<Integer> l = new ArrayList<>(); l.add(10); l.add(20); l.add(30); l.remove(1); System.out.println(l);",
+      "16. What is the output of: Set<String> s = new HashSet<>(); s.add('a'); s.add('a'); s.add('b'); System.out.println(s.size());",
+      "17. What is the output of: Map<String,Integer> m = new HashMap<>(); m.put('a',1); m.put('a',2); System.out.println(m.get('a'));",
+      "18. What is the output of: List<String> l = new ArrayList<>(); System.out.println(l.isEmpty() + ' ' + l.size());",
+      "19. Scenario: You need a collection that keeps elements in insertion order and rejects duplicates. Which one would you use and why?",
+      "20. Scenario: You need very fast lookups by a unique key for thousands of records. Which collection would you choose and why?",
+      "21. Scenario: You added custom objects to a HashSet but duplicates still appear. What did you most likely forget to implement?",
+      "22. Scenario: You need a list-like structure but only ever add to the end and remove from the front. Which collection fits best?",
+      "23. What is the difference between Collection (the interface) and Collections (the utility class) in Java?",
+      "24. How do you retrieve data from a HashMap? Explain get(), getOrDefault(), and reading everything via keySet(), values(), and entrySet()."
     ],
     "Mid-level (2-5 yrs)": [
       "1. How does HashMap handle hash collisions internally?",
@@ -207,7 +183,21 @@
       "7. What is the difference between EnumSet and HashSet?",
       "8. How do you make a collection thread-safe?",
       "9. What is the PriorityQueue in Java and how does it work?",
-      "10. Explain the difference between Deque and Stack."
+      "10. Explain the difference between Deque and Stack.",
+      "11. Write code to sort a List of custom objects by a field using a Comparator.",
+      "12. Write code to sort a Map by its values in descending order.",
+      "13. Write code to merge two maps, summing the values for any duplicate keys.",
+      "14. Write code to count the frequency of each element in a List using a Map.",
+      "15. What is the output of: List<Integer> l = Arrays.asList(1,2,3); l.add(4); System.out.println(l);",
+      "16. What is the output of: Map<String,Integer> m = new HashMap<>(); System.out.println(m.getOrDefault('x', 0));",
+      "17. What is the output of: Map<Integer,String> m = new TreeMap<>(); m.put(3,'c'); m.put(1,'a'); m.put(2,'b'); System.out.println(m);",
+      "18. Scenario: One thread iterates a list while another modifies it, causing ConcurrentModificationException. What collection or technique fixes it?",
+      "19. Scenario: A HashMap-based cache grows without limit and causes memory pressure. How would you bound it (e.g., LinkedHashMap removeEldestEntry)?",
+      "20. Scenario: Many threads update counts in a shared map. Which collection and method (e.g., ConcurrentHashMap.merge or compute) would you use?",
+      "21. Scenario: Lookups in a large List are O(n) and too slow. How would you restructure the data for O(1) access?",
+      "22. Scenario: You need both fast key lookups and predictable iteration order for an LRU-style feature. Which collection and configuration would you use?",
+      "23. Compare HashMap vs Hashtable vs ConcurrentHashMap across thread safety, null handling, locking strategy, and performance. When would you pick each?",
+      "24. What is the difference between Comparable and Comparator? Write code that sorts a list of Employee objects by name using Comparable and by salary using Comparator."
     ],
     "Senior (5+ yrs)": [
       "1. Explain the internal implementation of Java 8 HashMap (treeification).",
@@ -219,7 +209,16 @@
       "7. How would you implement an LRU cache using Java collections?",
       "8. What are the performance characteristics of each major Collection type?",
       "9. How does the Spliterator interface support parallel streams?",
-      "10. Explain why Collections.unmodifiableList() is not truly immutable."
+      "10. Explain why Collections.unmodifiableList() is not truly immutable.",
+      "11. Implement an LRU cache using LinkedHashMap with access-order enabled.",
+      "12. Write code that demonstrates the difference between fail-fast and fail-safe iterators.",
+      "13. What is the output/behaviour when a HashMap key's hashCode() is broken (returns a constant or changes after insertion)?",
+      "14. Scenario: A mutable object is used as a HashMap key and later its fields change, so lookups fail and entries seem to disappear. What is happening and how do you prevent it?",
+      "15. Scenario: ConcurrentHashMap shows high contention under heavy write load. How would you analyse and reduce it?",
+      "16. Scenario: You must group and count a stream of 100M elements with minimal memory. Which collections and approach would you choose?",
+      "17. Scenario: You need ordered traversal plus range queries (floor/ceiling/headMap) over millions of entries. Which collection and why?",
+      "18. Scenario: A shared ArrayList is read by many threads and rarely written. Which thread-safe collection minimises read overhead, and what is the cost?",
+      "19. Scenario: Autoboxing in a hot Map<Integer,Integer> loop is causing GC pressure. How would you diagnose and reduce the allocation?"
     ]
   },
   "Multithreading & Concurrency": {
