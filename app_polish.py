@@ -43,6 +43,13 @@ section[data-testid="stSidebar"]{
   border-right:1px solid rgba(124,58,237,.18);
 }
 
+/* neutralize the dark inner box + shadow so the gradient shows cleanly */
+section[data-testid="stSidebar"] .sidebar-content{
+  background:transparent !important;
+  box-shadow:none !important;
+  padding:0.3rem 0.2rem !important;
+}
+
 /* "Configuration" -> filled purple banner (your .sidebar-title) */
 .sidebar-title{
   background:var(--brand-grad) !important;
