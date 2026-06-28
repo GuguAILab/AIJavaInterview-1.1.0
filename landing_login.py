@@ -135,6 +135,7 @@ section.main > div {padding:0 !important;}
 .ml-tcard .top{display:flex;align-items:center;gap:11px;margin-bottom:11px;}
 .ml-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#5b8cff,#9b6bff);
   color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;}
+img.ml-av{object-fit:cover;border:2px solid #e6ebff;}
 .ml-tcard .nm{font-weight:700;font-size:14px;} .ml-tcard .rl{color:#7b8398;font-size:11.5px;}
 .ml-tcard .q{color:#55607a;font-size:13px;line-height:1.55;font-style:italic;margin-bottom:9px;}
 .ml-stars{color:#f5b301;font-size:13px;}
@@ -211,18 +212,25 @@ def _render_marketing():
     chips = "".join(f'<span class="chip">{t}</span>' for t in topics)
 
     tests = [
-        ("RS", "Rahul Sharma", "SDE at Amazon",
+        ("RS", "Rahul Sharma", "SDE at Amazon", "emp4.png",
          "AI Mock Interview Platform helped me improve my confidence and clear multiple rounds with ease."),
-        ("PS", "Priya Singh", "Data Scientist at TCS",
+        ("PS", "Priya Singh", "Data Scientist at TCS", "emp5.png",
          "The questions are very relevant and the AI feedback is extremely helpful for continuous improvement."),
-        ("AV", "Ankit Verma", "Software Engineer",
+        ("AV", "Ankit Verma", "Software Engineer", "emp6.png",
          "Best platform for mock interviews and resume building. Highly recommended for all job seekers!"),
     ]
+
+    def _avatar(initials, photo):
+        src = _img_b64(photo)
+        if src:
+            return f'<img class="ml-av" src="{src}"/>'
+        return f'<div class="ml-av">{initials}</div>'
+
     tcards = "".join(
-        f'<div class="ml-tcard"><div class="top"><div class="ml-av">{av}</div>'
+        f'<div class="ml-tcard"><div class="top">{_avatar(av, photo)}'
         f'<div><div class="nm">{nm}</div><div class="rl">{rl}</div></div></div>'
         f'<div class="q">“{q}”</div><div class="ml-stars">★★★★★</div></div>'
-        for av, nm, rl, q in tests
+        for av, nm, rl, photo, q in tests
     )
 
     st.markdown(
