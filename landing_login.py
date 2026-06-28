@@ -96,7 +96,7 @@ section.main > div {padding:0 !important;}
 .ml-qp b{color:#fff;font-size:26px;} .ml-qp span{color:#8fa0c4;font-size:11px;}
 .ml-spark{display:flex;align-items:flex-end;gap:3px;height:42px;margin-top:8px;}
 .ml-spark i{flex:1;background:linear-gradient(180deg,#6d4aff,#2f6bff);border-radius:2px;}
-.ml-robot{position:absolute;right:-10px;bottom:-6px;width:150px;}
+.ml-robot{position:absolute;right:-1px;bottom:-6px;width:150px;}
 
 /* ---------- Section frame ---------- */
 .ml-section {max-width:1180px;margin:0 auto;padding:34px 22px 0;}
