@@ -16,6 +16,7 @@ import streamlit as st
 from groq import Groq
 
 # import speech_recognition as sr
+from app_polish import inject_polish, render_steps_card
 from streamlit_mic_recorder import mic_recorder
 
 import threading
@@ -2208,7 +2209,7 @@ if language_mode in MOCK_INTERVIEW_MODES:
         st.info(
             "👈 Configure your interview in the sidebar and click **🚀 Start New Interview** to begin."
         )
-
+render_steps_card()
     # ── Interview in progress ──
     elif (
         st.session_state["interview_active"] and not st.session_state["interview_done"]
