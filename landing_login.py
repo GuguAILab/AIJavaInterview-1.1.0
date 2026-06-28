@@ -123,45 +123,26 @@ section.main > div {padding:0 !important;}
 .ml-stat span{color:#9fabc9;font-size:12px;}
 
 /* ---------- Topics ---------- */
-.ml-topics{
-    display:flex;
-    flex-wrap:wrap;
-    gap:15px;
-    margin-top:12px;
-}
-
 .ml-topics .chip{
     display:inline-flex;
     align-items:center;
     justify-content:center;
 
-    padding:14px 28px;
-    min-height:52px;
+    width:auto;
+    min-width:90px;        /* smaller minimum width */
+    max-width:fit-content;
+
+    padding:12px 18px;     /* reduced from 28px */
 
     background:#3164E0;
-    color:#FFFFFF !important;
-
+    color:#fff;
+    border-radius:12px;
     border:none;
-    border-radius:8px;
 
-    font-size:22px;
+    font-size:20px;
     font-weight:700;
-    letter-spacing:.3px;
 
-    box-shadow:0 4px 12px rgba(49,100,224,.25);
-
-    cursor:pointer;
-    transition:all .25s ease;
-}
-
-.ml-topics .chip:hover{
-    background:#2554D3;
-    transform:translateY(-2px);
-    box-shadow:0 8px 20px rgba(49,100,224,.35);
-}
-
-.ml-topics .chip:active{
-    transform:scale(.98);
+    white-space:nowrap;    /* keep text on one line */
 }
 /* ---------- Testimonials ---------- */
 .ml-tcards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:14px;}
