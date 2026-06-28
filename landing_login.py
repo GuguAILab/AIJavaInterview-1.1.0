@@ -206,8 +206,8 @@ def _render_marketing():
         for i, n, l in stats
     )
 
-    topics = ["Data Structures", "Algorithms", "System Design", "DBMS", "OS",
-              "Computer Networks", "Python", "Java", "React", "SQL", "Aptitude"]
+    topics = ["DSA", "JAVA", "System Design", "DBMS", "AWS",
+              "Spring Boot", "Python", "Java", "Devops", "SQL", "Resume Agent"]
     chips = "".join(f'<span class="chip">{t}</span>' for t in topics)
 
     tests = [
