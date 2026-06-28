@@ -167,7 +167,7 @@ div[data-testid="stForm"]{border:none;padding:0;}
 
 
 def _render_marketing():
-    robot = _img_b64("Nit.png")
+    robot = _img_b64("AIrobo.png")
     robot_tag = (
         f'<img class="ml-robot" src="{robot}"/>' if robot else ""
     )
