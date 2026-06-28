@@ -769,7 +769,7 @@ if not st.session_state["logged_in"]:
     import base64
 
     _nit_img_tag = ""
-    _nit_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Nit.png")
+    _nit_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "AIrobo.png")
     if os.path.exists(_nit_path):
         with open(_nit_path, "rb") as _f:
             _nit_b64 = base64.b64encode(_f.read()).decode("utf-8")
