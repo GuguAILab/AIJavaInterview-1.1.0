@@ -96,7 +96,8 @@ section.main > div {padding:0 !important;}
 .ml-qp b{color:#fff;font-size:26px;} .ml-qp span{color:#8fa0c4;font-size:11px;}
 .ml-spark{display:flex;align-items:flex-end;gap:3px;height:42px;margin-top:8px;}
 .ml-spark i{flex:1;background:linear-gradient(180deg,#6d4aff,#2f6bff);border-radius:2px;}
-.ml-robot{position:absolute;right:-6px;bottom:-6px;width:150px;}
+.ml-robot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:165px;opacity:.96;filter:drop-shadow(0 8px 24px rgba(80,120,255,.35));}
 
 /* ---------- Section frame ---------- */
 .ml-section {max-width:1180px;margin:0 auto;padding:34px 22px 0;}
@@ -206,8 +207,8 @@ def _render_marketing():
         for i, n, l in stats
     )
 
-    topics = ["DSA", "JAVA", "System Design", "DBMS", "AWS",
-              "Spring Boot", "Python", "Java", "Devops", "SQL", "Resume Agent"]
+    topics = ["Data Structures", "Algorithms", "System Design", "DBMS", "OS",
+              "Computer Networks", "Python", "Java", "React", "SQL", "Aptitude"]
     chips = "".join(f'<span class="chip">{t}</span>' for t in topics)
 
     tests = [
