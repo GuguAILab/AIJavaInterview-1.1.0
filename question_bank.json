@@ -388,7 +388,17 @@
       "7. What is a REST API and how do you create one in Spring Boot?",
       "8. What is @RestController vs @Controller?",
       "9. How do you define a GET endpoint in Spring Boot?",
-      "10. What is Spring Data JPA?"
+      "10. What is Spring Data JPA?",
+      "11. What are the main benefits of using Spring Boot over the traditional Spring Framework?",
+      "12. Why is Spring Boot so popular for building Java applications and microservices?",
+      "13. What is a starter dependency (such as spring-boot-starter-web) and how does it simplify project setup?",
+      "14. What is @Autowired and how does Spring use it to inject dependencies?",
+      "15. What is the default embedded server in Spring Boot, and why are embedded servers useful?",
+      "16. Write a simple @RestController with a GET endpoint that returns a list of users.",
+      "17. How do you read a value from application.properties into a field using @Value?",
+      "18. Scenario: Your Spring Boot app fails at startup with 'A component required a bean that could not be found'. What are the likely causes?",
+      "19. Scenario: A REST endpoint returns 404 even though the controller exists. What configuration or mapping issues would you check?",
+      "20. What is @RequestParam and how do you read a query parameter (e.g. /search?name=John) in a Spring Boot controller?"
     ],
     "Mid-level (2-5 yrs)": [
       "1. What is the difference between @Bean and @Component?",
@@ -400,7 +410,19 @@
       "7. What is Spring Boot's embedded server and how do you change it?",
       "8. What is the difference between @RequestParam and @PathVariable?",
       "9. How do you configure multiple data sources in Spring Boot?",
-      "10. What is Hibernate and how does it relate to Spring Data JPA?"
+      "10. What is Hibernate and how does it relate to Spring Data JPA?",
+      "11. What is the difference between constructor injection and field injection, and why is constructor injection recommended?",
+      "12. Write a global exception handler using @ControllerAdvice and @ExceptionHandler.",
+      "13. Write a Spring Data JPA repository with a custom finder method such as findByEmail.",
+      "14. How do you validate a request body using @Valid and bean-validation annotations like @NotNull and @Size?",
+      "15. What is the difference between @RequestBody and @ResponseBody?",
+      "16. How do you implement pagination and sorting with Spring Data JPA using Pageable?",
+      "17. Scenario: A @Transactional method calls another method in the same class and the transaction is not applied. Why, and how do you fix it?",
+      "18. Scenario: Your service returns a 500 with a raw stack trace to the client. How would you return a clean, consistent error response instead?",
+      "19. Scenario: Two Spring profiles (dev and prod) need different database settings. How do you structure the configuration?",
+      "20. What is the difference between @Configuration and @Component, and why are @Bean methods inside a @Configuration class proxied (CGLIB full mode)?",
+      "21. How do you make a @RequestParam optional, give it a default value, or bind it to a differently-named query parameter?",
+      "22. When two beans of the same type exist, how do you resolve the NoUniqueBeanDefinitionException using @Qualifier and @Primary?"
     ],
     "Senior (5+ yrs)": [
       "1. How would you design a microservices architecture using Spring Boot?",
@@ -412,7 +434,14 @@
       "7. How do you handle database migrations in production with Spring Boot?",
       "8. What are the trade-offs of using Spring Security vs external auth providers?",
       "9. How do you optimise Spring Boot startup time for containerised deployments?",
-      "10. What is the Spring AOT compilation and how does GraalVM native image work?"
+      "10. What is the Spring AOT compilation and how does GraalVM native image work?",
+      "11. What is new in Spring Boot 3 and Spring Framework 6 (Jakarta EE namespace change, Java 17 baseline, built-in observability)?",
+      "12. How do you secure a REST API using JWT with Spring Security?",
+      "13. How do you implement method-level caching with @Cacheable, and what are the common pitfalls (key design, eviction, self-invocation)?",
+      "14. Scenario: A Spring Boot service shows high latency under load. How would you profile and tune it (connection pool, thread pool, slow queries)?",
+      "15. Scenario: JPA issues an N+1 query for a list endpoint. How do you detect it and fix it (fetch join, EntityGraph, batch size)?",
+      "16. Scenario: A microservice intermittently fails when a downstream service is slow. How would you add resilience (timeouts, retries, circuit breaker, bulkhead)?",
+      "17. Scenario: Sensitive config (DB passwords, API keys) is currently in application.properties. How would you externalise and secure it in production?"
     ]
   },
   "Exception Handling": {
