@@ -756,6 +756,12 @@ if "reset_username" not in st.session_state:
 # ============================================================
 if not st.session_state["logged_in"]:
 
+    # ── Branded landing + login page (login view only) ──
+    if st.session_state.get("auth_page", "login") == "login":
+        from landing_login import render_login_page
+        render_login_page(login_user, ensure_admin_plan, is_admin)
+        st.stop()
+
     # Encode Nit.png and Robot.png as base64 for embedding in HTML
     import base64
 
@@ -1942,7 +1948,7 @@ with st.sidebar:
 
         if st.session_state["question_source"] == "📖 Question Bank":
             if avail_q:
-                st.caption(f"✅ {5000} questions available in bank.")
+                st.caption(f"✅ {len(avail_q)} questions available in bank.")
             else:
                 st.caption(
                     "⚠️ No bank questions for this topic/level — will use AI instead."
