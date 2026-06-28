@@ -96,10 +96,9 @@ section.main > div {padding:0 !important;}
 .ml-qp b{color:#fff;font-size:26px;} .ml-qp span{color:#8fa0c4;font-size:11px;}
 .ml-spark{display:flex;align-items:flex-end;gap:3px;height:42px;margin-top:8px;}
 .ml-spark i{flex:1;background:linear-gradient(180deg,#6d4aff,#2f6bff);border-radius:2px;}
-.ml-robot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:165px;opacity:.96;filter:drop-shadow(0 8px 24px rgba(80,120,255,.35));}
-.ml-hero-img{width:160px;display:block;margin:14px 0 18px;border-radius:14px;
-  filter:drop-shadow(0 10px 30px rgba(80,120,255,.4));}
+.ml-hero-illustration{display:flex;align-items:center;justify-content:center;}
+.ml-hero-illustration img{width:100%;max-width:560px;border-radius:16px;
+  filter:drop-shadow(0 12px 36px rgba(60,100,255,.28));}
 
 /* ---------- Section frame ---------- */
 .ml-section {max-width:1180px;margin:0 auto;padding:34px 22px 0;}
@@ -170,13 +169,32 @@ div[data-testid="stForm"]{border:none;padding:0;}
 
 def _render_marketing():
     robot = _img_b64("Nit.png")
-    robot_tag = (
-        f'<img class="ml-hero-img" src="{robot}"/>' if robot else ""
-    )
 
     spark = "".join(
         f'<i style="height:{h}%"></i>'
         for h in [30, 45, 38, 60, 52, 70, 64, 82, 75, 95, 88, 100]
+    )
+
+    # Right side of the hero: use the Nit.png illustration if available,
+    # otherwise fall back to the HTML dashboard mock.
+    _dash_html = f"""<div class="ml-dash">
+        <div class="ml-card-dark"><h5>Mock Interview</h5>
+          <div class="ml-ring"><div><b>85%</b><span>Your Score</span></div></div>
+          <div class="ml-spark">{spark}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="ml-card-dark"><h5>Strengths</h5>
+            <div class="ml-bar"><div class="lab"><span>Communication</span><span>90%</span></div><div class="track"><div class="fill" style="width:90%"></div></div></div>
+            <div class="ml-bar"><div class="lab"><span>Problem Solving</span><span>85%</span></div><div class="track"><div class="fill" style="width:85%"></div></div></div>
+            <div class="ml-bar"><div class="lab"><span>Confidence</span><span>80%</span></div><div class="track"><div class="fill" style="width:80%"></div></div></div>
+          </div>
+          <div class="ml-card-dark ml-qp"><h5>Question Practice</h5><b>5,284</b><br><span>Questions Solved</span></div>
+        </div>
+      </div>"""
+    right_col = (
+        f'<div class="ml-hero-illustration"><img src="{robot}"/></div>'
+        if robot
+        else _dash_html
     )
 
     features = [
@@ -245,7 +263,6 @@ def _render_marketing():
     <div class="ml-hero">
       <div>
         <div class="ml-badge">🎯 Your Success, Our Mission</div>
-        {robot_tag}
         <h1 class="ml-h1">Practice. Prepare.<br>Crack Your <span class="grad">Dream Job.</span></h1>
         <p class="ml-sub">AI-powered mock interviews, 5K+ practice questions, resume builder
           and performance analytics to help you land your dream job.</p>
@@ -259,20 +276,7 @@ def _render_marketing():
           <span><b>✔</b> Improve &amp; Succeed</span>
         </div>
       </div>
-      <div class="ml-dash">
-        <div class="ml-card-dark"><h5>Mock Interview</h5>
-          <div class="ml-ring"><div><b>85%</b><span>Your Score</span></div></div>
-          <div class="ml-spark">{spark}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <div class="ml-card-dark"><h5>Strengths</h5>
-            <div class="ml-bar"><div class="lab"><span>Communication</span><span>90%</span></div><div class="track"><div class="fill" style="width:90%"></div></div></div>
-            <div class="ml-bar"><div class="lab"><span>Problem Solving</span><span>85%</span></div><div class="track"><div class="fill" style="width:85%"></div></div></div>
-            <div class="ml-bar"><div class="lab"><span>Confidence</span><span>80%</span></div><div class="track"><div class="fill" style="width:80%"></div></div></div>
-          </div>
-          <div class="ml-card-dark ml-qp"><h5>Question Practice</h5><b>5,284</b><br><span>Questions Solved</span></div>
-        </div>
-      </div>
+      {right_col}
     </div>
   </div>
 
