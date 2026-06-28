@@ -13,6 +13,9 @@ if sys.platform == "win32":
         pass
 
 import streamlit as st
+
+# Designed after-login polish + onboarding + hero banner (app_polish.py same folder)
+from app_polish import inject_polish, render_steps_card, render_hero_banner
 from groq import Groq
 
 # import speech_recognition as sr
@@ -1386,6 +1389,9 @@ if "is_admin" not in st.session_state:
 if "show_admin" not in st.session_state:
     st.session_state["show_admin"] = False
 
+# ── Designed after-login polish (purple Configuration banner, colors, cards) ──
+inject_polish()
+
 # ── Top bar: Welcome + Plan badge + Upgrade + Logout ──
 st.markdown('<div style="margin-top:80px;"></div>', unsafe_allow_html=True)
 uname = st.session_state["username"]
@@ -2024,7 +2030,7 @@ with st.sidebar:
         st.session_state["timer_minutes"] = int(_selected_time.split()[0])
 
         st.markdown("---")
-        if st.button("🚀 Start New Interview", use_container_width=True):
+        if st.button("🚀 Start New Interview", use_container_width=True) or st.session_state.pop("_trigger_start", False):
             st.session_state["interview_active"] = True
             st.session_state["interview_done"] = False
             st.session_state["interview_index"] = 0
@@ -2194,10 +2200,7 @@ with st.sidebar:
 if language_mode in MOCK_INTERVIEW_MODES:
     uploaded_file = None  # not needed in this mode
 
-    st.markdown(
-        f'<div class="interview-header" style="margin-top:30px;">{language_mode} &#8211; AI Interviewer</div>',
-        unsafe_allow_html=True,
-    )
+    render_hero_banner(f"{language_mode} – AI Interviewer")
 
     # ── Interview not started yet ──
     if (
@@ -2207,6 +2210,21 @@ if language_mode in MOCK_INTERVIEW_MODES:
         st.info(
             "👈 Configure your interview in the sidebar and click **🚀 Start New Interview** to begin."
         )
+
+        # Designed onboarding steps card (rocket + Configure→Improve pipeline)
+        render_steps_card()
+
+        # Centered "Start New Interview" button in the main area
+        _bc1, _bc2, _bc3 = st.columns([1, 2, 1])
+        with _bc2:
+            if st.button(
+                "🚀 Start New Interview",
+                use_container_width=True,
+                type="primary",
+                key="main_start_btn",
+            ):
+                st.session_state["_trigger_start"] = True
+                st.rerun()
 
     # ── Interview in progress ──
     elif (
