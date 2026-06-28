@@ -229,8 +229,9 @@ def render_hero_banner(
             break
     if img_src:
         art = (
-            f'<img src="{img_src}" style="height:118px;object-fit:contain;'
-            'filter:drop-shadow(0 8px 18px rgba(0,0,0,.25));"/>'
+            f'<img src="{img_src}" style="height:128px;width:128px;object-fit:cover;'
+            'border-radius:18px;border:2px solid rgba(255,255,255,.35);'
+            'box-shadow:0 10px 24px rgba(0,0,0,.30);"/>'
         )
     else:
         art = (
