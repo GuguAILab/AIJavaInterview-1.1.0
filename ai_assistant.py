@@ -762,7 +762,7 @@ if not st.session_state["logged_in"]:
         render_login_page(login_user, ensure_admin_plan, is_admin)
         st.stop()
 
-    # Encode Nit.png and Robot.png as base64 for embedding in HTML
+    # Encode Nit.png and  as base64 for embedding in HTML
     import base64
 
     _nit_img_tag = ""
@@ -773,7 +773,7 @@ if not st.session_state["logged_in"]:
         _nit_img_tag = f'<img src="data:image/png;base64,{_nit_b64}" style="position:absolute;top:36px;right:14px;width:80px;height:80px;object-fit:contain;border-radius:10px;opacity:0.92;" alt="Nit Logo"/>'
 
     _robot_img_tag = ""
-    _robot_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Robot.png")
+    _robot_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Nit.png")
     if os.path.exists(_robot_path):
         with open(_robot_path, "rb") as _f:
             _robot_b64 = base64.b64encode(_f.read()).decode("utf-8")
