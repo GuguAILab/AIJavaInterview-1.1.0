@@ -98,6 +98,8 @@ section.main > div {padding:0 !important;}
 .ml-spark i{flex:1;background:linear-gradient(180deg,#6d4aff,#2f6bff);border-radius:2px;}
 .ml-robot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
   width:165px;opacity:.96;filter:drop-shadow(0 8px 24px rgba(80,120,255,.35));}
+.ml-hero-img{width:160px;display:block;margin:14px 0 18px;border-radius:14px;
+  filter:drop-shadow(0 10px 30px rgba(80,120,255,.4));}
 
 /* ---------- Section frame ---------- */
 .ml-section {max-width:1180px;margin:0 auto;padding:34px 22px 0;}
@@ -169,7 +171,7 @@ div[data-testid="stForm"]{border:none;padding:0;}
 def _render_marketing():
     robot = _img_b64("Nit.png")
     robot_tag = (
-        f'<img class="ml-robot" src="{robot}"/>' if robot else ""
+        f'<img class="ml-hero-img" src="{robot}"/>' if robot else ""
     )
 
     spark = "".join(
@@ -243,6 +245,7 @@ def _render_marketing():
     <div class="ml-hero">
       <div>
         <div class="ml-badge">🎯 Your Success, Our Mission</div>
+        {robot_tag}
         <h1 class="ml-h1">Practice. Prepare.<br>Crack Your <span class="grad">Dream Job.</span></h1>
         <p class="ml-sub">AI-powered mock interviews, 5K+ practice questions, resume builder
           and performance analytics to help you land your dream job.</p>
@@ -269,7 +272,6 @@ def _render_marketing():
           </div>
           <div class="ml-card-dark ml-qp"><h5>Question Practice</h5><b>5,284</b><br><span>Questions Solved</span></div>
         </div>
-        {robot_tag}
       </div>
     </div>
   </div>
