@@ -232,7 +232,17 @@
       "7. What is a race condition?",
       "8. What are daemon threads in Java?",
       "9. What is the lifecycle of a thread in Java?",
-      "10. What is the volatile keyword used for?"
+      "10. What is the volatile keyword used for?",
+      "11. Write code to create and start a thread using the Runnable interface.",
+      "12. Write a program where a thread prints numbers 1 to 5 with a one-second delay between each.",
+      "13. Write code to start two threads and wait for both to finish using join().",
+      "14. What happens if you call run() directly instead of start() on a Thread?",
+      "15. Can you start the same Thread object twice? What happens if you try?",
+      "16. What is the likely problem if two threads increment a shared int counter without synchronization?",
+      "17. Scenario: Your multithreaded code sometimes prints the wrong total for a shared counter. What is the cause and how do you fix it?",
+      "18. Scenario: The main thread finishes but the program does not exit. What might be keeping the JVM alive?",
+      "19. Scenario: You want a background worker thread that should not prevent the JVM from shutting down. How do you configure it?",
+      "20. Scenario: Two threads each lock resource A then resource B in different orders and the app freezes. What is happening and how do you prevent it?"
     ],
     "Mid-level (2-5 yrs)": [
       "1. What is the ExecutorService and how does it differ from raw threads?",
@@ -244,7 +254,22 @@
       "7. What is the difference between CyclicBarrier and CountDownLatch?",
       "8. How does the Semaphore class work?",
       "9. What is a thread pool? What are the different types?",
-      "10. What is lock striping in ConcurrentHashMap?"
+      "10. What is lock striping in ConcurrentHashMap?",
+      "11. Write code using ExecutorService to run five tasks and shut the pool down properly.",
+      "12. Write code where two threads print odd and even numbers alternately using wait() and notify().",
+      "13. Write code using CompletableFuture to call two services in parallel and combine their results.",
+      "14. Write a thread-safe counter using AtomicInteger and explain why it avoids locks.",
+      "15. What is the difference between submit() and execute() in an ExecutorService when a task throws an exception?",
+      "16. What happens if you never call shutdown() on an ExecutorService?",
+      "17. Scenario: A double-checked-locking singleton occasionally returns a half-initialized object. Which keyword fixes it and why?",
+      "18. Scenario: A shared HashMap updated by many threads corrupts its data. Which class and method would you switch to?",
+      "19. Scenario: You must allow at most three threads to access a resource at once. Which concurrency construct do you use?",
+      "20. Scenario: Tasks submitted to a fixed thread pool pile up and memory keeps growing. How do you bound the queue and handle rejected tasks?",
+      "21. Scenario: A CompletableFuture chain swallows exceptions and the failure is silent. How do you handle errors properly (exceptionally / handle)?",
+      "22. Write code that submits a Callable to an ExecutorService and retrieves its return value using a Future.",
+      "23. Show with code how execute() and submit() differ when a task throws an exception, and how you would capture that exception in each case.",
+      "24. Write code using a Semaphore so that only N threads can access a shared resource (such as a connection pool) at the same time.",
+      "25. What is the difference between a binary semaphore and a ReentrantLock (mutex)? Can a semaphore permit be released by a different thread than the one that acquired it?"
     ],
     "Senior (5+ yrs)": [
       "1. Explain the Java Memory Model's happens-before guarantee.",
@@ -256,7 +281,17 @@
       "7. How does ForkJoinPool differ from a regular thread pool?",
       "8. Explain the actor model and how it compares to Java threads.",
       "9. What is the Phaser class and when does it replace CyclicBarrier?",
-      "10. How would you implement a non-blocking queue in Java?"
+      "10. How would you implement a non-blocking queue in Java?",
+      "11. What are virtual threads in Java 21, and how do they change the classic thread-per-request server design?",
+      "12. What is structured concurrency (StructuredTaskScope), and what problem does it solve over raw ExecutorService usage?",
+      "13. What are scoped values, and how do they compare to ThreadLocal in a virtual-thread world?",
+      "14. Why can synchronized blocks 'pin' a virtual thread to its carrier, and what should you use instead?",
+      "15. Implement a thread-safe bounded blocking queue using ReentrantLock and Condition objects.",
+      "16. Implement a non-blocking counter using AtomicLong and CAS, and explain the compare-and-set retry loop.",
+      "17. Scenario: After migrating to virtual threads, throughput did not improve and threads appear pinned. How do you diagnose and fix it?",
+      "18. Scenario: A custom lock-free stack occasionally loses updates under heavy load. Could this be the ABA problem, and how would you address it?",
+      "19. Scenario: A production thread dump shows many threads BLOCKED on the same monitor. How do you identify the contended lock and reduce contention?",
+      "20. Scenario: A parallelStream() on a shared mutable collection gives inconsistent results. What is wrong and how do you make the aggregation safe?"
     ]
   },
   "Java 8+ (Streams, Lambdas)": {
