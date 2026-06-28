@@ -15,7 +15,7 @@ if sys.platform == "win32":
 import streamlit as st
 
 # Designed after-login polish + onboarding steps card (app_polish.py in same folder)
-from app_polish import inject_polish, render_steps_card
+from app_polish import inject_polish, render_steps_card, render_hero_banner
 from groq import Groq
 
 # import speech_recognition as sr
@@ -2191,10 +2191,7 @@ with st.sidebar:
 if language_mode in MOCK_INTERVIEW_MODES:
     uploaded_file = None  # not needed in this mode
 
-    st.markdown(
-        f'<div class="interview-header" style="margin-top:30px;">{language_mode} &#8211; AI Interviewer</div>',
-        unsafe_allow_html=True,
-    )
+    render_hero_banner(f"{language_mode} – AI Interviewer")
 
     # ── Interview not started yet ──
     if (
