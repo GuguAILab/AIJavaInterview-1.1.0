@@ -135,3 +135,52 @@ div[data-testid="stVerticalBlockBorderWrapper"]{
         """,
         unsafe_allow_html=True,
     )
+
+
+def render_steps_card():
+    """Onboarding card: rocket + instructions + the 5-step pipeline.
+    Call once in the main area after login, e.g. just below the hero banner.
+    Purely presentational — no logic."""
+    steps = [
+        ("⚙️", "Configure",      "#ede9fe", "#7c3aed", True),
+        ("🚀", "Start Interview", "#ffedd5", "#f97316", False),
+        ("💬", "Answer",          "#dcfce7", "#16a34a", False),
+        ("📊", "Get Feedback",    "#dbeafe", "#2563eb", False),
+        ("🎯", "Improve",         "#e0e7ff", "#4f46e5", False),
+    ]
+    parts = []
+    for i, (ic, lab, bg, col, active) in enumerate(steps):
+        lab_color = "#7c3aed" if active else "#475569"
+        parts.append(
+            f'<div style="text-align:center;min-width:82px;">'
+            f'<div style="width:60px;height:60px;border-radius:50%;background:{bg};'
+            f'display:flex;align-items:center;justify-content:center;font-size:24px;'
+            f'margin:0 auto 8px;box-shadow:0 4px 14px rgba(40,30,90,.08);">{ic}</div>'
+            f'<div style="font-size:12.5px;font-weight:600;color:{lab_color};">{lab}</div>'
+            f'</div>'
+        )
+        if i < len(steps) - 1:
+            parts.append(
+                '<div style="color:#c4b5fd;font-size:20px;font-weight:700;'
+                'align-self:flex-start;margin-top:18px;">⇢</div>'
+            )
+    steps_html = "".join(parts)
+
+    html = (
+        '<div style="background:linear-gradient(180deg,#f7f8fe,#f1f2fb);'
+        'border:1px solid #ecedf7;border-radius:16px;padding:22px 24px;'
+        'display:flex;align-items:center;gap:26px;flex-wrap:wrap;'
+        'box-shadow:0 8px 24px rgba(40,30,90,.05);margin:14px 0;">'
+        '<div style="display:flex;align-items:center;gap:18px;flex:1;min-width:300px;">'
+        '<div style="width:78px;height:78px;border-radius:18px;flex:none;'
+        'background:linear-gradient(135deg,#e0e7ff,#dbeafe);display:flex;'
+        'align-items:center;justify-content:center;font-size:34px;">🚀</div>'
+        '<div style="font-size:14.5px;color:#334155;line-height:1.7;">'
+        'Configure your interview in the sidebar and click<br>'
+        '<span style="color:#7c3aed;font-weight:700;">🚀 Start New Interview</span><br>'
+        'to begin your AI-powered mock interview.</div>'
+        '</div>'
+        f'<div style="display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;">{steps_html}</div>'
+        '</div>'
+    )
+    st.markdown(html, unsafe_allow_html=True)
