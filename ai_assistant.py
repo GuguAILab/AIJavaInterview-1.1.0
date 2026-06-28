@@ -1393,7 +1393,7 @@ if "show_admin" not in st.session_state:
 inject_polish()
 
 # ── Top bar: Welcome + Plan badge + Upgrade + Logout ──
-st.markdown('<div style="margin-top:80px;"></div>', unsafe_allow_html=True)
+st.markdown('<div style="margin-top:16px;"></div>', unsafe_allow_html=True)
 uname = st.session_state["username"]
 is_guest = uname == "Guest"
 
@@ -1844,6 +1844,21 @@ if "bank_count" not in st.session_state:
 # -------------------------------
 with st.sidebar:
     st.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
+
+    # ── Brand logo (AI Mock / Interview Platform) ──
+    st.markdown(
+        '<div style="display:flex;align-items:center;gap:11px;padding:4px 2px 14px;">'
+        '<div style="width:42px;height:42px;border-radius:12px;flex:none;'
+        'background:linear-gradient(135deg,#3b82f6,#7c3aed);display:flex;'
+        'align-items:center;justify-content:center;font-size:22px;'
+        'box-shadow:0 6px 16px rgba(99,60,230,.45);">🤖</div>'
+        '<div style="line-height:1.12;">'
+        '<div style="color:#fff;font-weight:800;font-size:17px;">AI Mock</div>'
+        '<div style="color:#8ea0c4;font-size:11.5px;">Interview Platform</div>'
+        '</div></div>',
+        unsafe_allow_html=True,
+    )
+
     st.markdown(
         '<div class="sidebar-title">⚙️ Configuration</div>', unsafe_allow_html=True
     )
