@@ -124,8 +124,8 @@ section.main > div {padding:0 !important;}
 
 /* ---------- Topics ---------- */
 .ml-topics{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px;}
-.ml-topics .chip{border:2px solid #d9deea;color:#FFFFFF;background:#0D1534;border-radius:9px;
-  padding:8px 15px;font-size:13px;color:#3a4258;}
+.ml-topics .chip{border:2px solid #d9deea;color:#fff;background:#0c1330;border-radius:9px;
+  padding:8px 15px;font-size:25px;color:#3a4258;}
 .ml-htitle{font-size:19px;font-weight:800;margin:0;display:flex;align-items:center;gap:8px;}
 
 /* ---------- Testimonials ---------- */
