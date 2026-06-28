@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-
+from app_polish import inject_polish
 # ── Force UTF-8 encoding on Windows (fixes emoji mojibake) ──
 os.environ.setdefault("PYTHONUTF8", "1")
 os.environ.setdefault("PYTHONIOENCODING", "utf-8")
@@ -1459,7 +1459,8 @@ if not is_guest and not active:
     st.error(
         "⚠️ Your subscription has expired. Please upgrade to continue using the app."
     )
-
+if st.session_state["logged_in"]:
+    inject_polish()
 # ──────────────────────────────────────────────────────────────
 # 💳 PRICING PAGE
 # ──────────────────────────────────────────────────────────────
