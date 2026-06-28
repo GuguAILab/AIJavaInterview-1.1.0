@@ -123,11 +123,42 @@ section.main > div {padding:0 !important;}
 .ml-stat span{color:#9fabc9;font-size:12px;}
 
 /* ---------- Topics ---------- */
-.ml-topics{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px;}
-.ml-topics .chip{border:2px solid #d9deea;color:#F8FAFC;background:#0D1534;border-radius:9px;
-  padding:8px 15px;font-size:25px;color:#3a4258;}
-.ml-htitle{font-size:19px;font-weight:800;margin:0;display:flex;align-items:center;gap:8px;}
+.ml-topics {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
 
+.ml-topics .chip {
+    background: #0D1534;
+    color: #FFFFFF;              /* Remove the second color property */
+    border: 2px solid #5B7FFF;
+    border-radius: 12px;
+    padding: 12px 22px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    transition: all 0.25s ease;
+}
+
+.ml-topics .chip:hover {
+    background: #182352;
+    border-color: #8AB4FF;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    cursor: pointer;
+}
+
+.ml-htitle {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0D1534;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 /* ---------- Testimonials ---------- */
 .ml-tcards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:14px;}
 .ml-tcard{background:#fff;border:1px solid #eef0f6;border-radius:14px;padding:18px;
