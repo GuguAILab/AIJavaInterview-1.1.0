@@ -223,7 +223,7 @@ def render_hero_banner(
     this file to match the mockup; otherwise a robot emoji is shown.
     Purely presentational — no logic."""
     img_src = ""
-    for name in ("hero_robot.png", "hero_robot.png", "Robot.png"):
+    for name in ("hero_robot.png", "Nit.png", "Robot.png"):
         img_src = _img_b64(name)
         if img_src:
             break
