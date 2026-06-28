@@ -13,9 +13,6 @@ if sys.platform == "win32":
         pass
 
 import streamlit as st
-
-# Designed after-login polish + onboarding steps card (app_polish.py in same folder)
-from app_polish import inject_polish, render_steps_card, render_hero_banner
 from groq import Groq
 
 # import speech_recognition as sr
@@ -758,6 +755,12 @@ if "reset_username" not in st.session_state:
 # 🔐 LOGIN / SIGN UP PAGE
 # ============================================================
 if not st.session_state["logged_in"]:
+
+    # ── Branded landing + login page (login view only) ──
+    if st.session_state.get("auth_page", "login") == "login":
+        from landing_login import render_login_page
+        render_login_page(login_user, ensure_admin_plan, is_admin)
+        st.stop()
 
     # Encode Nit.png and Robot.png as base64 for embedding in HTML
     import base64
@@ -2191,7 +2194,10 @@ with st.sidebar:
 if language_mode in MOCK_INTERVIEW_MODES:
     uploaded_file = None  # not needed in this mode
 
-    render_hero_banner(f"{language_mode} – AI Interviewer")
+    st.markdown(
+        f'<div class="interview-header" style="margin-top:30px;">{language_mode} &#8211; AI Interviewer</div>',
+        unsafe_allow_html=True,
+    )
 
     # ── Interview not started yet ──
     if (
@@ -2201,9 +2207,6 @@ if language_mode in MOCK_INTERVIEW_MODES:
         st.info(
             "👈 Configure your interview in the sidebar and click **🚀 Start New Interview** to begin."
         )
-
-        # Designed onboarding steps card (rocket + Configure→Improve pipeline)
-        render_steps_card()
 
     # ── Interview in progress ──
     elif (
