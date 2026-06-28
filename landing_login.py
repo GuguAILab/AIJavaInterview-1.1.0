@@ -17,6 +17,12 @@ import base64
 import streamlit as st
 
 
+def _html(s):
+    """Strip per-line leading whitespace so Streamlit's markdown does not treat
+    indented HTML as a code block (which would render it as literal text)."""
+    return "\n".join(line.lstrip() for line in s.splitlines() if line.strip())
+
+
 def _img_b64(filename):
     """Return a data-URI for an image next to this file, or '' if missing."""
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
@@ -28,7 +34,7 @@ def _img_b64(filename):
 
 def _inject_css():
     st.markdown(
-        """
+        _html("""
 <style>
 /* Hide default Streamlit chrome on the login screen */
 #MainMenu, header[data-testid="stHeader"], footer {visibility:hidden;}
@@ -154,7 +160,7 @@ div[data-testid="stForm"]{border:none;padding:0;}
   .ml-stats,.ml-tcards{grid-template-columns:1fr 1fr;} .ml-nav{display:none;}
 }
 </style>
-        """,
+        """),
         unsafe_allow_html=True,
     )
 
@@ -220,7 +226,7 @@ def _render_marketing():
     )
 
     st.markdown(
-        f"""
+        _html(f"""
 <div class="ml-page">
   <div class="ml-hero-bg">
     <div class="ml-header">
@@ -279,7 +285,7 @@ def _render_marketing():
   </div>
   <div id="ml-login"></div>
 </div>
-        """,
+        """),
         unsafe_allow_html=True,
     )
 
@@ -294,13 +300,13 @@ def render_login_page(login_user, ensure_admin_plan, is_admin):
     left, right = st.columns([1.05, 1])
     with left:
         st.markdown(
-            """
+            _html("""
 <div class="ml-ready" style="padding-top:14px;">
   <div class="ml-shield">🛡️🔒</div>
   <h2>Ready to Begin Your Success Journey?</h2>
   <p>Login to access personalized practice, mock interviews, and much more.</p>
 </div>
-            """,
+            """),
             unsafe_allow_html=True,
         )
     with right:
