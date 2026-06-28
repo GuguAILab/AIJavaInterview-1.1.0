@@ -12,7 +12,18 @@ Usage in ai_assistant.py — call once, right after the login check:
         inject_polish()
 """
 
+import os
+import base64
 import streamlit as st
+
+
+def _img_b64(filename):
+    """Return a data-URI for an image next to this file, or '' if missing."""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
+    if os.path.exists(path):
+        with open(path, "rb") as f:
+            return "data:image/png;base64," + base64.b64encode(f.read()).decode("utf-8")
+    return ""
 
 
 def inject_polish():
@@ -181,6 +192,46 @@ def render_steps_card():
         'to begin your AI-powered mock interview.</div>'
         '</div>'
         f'<div style="display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;">{steps_html}</div>'
+        '</div>'
+    )
+    st.markdown(html, unsafe_allow_html=True)
+
+
+def render_hero_banner(
+    title,
+    subtitle="Practice. Prepare. Succeed. Get AI-powered interview experience.",
+):
+    """Designed gradient hero banner (orange -> purple) with title, subtitle,
+    and a robot image on the right. Drop a transparent 'hero_robot.png' next to
+    this file to match the mockup; otherwise a robot emoji is shown.
+    Purely presentational — no logic."""
+    img_src = ""
+    for name in ("hero_robot.png", "Nit.png", "Robot.png"):
+        img_src = _img_b64(name)
+        if img_src:
+            break
+    if img_src:
+        art = (
+            f'<img src="{img_src}" style="height:118px;object-fit:contain;'
+            'filter:drop-shadow(0 8px 18px rgba(0,0,0,.25));"/>'
+        )
+    else:
+        art = (
+            '<div style="display:flex;align-items:center;gap:14px;font-size:60px;'
+            'opacity:.95;">🤖<span style="font-size:34px;">&lt;/&gt;</span>☕</div>'
+        )
+
+    html = (
+        '<div style="background:linear-gradient(100deg,#f7831b 0%,#f2641c 28%,'
+        '#b13bd0 72%,#7c3aed 100%);border-radius:18px;padding:24px 34px;'
+        'display:flex;align-items:center;justify-content:space-between;gap:20px;'
+        'box-shadow:0 18px 42px rgba(120,40,170,.28);margin:18px 0 8px;overflow:hidden;">'
+        '<div style="min-width:0;">'
+        f'<div style="font-size:26px;font-weight:800;color:#fff;line-height:1.15;'
+        f'margin-bottom:7px;">{title}</div>'
+        f'<div style="font-size:14px;color:rgba(255,255,255,.92);">{subtitle}</div>'
+        '</div>'
+        f'<div style="flex:none;">{art}</div>'
         '</div>'
     )
     st.markdown(html, unsafe_allow_html=True)
