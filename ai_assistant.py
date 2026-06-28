@@ -1383,9 +1383,6 @@ if "is_admin" not in st.session_state:
 if "show_admin" not in st.session_state:
     st.session_state["show_admin"] = False
 
-# ── Designed after-login polish (purple Configuration banner, colors, cards) ──
-inject_polish()
-
 # ── Top bar: Welcome + Plan badge + Upgrade + Logout ──
 st.markdown('<div style="margin-top:80px;"></div>', unsafe_allow_html=True)
 uname = st.session_state["username"]
@@ -2024,7 +2021,7 @@ with st.sidebar:
         st.session_state["timer_minutes"] = int(_selected_time.split()[0])
 
         st.markdown("---")
-        if st.button("🚀 Start New Interview", use_container_width=True) or st.session_state.pop("_trigger_start", False):
+        if st.button("🚀 Start New Interview", use_container_width=True):
             st.session_state["interview_active"] = True
             st.session_state["interview_done"] = False
             st.session_state["interview_index"] = 0
@@ -2207,18 +2204,6 @@ if language_mode in MOCK_INTERVIEW_MODES:
 
         # Designed onboarding steps card (rocket + Configure→Improve pipeline)
         render_steps_card()
-
-        # Centered "Start New Interview" button in the main area
-        _bc1, _bc2, _bc3 = st.columns([1, 2, 1])
-        with _bc2:
-            if st.button(
-                "🚀 Start New Interview",
-                use_container_width=True,
-                type="primary",
-                key="main_start_btn",
-            ):
-                st.session_state["_trigger_start"] = True
-                st.rerun()
 
     # ── Interview in progress ──
     elif (
