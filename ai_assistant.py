@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-from app_polish import inject_polish
+
 # ── Force UTF-8 encoding on Windows (fixes emoji mojibake) ──
 os.environ.setdefault("PYTHONUTF8", "1")
 os.environ.setdefault("PYTHONIOENCODING", "utf-8")
@@ -13,10 +13,12 @@ if sys.platform == "win32":
         pass
 
 import streamlit as st
+
+# Designed after-login polish + onboarding steps card (app_polish.py in same folder)
+from app_polish import inject_polish, render_steps_card
 from groq import Groq
 
 # import speech_recognition as sr
-from app_polish import inject_polish, render_steps_card
 from streamlit_mic_recorder import mic_recorder
 
 import threading
@@ -757,24 +759,18 @@ if "reset_username" not in st.session_state:
 # ============================================================
 if not st.session_state["logged_in"]:
 
-    # ── Branded landing + login page (login view only) ──
-    if st.session_state.get("auth_page", "login") == "login":
-        from landing_login import render_login_page
-        render_login_page(login_user, ensure_admin_plan, is_admin)
-        st.stop()
-
-    # Encode Nit.png and  as base64 for embedding in HTML
+    # Encode Nit.png and Robot.png as base64 for embedding in HTML
     import base64
 
     _nit_img_tag = ""
-    _nit_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "emp1.png")
+    _nit_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Nit.png")
     if os.path.exists(_nit_path):
         with open(_nit_path, "rb") as _f:
             _nit_b64 = base64.b64encode(_f.read()).decode("utf-8")
         _nit_img_tag = f'<img src="data:image/png;base64,{_nit_b64}" style="position:absolute;top:36px;right:14px;width:80px;height:80px;object-fit:contain;border-radius:10px;opacity:0.92;" alt="Nit Logo"/>'
 
     _robot_img_tag = ""
-    _robot_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "emp2.png")
+    _robot_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Robot.png")
     if os.path.exists(_robot_path):
         with open(_robot_path, "rb") as _f:
             _robot_b64 = base64.b64encode(_f.read()).decode("utf-8")
@@ -1460,8 +1456,7 @@ if not is_guest and not active:
     st.error(
         "⚠️ Your subscription has expired. Please upgrade to continue using the app."
     )
-if st.session_state["logged_in"]:
-    inject_polish()
+
 # ──────────────────────────────────────────────────────────────
 # 💳 PRICING PAGE
 # ──────────────────────────────────────────────────────────────
@@ -2209,7 +2204,10 @@ if language_mode in MOCK_INTERVIEW_MODES:
         st.info(
             "👈 Configure your interview in the sidebar and click **🚀 Start New Interview** to begin."
         )
-render_steps_card()
+
+        # Designed onboarding steps card (rocket + Configure→Improve pipeline)
+        render_steps_card()
+
     # ── Interview in progress ──
     elif (
         st.session_state["interview_active"] and not st.session_state["interview_done"]
