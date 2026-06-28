@@ -132,15 +132,11 @@ section.main > div {padding:0 !important;}
 
 .ml-topics .chip {
     background: #0D1534;
-    color: #FFFFFF;              /* Remove the second color property */
-    border: 2px solid #5B7FFF;
-    border-radius: 12px;
-    padding: 12px 22px;
+    color: #FFFFFF;
+    border: 2px solid #4B6FFF;
     font-size: 24px;
     font-weight: 700;
-    letter-spacing: 0.3px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-    transition: all 0.25s ease;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
 }
 
 .ml-topics .chip:hover {
