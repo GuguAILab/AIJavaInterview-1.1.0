@@ -127,7 +127,7 @@ section.main > div {padding:0 !important;}
     display:flex;
     flex-wrap:wrap;
     gap:15px;
-    margin-top:15px;
+    margin-top:12px;
 }
 
 .ml-topics .chip{
@@ -142,7 +142,7 @@ section.main > div {padding:0 !important;}
     color:#FFFFFF !important;
 
     border:none;
-    border-radius:12px;
+    border-radius:8px;
 
     font-size:22px;
     font-weight:700;
