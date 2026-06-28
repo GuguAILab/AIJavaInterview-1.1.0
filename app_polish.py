@@ -94,6 +94,16 @@ section[data-testid="stSidebar"] [data-baseweb="radio"] svg{color:var(--brand1) 
 section[data-testid="stSidebar"] [data-testid="stWidgetLabel"]+div [aria-checked="true"],
 [data-baseweb="checkbox"] [aria-checked="true"]{background:var(--brand1) !important;}
 
+/* make radio / checkbox / toggle option text readable on the dark sidebar */
+section[data-testid="stSidebar"] [data-baseweb="radio"] div,
+section[data-testid="stSidebar"] [data-baseweb="checkbox"] div,
+section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
+section[data-testid="stSidebar"] label p,
+section[data-testid="stSidebar"] .stRadio label,
+section[data-testid="stSidebar"] .stCheckbox label{
+  color:#e8ecfb !important;
+}
+
 /* ============ HERO (keeps your gradient, adds depth) ============ */
 .hero-card,.interview-header{
   border-radius:20px !important;
