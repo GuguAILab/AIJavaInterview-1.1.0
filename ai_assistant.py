@@ -706,6 +706,12 @@ if not st.session_state["logged_in"]:
         render_login_page(login_user, ensure_admin_plan, is_admin)
         st.stop()
 
+    # ── Branded registration page (signup view) ──
+    if st.session_state.get("auth_page") == "signup":
+        from landing_login import render_signup_page
+        render_signup_page(register_user, login_user, ensure_admin_plan, is_admin)
+        st.stop()
+
     # Encode Nit.png and Robot.png as base64 for embedding in HTML
     import base64
 
