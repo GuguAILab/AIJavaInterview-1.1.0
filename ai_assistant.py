@@ -331,8 +331,8 @@ def register_user(username, password, email):
 # -------------------------------
 # 🔧 Initialize Groq Client
 # -------------------------------
-client = Groq(api_key="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")
-
+#client = Groq(api_key="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")
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 # -------------------------------
 # 🎤 Text-to-Speech setup
 # -------------------------------
