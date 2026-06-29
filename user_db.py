@@ -2,21 +2,29 @@
 """
 user_db.py — permanent, concurrency-safe user storage on Supabase (Postgres).
 
-Sized for ~400-500 users with bursty concurrency. Same public API as before
-(load_users, save_users, register_user, login_user, verify_email_for_reset,
-reset_password, hash_password) so nothing else in the app changes.
+Same public API as before (load_users, save_users, register_user, login_user,
+verify_email_for_reset, reset_password, hash_password) so nothing else changes.
+Sized for ~400-500 users with bursty concurrency.
 
-Scaling notes (why this is safe at 400-500 users):
-  * The real limit at scale is DB CONNECTIONS, not rows. We use a small,
-    thread-safe pool and hold each connection for the shortest time possible.
-  * ThreadedConnectionPool is used (SimpleConnectionPool is NOT thread-safe).
-  * Connections are validated and retried once if the pooler dropped them.
-  * Reads (login validation, load_users) are cached for a few seconds so a
-    burst of logins doesn't open a connection per click. Writes bust the cache.
-  * Always connect through the Supabase TRANSACTION POOLER (port 6543), which
-    multiplexes thousands of clients onto a few real Postgres connections.
+TWO WAYS to configure the connection in Streamlit secrets — pick ONE:
 
-SETUP: see the [supabase] url secret described at the bottom of this file.
+  A) SEPARATE FIELDS (recommended — works even if your password has @ : / # etc.,
+     no URL-encoding needed):
+
+         [supabase]
+         host     = "aws-0-<region>.pooler.supabase.com"
+         port     = "6543"
+         user     = "postgres.<your-project-ref>"
+         password = "Gugu16@2023"
+         dbname   = "postgres"
+
+  B) SINGLE URL (must URL-encode special chars in the password, e.g. @ -> %40):
+
+         [supabase]
+         url = "postgresql://postgres.<ref>:<encoded-pw>@aws-0-<region>.pooler.supabase.com:6543/postgres"
+
+Get host / user / region from Supabase -> Settings -> Database -> Connection
+string -> "Transaction pooler" (port 6543).
 """
 
 import os
@@ -32,50 +40,63 @@ from psycopg2 import OperationalError, InterfaceError
 from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import Json
 
-# How many real connections this app instance may hold at once.
-# Keep modest: the pooler multiplexes, and Streamlit Cloud runs one instance.
 _POOL_MIN = 1
 _POOL_MAX = int(os.environ.get("DB_POOL_MAX", "16"))
-
-# Read cache TTL (seconds). Short, so a burst of logins shares one query.
-_READ_TTL = 5.0
+_READ_TTL = 5.0  # seconds: short cache so login bursts share one query
 
 
 # ---------------------------------------------------------------------------
-# Connection pool (thread-safe, shared once per app instance)
+# Build connection parameters from secrets (separate fields OR a url)
 # ---------------------------------------------------------------------------
-def _db_url():
+def _secrets():
     try:
-        if "supabase" in st.secrets and "url" in st.secrets["supabase"]:
-            return st.secrets["supabase"]["url"]
+        if "supabase" in st.secrets:
+            return dict(st.secrets["supabase"])
     except Exception:
         pass
-    try:
-        if "SUPABASE_DB_URL" in st.secrets:
-            return st.secrets["SUPABASE_DB_URL"]
-    except Exception:
-        pass
-    return os.environ.get("SUPABASE_DB_URL", "")
+    return {}
+
+
+def _conn_kwargs():
+    """Return kwargs for psycopg2 — separate fields preferred, url as fallback."""
+    sec = _secrets()
+
+    # A) separate fields (no URL-encoding required for the password)
+    if sec.get("host") and sec.get("password"):
+        return {
+            "host": str(sec["host"]).strip(),
+            "port": int(str(sec.get("port", "6543")).strip()),
+            "user": str(sec.get("user", "postgres")).strip(),
+            "password": str(sec["password"]),
+            "dbname": str(sec.get("dbname", "postgres")).strip(),
+        }
+
+    # B) single url (here or in env)
+    url = sec.get("url") or os.environ.get("SUPABASE_DB_URL", "")
+    if url:
+        return {"dsn": str(url).strip()}
+
+    return None
 
 
 @st.cache_resource
 def _pool():
-    url = _db_url()
-    if not url:
+    kwargs = _conn_kwargs()
+    if not kwargs:
         raise RuntimeError(
-            'Database URL not configured. Add [supabase] url = "..." to secrets.'
+            "Database connection not configured. In Streamlit secrets add a "
+            "[supabase] section with either host/port/user/password/dbname "
+            'fields, or a single url = "...".'
         )
-    pool = ThreadedConnectionPool(
-        _POOL_MIN,
-        _POOL_MAX,
-        dsn=url,
-        # short timeouts so a stuck connection fails fast instead of hanging users
+    common = dict(
         connect_timeout=8,
         keepalives=1,
         keepalives_idle=30,
         keepalives_interval=10,
         keepalives_count=3,
     )
+    pool = ThreadedConnectionPool(_POOL_MIN, _POOL_MAX, **kwargs, **common)
+
     conn = pool.getconn()
     try:
         with conn, conn.cursor() as cur:
@@ -99,7 +120,6 @@ def _conn():
     for attempt in (1, 2):
         conn = pool.getconn()
         try:
-            # cheap liveness check; if the pooler closed it, reconnect
             with conn.cursor() as c:
                 c.execute("SELECT 1;")
             yield conn
@@ -111,7 +131,6 @@ def _conn():
                 conn.rollback()
             except Exception:
                 pass
-            # drop the dead connection from the pool, then retry once
             try:
                 pool.putconn(conn, close=True)
             except Exception:
@@ -128,7 +147,7 @@ def _conn():
 
 
 # ---------------------------------------------------------------------------
-# Short read cache so login bursts don't open a connection per click
+# Short read cache (login bursts share one query; writes invalidate it)
 # ---------------------------------------------------------------------------
 @st.cache_resource
 def _cache():
@@ -147,7 +166,6 @@ def _all_users_cached():
     with c["lock"]:
         if c["users"] is not None and (time.time() - c["ts"]) < _READ_TTL:
             return c["users"]
-    # fetch outside the lock window held above (re-query)
     with _conn() as conn, conn.cursor() as cur:
         cur.execute("SELECT username, data FROM app_users;")
         users = {row[0]: row[1] for row in cur.fetchall()}
@@ -165,8 +183,6 @@ def hash_password(password):
 
 
 def get_user(username):
-    # Serve from the short cache; only hit the DB if the user isn't there
-    # (covers a just-registered account before the cache refreshes).
     users = _all_users_cached()
     if username in users:
         return users[username]
@@ -177,7 +193,6 @@ def get_user(username):
 
 
 def load_users():
-    # Return a copy so callers can mutate without touching the cache.
     return dict(_all_users_cached())
 
 
