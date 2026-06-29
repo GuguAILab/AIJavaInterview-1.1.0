@@ -75,69 +75,36 @@ def get_bank_questions(topic, difficulty, num_questions):
     return result
 
 
+# ── Auth now backed by Supabase (Postgres) — see user_db.py ──
+import user_db
+
+
 def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
+    return user_db.hash_password(password)
 
 
 def load_users():
-    if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
+    return user_db.load_users()
 
 
 def save_users(users):
-    with open(USERS_FILE, "w", encoding="utf-8") as f:
-        json.dump(users, f, indent=2, ensure_ascii=False)
+    return user_db.save_users(users)
 
 
 def register_user(username, password, email):
-    users = load_users()
-    if username in users:
-        return False, "⚠️ Username already exists. Please choose another."
-    if len(password) < 6:
-        return False, "⚠️ Password must be at least 6 characters."
-    if "@" not in email:
-        return False, "⚠️ Please enter a valid email address."
-    users[username] = {
-        "password": hash_password(password),
-        "email": email,
-        "created": time.strftime("%Y-%m-%d %H:%M:%S"),
-    }
-    save_users(users)
-    return True, "✅ Account created successfully! Please log in."
+    return user_db.register_user(username, password, email)
 
 
 def login_user(username, password):
-    users = load_users()
-    if username not in users:
-        return False, "❌ Username not found."
-    if users[username]["password"] != hash_password(password):
-        return False, "❌ Incorrect password."
-    return True, users[username]["email"]
+    return user_db.login_user(username, password)
 
 
 def verify_email_for_reset(username, email):
-    """Check username exists and email matches for password reset."""
-    users = load_users()
-    if username not in users:
-        return False, "❌ Username not found."
-    if users[username]["email"].strip().lower() != email.strip().lower():
-        return False, "❌ Email does not match our records."
-    return True, "✅ Identity verified."
+    return user_db.verify_email_for_reset(username, email)
 
 
 def reset_password(username, new_password):
-    """Reset password for a verified user."""
-    if len(new_password) < 6:
-        return False, "⚠️ Password must be at least 6 characters."
-    users = load_users()
-    if username not in users:
-        return False, "❌ Username not found."
-    users[username]["password"] = hash_password(new_password)
-    users[username]["password_reset"] = time.strftime("%Y-%m-%d %H:%M:%S")
-    save_users(users)
-    return True, "✅ Password reset successfully! Please log in with your new password."
+    return user_db.reset_password(username, new_password)
 
 
 # ───────────────────────────────────────────────────────
@@ -357,34 +324,8 @@ def activate_plan(username, plan_key):
 
 
 def register_user(username, password, email):
-    users = load_users()
-    if username in users:
-        return False, "⚠️ Username already exists. Please choose another."
-    if len(password) < 6:
-        return False, "⚠️ Password must be at least 6 characters."
-    if "@" not in email:
-        return False, "⚠️ Please enter a valid email address."
-    from datetime import datetime, timedelta
-
-    # Auto-start 3-day free trial on registration
-    trial_expires = (datetime.now() + timedelta(days=3)).isoformat()
-    users[username] = {
-        "password": hash_password(password),
-        "email": email,
-        "created": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "plan": "free_trial",
-        "subscription": {
-            "plan": "free_trial",
-            "activated": datetime.now().isoformat(),
-            "expires": trial_expires,
-            "auto_renew": False,
-        },
-    }
-    save_users(users)
-    return (
-        True,
-        "✅ Account created! Your **3-day Free Trial** has started. Please log in.",
-    )
+    # Atomic, permanent registration via Supabase (includes the 3-day free trial).
+    return user_db.register_user(username, password, email)
 
 
 # -------------------------------
@@ -769,7 +710,7 @@ if not st.session_state["logged_in"]:
     import base64
 
     _nit_img_tag = ""
-    _nit_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "AIrobo.png")
+    _nit_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Nit.png")
     if os.path.exists(_nit_path):
         with open(_nit_path, "rb") as _f:
             _nit_b64 = base64.b64encode(_f.read()).decode("utf-8")
