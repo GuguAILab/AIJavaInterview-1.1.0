@@ -713,6 +713,15 @@ if not st.session_state["logged_in"]:
         render_signup_page(register_user, login_user, ensure_admin_plan, is_admin)
         st.stop()
 
+    # ── Branded forgot-password page (reset view) ──
+    if st.session_state.get("auth_page") == "forgot":
+        from landing_login import render_forgot_page
+        render_forgot_page(
+            verify_email_for_reset, reset_password, load_users,
+            login_user, ensure_admin_plan, is_admin,
+        )
+        st.stop()
+
     # Encode Nit.png and Robot.png as base64 for embedding in HTML
     import base64
 
