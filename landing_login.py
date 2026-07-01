@@ -599,3 +599,223 @@ def render_signup_page(register_user, login_user=None, ensure_admin_plan=None, i
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("</div></div>", unsafe_allow_html=True)
+
+
+# ===========================================================================
+# Branded FORGOT-PASSWORD page (matches the login / signup design)
+# ===========================================================================
+def render_forgot_page(verify_email_for_reset, reset_password,
+                       load_users_fn=None, login_user=None,
+                       ensure_admin_plan=None, is_admin=None):
+    """Full-page branded 'Reset Your Password' screen with the same hero as the
+    login/signup pages and a 3-step flow on the right:
+        1) Enter Username  2) Verify Email  3) New Password
+    Wires to the app's verify_email_for_reset() and reset_password()."""
+    _inject_css()
+    st.session_state.setdefault("reset_step", 1)
+    st.session_state.setdefault("reset_username", "")
+
+    st.markdown(
+        _html("""
+<style>
+.ml-su-hero{background:linear-gradient(160deg,#0a0f24 0%,#0d1430 55%,#101a3d 100%);
+  border-radius:0 0 22px 22px;padding-bottom:30px;}
+.ml-su-stats{background:#fff;border:1px solid #eef0f6;border-radius:16px;
+  box-shadow:0 14px 36px rgba(20,30,70,.10);display:grid;grid-template-columns:repeat(4,1fr);
+  gap:8px;padding:20px;max-width:1180px;margin:-34px auto 0;}
+.ml-su-stat{display:flex;align-items:center;gap:13px;justify-content:center;border-right:1px solid #eef0f6;}
+.ml-su-stat:last-child{border-right:none;}
+.ml-su-stat .si{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px;}
+.ml-su-stat b{color:#10182b;font-size:23px;display:block;line-height:1;}
+.ml-su-stat span{color:#6b7488;font-size:12.5px;}
+.ml-logos{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+.ml-logos div{background:#fff;border:1px solid #e7ebf4;border-radius:9px;padding:8px 16px;font-weight:800;font-size:13px;color:#33405c;}
+.ml-su-wrap{max-width:1180px;margin:30px auto 0;padding:0 22px;}
+.ml-su-card{display:grid;grid-template-columns:.85fr 1.15fr;gap:0;background:#fff;
+  border:1px solid #eef0f6;border-radius:20px;overflow:hidden;box-shadow:0 18px 50px rgba(20,30,70,.10);}
+.ml-su-left{background:linear-gradient(170deg,#eef4ff,#e7eefc);padding:40px 34px;}
+.ml-su-left .tgt{width:60px;height:60px;border-radius:16px;background:#fff;display:flex;align-items:center;
+  justify-content:center;font-size:28px;box-shadow:0 8px 20px rgba(47,107,255,.16);margin-bottom:20px;}
+.ml-su-left h3{font-size:23px;font-weight:800;color:#16213c;margin:0 0 12px;}
+.ml-su-left p{color:#52607c;font-size:14px;line-height:1.6;margin:0 0 20px;}
+.ml-fp-step{display:flex;align-items:center;gap:11px;margin:14px 0;font-size:14px;font-weight:600;}
+.ml-fp-step .n{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:14px;flex:none;}
+.ml-fp-done .n{background:#22a06b;color:#fff;} .ml-fp-done{color:#22a06b;}
+.ml-fp-active .n{background:#2f6bff;color:#fff;} .ml-fp-active{color:#1f3d80;}
+.ml-fp-todo .n{background:#dfe4f0;color:#8a93a8;} .ml-fp-todo{color:#9aa3b6;}
+.ml-su-right{padding:38px 38px 30px;}
+.ml-su-right .ttl{font-size:24px;font-weight:800;color:#101a30;margin:0 0 4px;}
+.ml-su-right .ttl::after{content:"";display:block;width:46px;height:3px;border-radius:3px;background:#2f6bff;margin-top:8px;}
+@media(max-width:880px){.ml-su-card{grid-template-columns:1fr;} .ml-su-stats{grid-template-columns:repeat(2,1fr);}}
+</style>
+        """),
+        unsafe_allow_html=True,
+    )
+
+    bot = _img_b64("Nit.png") or _img_b64("Robot.png") or _img_b64("AIrobot.png")
+    bot_tag = (f'<img src="{bot}" style="width:240px;border-radius:16px;"/>'
+               if bot else '<div style="font-size:120px;">🤖</div>')
+
+    st.markdown(
+        _html(f"""
+<div class="ml-page">
+  <div class="ml-su-hero">
+    <div class="ml-header">
+      <div class="ml-logo"><div class="bot">🧠</div>
+        <div class="txt"><b>AI Mock Interview</b><span>Platform</span></div></div>
+      <div class="ml-nav">
+        <a class="active" href="#">Home</a><a href="#">Features</a><a href="#">For Companies</a>
+        <a href="#">Pricing</a><a href="#">Resources</a><a href="#">About Us</a>
+      </div>
+    </div>
+    <div class="ml-hero">
+      <div>
+        <div class="ml-badge">🔒 Secure account recovery</div>
+        <h1 class="ml-h1">Reset your<br><span class="grad">Password</span></h1>
+        <p class="ml-sub">Verify your identity in three quick steps and set a new
+          password to get back to acing your interviews.</p>
+        <div class="ml-checks" style="gap:14px;">
+          <span>🤖 AI Interviewer</span><span>💬 Smart Feedback</span>
+          <span>🌐 Real-world Questions</span><span>📊 Performance Analytics</span>
+        </div>
+        <div style="color:#8ea0c4;font-size:12px;margin-top:18px;">Trusted by learners from</div>
+        <div class="ml-logos"><div>Google</div><div>amazon</div><div>JPMorgan</div>
+          <div>Microsoft</div><div>Adobe</div><div>EY</div></div>
+      </div>
+      <div style="text-align:center;">{bot_tag}</div>
+    </div>
+  </div>
+  <div class="ml-su-stats">
+    <div class="ml-su-stat"><div class="si" style="background:#e7efff;">👥</div>
+      <div><b>500K+</b><span>Interviews Conducted</span></div></div>
+    <div class="ml-su-stat"><div class="si" style="background:#e3f9ee;">📗</div>
+      <div><b>50K+</b><span>Active Users</span></div></div>
+    <div class="ml-su-stat"><div class="si" style="background:#efe9ff;">🛠️</div>
+      <div><b>1K+</b><span>Top Companies</span></div></div>
+    <div class="ml-su-stat"><div class="si" style="background:#fff1de;">⭐</div>
+      <div><b>4.9/5</b><span>User Rating</span></div></div>
+  </div>
+</div>
+        """),
+        unsafe_allow_html=True,
+    )
+
+    step = st.session_state["reset_step"]
+
+    def _cls(n):
+        return "ml-fp-done" if step > n else ("ml-fp-active" if step == n else "ml-fp-todo")
+
+    st.markdown('<div class="ml-su-wrap"><div class="ml-su-card">', unsafe_allow_html=True)
+    left, right = st.columns([0.85, 1.15], gap="large")
+
+    with left:
+        st.markdown(
+            _html(f"""
+<div class="ml-su-left">
+  <div class="tgt">🔓</div>
+  <h3>Reset Your Password</h3>
+  <p>For your security, we verify your identity before letting you set a new password.</p>
+  <div class="ml-fp-step {_cls(1)}"><span class="n">{'✓' if step>1 else '1'}</span> Enter Username</div>
+  <div class="ml-fp-step {_cls(2)}"><span class="n">{'✓' if step>2 else '2'}</span> Verify Email</div>
+  <div class="ml-fp-step {_cls(3)}"><span class="n">3</span> New Password</div>
+</div>
+            """),
+            unsafe_allow_html=True,
+        )
+
+    with right:
+        st.markdown('<div class="ml-su-right">', unsafe_allow_html=True)
+        st.markdown('<div class="ttl">Account Recovery</div>', unsafe_allow_html=True)
+
+        msg = st.session_state.get("auth_msg", "")
+        if msg:
+            (st.success if msg.startswith("✅") else st.error if msg.startswith("❌") or msg.startswith("⚠️") else st.info)(msg)
+
+        # ---- Step 1: username ----
+        if step == 1:
+            with st.form("fp1"):
+                u = st.text_input("Username", placeholder="Your registered username",
+                                  label_visibility="collapsed")
+                c1, c2 = st.columns(2)
+                nxt = c1.form_submit_button("Next ▶", use_container_width=True, type="primary")
+                back = c2.form_submit_button("◀ Back to Login", use_container_width=True)
+            if nxt:
+                if not u.strip():
+                    st.session_state["auth_msg"] = "⚠️ Please enter your username."
+                elif load_users_fn and u.strip() not in load_users_fn():
+                    st.session_state["auth_msg"] = "❌ Username not found."
+                else:
+                    st.session_state["reset_username"] = u.strip()
+                    st.session_state["reset_step"] = 2
+                    st.session_state["auth_msg"] = ""
+                st.rerun()
+            if back:
+                st.session_state["auth_page"] = "login"
+                st.session_state["auth_msg"] = ""
+                st.rerun()
+
+        # ---- Step 2: verify email ----
+        elif step == 2:
+            st.caption(f"Verifying account: **{st.session_state['reset_username']}**")
+            with st.form("fp2"):
+                em = st.text_input("Email", placeholder="Your registered email",
+                                   label_visibility="collapsed")
+                c1, c2 = st.columns(2)
+                ver = c1.form_submit_button("Verify ▶", use_container_width=True, type="primary")
+                back = c2.form_submit_button("◀ Back", use_container_width=True)
+            if ver:
+                if not em.strip():
+                    st.session_state["auth_msg"] = "⚠️ Please enter your email."
+                else:
+                    ok, m = verify_email_for_reset(st.session_state["reset_username"], em.strip())
+                    st.session_state["auth_msg"] = m
+                    if ok:
+                        st.session_state["reset_step"] = 3
+                st.rerun()
+            if back:
+                st.session_state["reset_step"] = 1
+                st.session_state["auth_msg"] = ""
+                st.rerun()
+
+        # ---- Step 3: new password ----
+        elif step == 3:
+            st.caption(f"Set a new password for: **{st.session_state['reset_username']}**")
+            with st.form("fp3"):
+                p1 = st.text_input("New Password", type="password",
+                                   placeholder="New password (min 6 chars)",
+                                   label_visibility="collapsed")
+                p2 = st.text_input("Confirm", type="password",
+                                   placeholder="Confirm new password",
+                                   label_visibility="collapsed")
+                c1, c2 = st.columns(2)
+                rst = c1.form_submit_button("✅ Reset Password", use_container_width=True, type="primary")
+                back = c2.form_submit_button("◀ Back", use_container_width=True)
+            if rst:
+                if not p1 or not p2:
+                    st.session_state["auth_msg"] = "⚠️ Please fill in both fields."
+                elif p1 != p2:
+                    st.session_state["auth_msg"] = "⚠️ Passwords do not match."
+                else:
+                    ok, m = reset_password(st.session_state["reset_username"], p1)
+                    st.session_state["auth_msg"] = m
+                    if ok:
+                        st.session_state["reset_step"] = 1
+                        st.session_state["reset_username"] = ""
+                        st.session_state["auth_page"] = "login"
+                st.rerun()
+            if back:
+                st.session_state["reset_step"] = 2
+                st.session_state["auth_msg"] = ""
+                st.rerun()
+
+        back_login = st.button("← Back to Login", use_container_width=True, key="fp_back_login")
+        if back_login:
+            st.session_state["auth_page"] = "login"
+            st.session_state["reset_step"] = 1
+            st.session_state["auth_msg"] = ""
+            st.rerun()
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown("</div></div>", unsafe_allow_html=True)
