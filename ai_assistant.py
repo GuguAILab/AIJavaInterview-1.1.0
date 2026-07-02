@@ -2716,11 +2716,16 @@ elif "uploaded_file" in dir() and uploaded_file:
 if language_mode == RESUME_AGENT_MODE:
     uploaded_file = None
 
+    def _go_back_to_home():
+        st.session_state["assistant_mode_select"] = "☕ Java Mock Interview"
+
     back_col, _ = st.columns([1, 5])
     with back_col:
-        if st.button("⬅️ Back to AI Mock Interview", use_container_width=True):
-            st.session_state["assistant_mode_select"] = "☕ Java Mock Interview"
-            st.rerun()
+        st.button(
+            "⬅️ Back to AI Mock Interview",
+            use_container_width=True,
+            on_click=_go_back_to_home,
+        )
 
     render_resume_agent(
         client,
