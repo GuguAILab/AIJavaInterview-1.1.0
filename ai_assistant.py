@@ -77,7 +77,6 @@ def get_bank_questions(topic, difficulty, num_questions):
 
 # ── Auth now backed by Supabase (Postgres) — see user_db.py ──
 import user_db
-import payments
 
 
 def hash_password(password):
@@ -713,12 +712,16 @@ if not st.session_state["logged_in"]:
         render_signup_page(register_user, login_user, ensure_admin_plan, is_admin)
         st.stop()
 
-    # ── Branded forgot-password page (reset view) ──
+    # ── Branded account-recovery page (forgot-password view) ──
     if st.session_state.get("auth_page") == "forgot":
         from landing_login import render_forgot_page
         render_forgot_page(
-            verify_email_for_reset, reset_password, load_users,
-            login_user, ensure_admin_plan, is_admin,
+            verify_email_for_reset,
+            reset_password,
+            load_users,
+            login_user,
+            ensure_admin_plan,
+            is_admin,
         )
         st.stop()
 
@@ -1349,13 +1352,6 @@ if "show_admin" not in st.session_state:
 # ── Designed after-login polish (purple Configuration banner, colors, cards) ──
 inject_polish()
 
-# ── Handle return from Razorpay payment (verify signature + activate plan) ──
-_pay_handled, _pay_ok, _pay_msg = payments.handle_payment_return(activate_plan)
-if _pay_handled:
-    st.session_state["sub_msg"] = _pay_msg
-    if _pay_ok:
-        st.balloons()
-
 # ── Top bar: Welcome + Plan badge + Upgrade + Logout ──
 st.markdown('<div style="margin-top:16px;"></div>', unsafe_allow_html=True)
 uname = st.session_state["username"]
@@ -1479,53 +1475,16 @@ if st.session_state["show_pricing"]:
                 duration_label = f"{p['duration']} Days Access"
 
             if not is_guest:
-                # Free trial activates directly (no payment).
-                if pk == "free_trial":
-                    if st.button(
-                        f"{pb}",
-                        key=f"plan_btn_{pk}",
-                        use_container_width=True,
-                        type="primary" if pk != plan_key else "secondary",
-                    ):
-                        ok, msg = activate_plan(uname, pk)
-                        st.session_state["sub_msg"] = msg
-                        st.session_state["show_pricing"] = False
-                        st.rerun()
-                else:
-                    # Paid plans → real Razorpay payment.
-                    import re as _re
-                    amount_inr = int(_re.sub(r"[^\d]", "", p["price"]) or 0)
-
-                    if not payments.is_configured():
-                        st.button(f"{pb}", key=f"plan_btn_{pk}",
-                                  use_container_width=True, disabled=True)
-                        st.caption("💳 Payment not configured yet")
-                    else:
-                        # Step 1: click subscribe → create a Razorpay payment link
-                        if st.button(
-                            f"{pb}",
-                            key=f"plan_btn_{pk}",
-                            use_container_width=True,
-                            type="primary" if pk != plan_key else "secondary",
-                        ):
-                            try:
-                                user_email = load_users().get(uname, {}).get("email", "")
-                                url, _lid = payments.create_payment_link(
-                                    uname, pk, amount_inr, p["name"], user_email
-                                )
-                                st.session_state[f"pay_url_{pk}"] = url
-                            except Exception as e:
-                                st.session_state["sub_msg"] = f"⚠️ Could not start payment: {e}"
-                            st.rerun()
-
-                        # Step 2: show the secure pay link once created
-                        if st.session_state.get(f"pay_url_{pk}"):
-                            st.link_button(
-                                f"💳 Pay ₹{amount_inr} securely →",
-                                st.session_state[f"pay_url_{pk}"],
-                                use_container_width=True,
-                            )
-                            st.caption("Opens Razorpay · UPI / Card / Net-Banking")
+                if st.button(
+                    f"{pb}",
+                    key=f"plan_btn_{pk}",
+                    use_container_width=True,
+                    type="primary" if pk != plan_key else "secondary",
+                ):
+                    ok, msg = activate_plan(uname, pk)
+                    st.session_state["sub_msg"] = msg
+                    st.session_state["show_pricing"] = False
+                    st.rerun()
             else:
                 st.caption("Login to subscribe")
 
@@ -1538,11 +1497,12 @@ if st.session_state["show_pricing"]:
     st.markdown(
         """
     <div style="background:#0d2137;border-radius:10px;padding:1rem;margin-top:1rem;color:#90A4AE;font-size:0.85rem;">
-    <b style="color:#42A5F5;">💳 Secure Payments by Razorpay</b><br>
+    <b style="color:#42A5F5;">💳 Payment Info (Demo Mode)</b><br>
     • Free Trial: 3 days, no card required<br>
-    • Monthly plans: ₹99 / ₹299 / ₹499 — grants the plan's access period<br>
-    • Accepted: UPI, Credit card, Debit card, Net Banking<br>
-    • Payments are processed on Razorpay's secure hosted page.<br>
+    • Monthly subscriptions: ₹99 / ₹299 / ₹499 per month<br>
+    • Automatic renewal on expiry<br>
+    • Accepted: Credit card, Debit card, UPI, Net Banking<br>
+    • <i>Note: This is a demo — click any button to simulate activation.</i>
     </div>
     """,
         unsafe_allow_html=True,
@@ -1898,6 +1858,7 @@ with st.sidebar:
         ],
         index=0,
         label_visibility="collapsed",
+        key="assistant_mode_select",
     )
 
     # ── Mock Interview Sidebar Controls ──
@@ -2767,6 +2728,18 @@ elif "uploaded_file" in dir() and uploaded_file:
 # ============================================================
 if language_mode == RESUME_AGENT_MODE:
     uploaded_file = None
+
+    def _go_back_to_home():
+        st.session_state["assistant_mode_select"] = "☕ Java Mock Interview"
+
+    back_col, _ = st.columns([1, 5])
+    with back_col:
+        st.button(
+            "⬅️ Back to AI Mock Interview",
+            use_container_width=True,
+            on_click=_go_back_to_home,
+        )
+
     render_resume_agent(
         client,
         model="llama-3.1-8b-instant",
