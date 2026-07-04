@@ -1,5 +1,5 @@
 {
-    "Core Java": {
+  "Core Java": {
     "Junior (0-2 yrs)": [
       "1. What is the difference between JDK, JRE, and JVM?",
       "2. Explain the concept of Object-Oriented Programming in Java.",
@@ -50,7 +50,20 @@
       "47. What is the output of: String a = 'java'; String b = new String('java'); System.out.println((a == b) + ' ' + a.equals(b));",
       "48. How do you create a user-defined (custom) exception in Java? Write a small example.",
       "49. What is the difference between 'throw' and 'throws' in Java?",
-      "50. What happens if an exception is thrown inside a finally block, or if both try and finally return a value?"
+      "50. What happens if an exception is thrown inside a finally block, or if both try and finally return a value?",
+      "51. What is a hash function and why is it used in a HashMap?",
+      "52. What is a collision in a hash table?",
+      "53. What is the average-case time complexity for retrieving data from a HashMap, and why?",
+      "54. What is the difference between HashMap, LinkedHashMap, and TreeMap in terms of ordering?",
+      "55. What is an ordered map, and which Java classes preserve ordering?",
+      "56. What is an array, and when would you use one in Java?",
+      "57. What is the difference between an Array and an ArrayList, and when would you use each?",
+      "58. What is a LinkedList, and when is it a better choice than an ArrayList?",
+      "59. What is a Stack, and give a real-world example of when you would use it?",
+      "60. What is a Queue, and when would you use it instead of a Stack?",
+      "61. What is the difference between a List and a Set, and when would you use each?",
+      "62. What is a Map, and when would you use it instead of a List?",
+      "63. Why would you choose a HashSet over a List to store unique values?"
     ],
     "Mid-level (2-5 yrs)": [
       "1. Explain the Java memory model — heap vs stack.",
@@ -101,7 +114,23 @@
       "46. What is the output of: String a = new String('hi').intern(); String b = 'hi'; System.out.println(a == b);",
       "47. When should a custom exception extend Exception (checked) versus RuntimeException (unchecked), and why?",
       "48. Why should a custom exception provide a constructor that accepts a Throwable cause? Explain exception chaining and how it preserves the original stack trace.",
-      "49. What are best practices when designing custom exceptions (naming, custom fields like an error code, when to catch vs rethrow)?"
+      "49. What are best practices when designing custom exceptions (naming, custom fields like an error code, when to catch vs rethrow)?",
+      "50. How does Java's HashMap handle collisions internally?",
+      "51. What collision resolution technique does Java HashMap use — chaining or open addressing?",
+      "52. What is the load factor in a HashMap, and what is its default value in Java?",
+      "53. What is rehashing, and when does it occur in a Java HashMap?",
+      "54. In Java 8+, what happens to a HashMap bucket when too many entries collide in it?",
+      "55. If you insert 20 elements into a default HashMap, at what point does it resize and why?",
+      "56. What are the characteristics of a good hash function?",
+      "57. When would you choose LinkedHashMap or TreeMap over a plain HashMap?",
+      "58. When should you use an ArrayList vs a LinkedList, based on how the data will be accessed and modified?",
+      "59. When would you use a HashMap vs a TreeMap vs a LinkedHashMap in a real application?",
+      "60. When should you use a Set vs a Map, and what problem does each solve?",
+      "61. What is a Deque, and when would you use it over a Stack or Queue?",
+      "62. When would you use a PriorityQueue, and what real-world problems does it solve?",
+      "63. Why might you choose an array over an ArrayList for performance-critical code?",
+      "64. When would you use a Stack (or Deque) to solve a problem instead of recursion?",
+      "65. How do you decide which collection type to use for a given problem?"
     ],
     "Senior (5+ yrs)": [
       "1. Explain the Java Memory Model (JMM) and happens-before relationship.",
@@ -143,10 +172,22 @@
       "37. What is the difference between the G1 and CMS garbage collectors in terms of design, pause-time behaviour, and heap fragmentation?",
       "38. What is GC pause time? What causes long stop-the-world pauses, and what techniques reduce them?",
       "39. How would you choose and tune a garbage collector for a low-latency service versus a high-throughput batch job?",
-      "40. Why was CMS deprecated and removed, and what does G1 (and later ZGC) do differently to improve pause times?"
+      "40. Why was CMS deprecated and removed, and what does G1 (and later ZGC) do differently to improve pause times?",
+      "41. Explain the collision-resolution techniques used in open addressing: linear probing, quadratic probing, and double hashing, with their trade-offs.",
+      "42. What is primary clustering in linear probing, and how do quadratic probing and double hashing reduce clustering?",
+      "43. How would you design your own hash function for strings, and what properties must it satisfy?",
+      "44. Walk through how you would implement your own hash table from scratch, including the bucket-index formula.",
+      "45. Why does Java HashMap convert a bucket's linked list into a Red-Black Tree, and what is the threshold and performance impact?",
+      "46. Rehashing has an O(n) cost — explain why HashMap insertion is still considered average O(1) despite this.",
+      "47. Explain the time-complexity trade-offs that drive the choice between ArrayList, LinkedList, and ArrayDeque.",
+      "48. When would you choose a TreeMap over a HashMap despite its O(log n) operations, and why?",
+      "49. How do memory layout and cache locality influence choosing an array over a linked structure in performance-sensitive Java code?",
+      "50. When would you pick a concurrent data structure (e.g., ConcurrentHashMap, CopyOnWriteArrayList) over a synchronized collection, and why?",
+      "51. How would you choose the right data structure when designing for both read-heavy and write-heavy workloads?",
+      "52. Explain a scenario where the wrong data-structure choice caused a performance problem and how you would fix it."
     ]
   },
-    "Collections & Generics": {
+  "Collections & Generics": {
     "Junior (0-2 yrs)": [
       "1. What is the Java Collections Framework?",
       "2. What is the difference between List, Set, and Map?",
@@ -493,7 +534,16 @@
       "7. How do you check if two strings are anagrams?",
       "8. Write a Java method to count the occurrences of a character in a string.",
       "9. What is binary search and what is its time complexity?",
-      "10. How do you remove duplicates from an array in Java?"
+      "10. How do you remove duplicates from an array in Java?",
+      "11. What is a Trie (prefix tree), and what is it used for?",
+      "12. How is a Trie different from a binary search tree?",
+      "13. Give a real-world example where a Trie is a good fit (e.g., autocomplete or spell-check).",
+      "14. What is a tree data structure, and what are the terms root, node, leaf, parent, child, and height?",
+      "15. What is a binary tree, and how is it different from a binary search tree (BST)?",
+      "16. What is a binary search tree (BST), and what property must it satisfy?",
+      "17. What are the three depth-first traversals of a binary tree (inorder, preorder, postorder)?",
+      "18. Why does an inorder traversal of a BST produce values in sorted order?",
+      "19. What is the difference between depth-first and breadth-first (level-order) traversal of a tree?"
     ],
     "Mid-level (2-5 yrs)": [
       "1. How do you detect a cycle in a linked list?",
@@ -505,7 +555,24 @@
       "7. What is dynamic programming? Give a Java example.",
       "8. How do you implement a binary search tree in Java?",
       "9. How do you find all permutations of a string?",
-      "10. Explain the two-pointer technique with a Java example."
+      "10. Explain the two-pointer technique with a Java example.",
+      "11. How do you insert and search for a word in a Trie? Walk through the steps.",
+      "12. What is the time complexity of insert, search, and prefix lookup in a Trie, and why?",
+      "13. How would you implement a Trie node in Java (what fields does each node need)?",
+      "14. How does a Trie support prefix-based searches (like autocomplete) efficiently?",
+      "15. How do you delete a word from a Trie, and what edge cases must you handle?",
+      "16. When would you use a Trie instead of a HashMap for storing strings, and what are the trade-offs?",
+      "17. Compare HashMap and Trie for exact search vs prefix search — which wins for each and why?",
+      "18. Why is a Trie better than a HashMap for autocomplete and search suggestions?",
+      "19. Why is prefix search (e.g., finding all words starting with 'app') slow in a HashMap but fast in a Trie?",
+      "20. How do you insert a value into a BST, and what is the time complexity?",
+      "21. How do you search for a value in a BST, and what is its average and worst-case complexity?",
+      "22. How do you delete a node from a BST, including the case where the node has two children?",
+      "23. How do you find the height (or depth) of a binary tree?",
+      "24. How do you do a level-order (BFS) traversal of a binary tree, and what data structure do you use?",
+      "25. How do you find the lowest common ancestor (LCA) of two nodes in a BST?",
+      "26. How do you check whether a given binary tree is a valid BST?",
+      "27. Why can a BST degrade to O(n) operations, and what causes it to become unbalanced?"
     ],
     "Senior (5+ yrs)": [
       "1. Implement a thread-safe bounded blocking queue from scratch.",
@@ -517,7 +584,22 @@
       "7. Implement consistent hashing in Java.",
       "8. What is the difference between memoization and tabulation?",
       "9. How do you detect and remove a loop in a linked list?",
-      "10. Design a Java solution for the sliding window maximum problem."
+      "10. Design a Java solution for the sliding window maximum problem.",
+      "11. What are the memory drawbacks of a standard Trie, and how can you reduce its space usage?",
+      "12. What is a compressed Trie (radix tree / Patricia trie), and when would you use it over a standard Trie?",
+      "13. How would you design a Trie to support autocomplete that returns the top-k most frequent suggestions for a prefix?",
+      "14. Compare a Trie vs a HashMap vs a balanced BST for storing and searching a large dictionary of strings, with trade-offs.",
+      "15. How would you implement a Trie that supports wildcard or pattern matching (e.g., '.' matching any character)?",
+      "16. How would you make a Trie thread-safe or suitable for concurrent reads and writes?",
+      "17. For a feature needing exact lookup, prefix search, autocomplete, and spell-check, how would you decide between HashMap and Trie — and would you use both?",
+      "18. What is a balanced binary search tree (BBST), and why is balancing important for guaranteeing O(log n) operations?",
+      "19. What is an AVL tree, and how does it use the balance factor and rotations to stay balanced?",
+      "20. Explain the four rotation cases in an AVL tree (LL, RR, LR, RL).",
+      "21. What is a Red-Black tree, what are its properties, and how does it stay balanced?",
+      "22. Compare AVL trees and Red-Black trees — when would you prefer one over the other?",
+      "23. How are Red-Black trees used inside Java's TreeMap and TreeSet, and why were they chosen?",
+      "24. Compare a balanced BST vs a HashMap for storing key-value data — when would you choose a BST despite O(log n) lookups?",
+      "25. How would you serialize and deserialize a binary tree so it can be stored or transmitted and rebuilt?"
     ]
   },
   "JVM & Memory Management": {
@@ -720,7 +802,17 @@
       "14. Check if a given string contains only unique characters.",
       "15. Write a Java method to calculate the Fibonacci sequence iteratively.",
       "16. Pair Difference Problem: Given an unsorted array of integers and a target difference K, find all pairs (a, b) such that |a - b| = K. Write a brute-force O(n^2) solution first, then optimize using a HashSet to O(n). Example: arr=[1,5,3,4,2], K=2 → pairs: (1,3),(3,5),(2,4). Explain your approach.",
-      "17. Water Trapping Rainwater (Basic): Given an array representing heights of bars, explain the concept of trapped water between bars. For the array [0,1,0,2,1,0,1,3,2,1,2,1], how much water is trapped? Walk through the brute-force O(n^2) approach where for each bar you find maxLeft and maxRight."
+      "17. Water Trapping Rainwater (Basic): Given an array representing heights of bars, explain the concept of trapped water between bars. For the array [0,1,0,2,1,0,1,3,2,1,2,1], how much water is trapped? Walk through the brute-force O(n^2) approach where for each bar you find maxLeft and maxRight.",
+      "18. Two Pointers: Given a sorted array, find if there is a pair of numbers that sums to a given target.",
+      "19. Two Pointers: Reverse an array (or string) in place using two pointers.",
+      "20. Two Pointers: Check whether a given string is a palindrome using two pointers.",
+      "21. Two Pointers: Remove duplicates from a sorted array in place and return the new length.",
+      "22. Two Pointers: Move all zeros in an array to the end while keeping the order of non-zero elements.",
+      "23. Sliding Window: Find the maximum sum of any contiguous subarray of size k.",
+      "24. Sliding Window: Find the average of every contiguous subarray of size k.",
+      "25. Sliding Window: Find the smallest subarray whose sum is greater than or equal to a given value.",
+      "26. Backtracking: Generate all subsets (the power set) of a given array.",
+      "27. Backtracking: Generate all permutations of a given string or array."
     ],
     "Mid-level (2-5 yrs)": [
       "1. Implement binary search on a sorted array in Java.",
@@ -741,7 +833,20 @@
       "16. Trapping Rainwater (Optimized): Solve LeetCode #42 - Trapping Rain Water. Given int[] height, compute total trapped water using the two-pointer approach in O(n) time and O(1) space. Walk through: left=0, right=n-1, leftMax=0, rightMax=0. For height=[0,1,0,2,1,0,1,3,2,1,2,1] answer is 6. Code it in Java and explain why two pointers work.",
       "17. Pair Difference (Optimized): Given an unsorted integer array and target K, find all unique pairs with |a-b|=K using a HashSet in O(n). Handle edge cases: K=0 (duplicate pairs), negative numbers, duplicates in array. Example: arr=[1,7,5,9,2,12,3], K=2 → [(1,3),(3,5),(5,7),(7,9)]. Code in Java with HashSet approach.",
       "18. LeetCode 39 - Combination Sum (Backtracking): Given a list of distinct candidates and a target, find all unique combinations where chosen numbers sum to target. Candidates can be reused. Example: candidates=[2,3,6,7], target=7 → [[2,2,3],[7]]. Implement in Java using backtracking. Explain the recursion tree, how you avoid duplicate combinations, and time complexity O(N^(T/M)) where T=target, M=min candidate.",
-      "19. N-Queens Problem (Introduction): Place N queens on an N×N chessboard so that no two queens attack each other (no same row, column, or diagonal). For N=4, there are 2 solutions. Explain the backtracking approach: place queen row by row, check if column and both diagonals are safe before placing. Write the isSafe() method in Java that checks: (a) same column above, (b) upper-left diagonal, (c) upper-right diagonal. What is the time complexity? O(N!)."
+      "19. N-Queens Problem (Introduction): Place N queens on an N×N chessboard so that no two queens attack each other (no same row, column, or diagonal). For N=4, there are 2 solutions. Explain the backtracking approach: place queen row by row, check if column and both diagonals are safe before placing. Write the isSafe() method in Java that checks: (a) same column above, (b) upper-left diagonal, (c) upper-right diagonal. What is the time complexity? O(N!).",
+      "20. Two Pointers: Given a sorted array, find all unique triplets that sum to zero (3Sum).",
+      "21. Two Pointers: Find the container that holds the most water (Container With Most Water).",
+      "22. Two Pointers: Merge two sorted arrays into one sorted array in place.",
+      "23. Two Pointers: Given a sorted array, return the squares of each number in sorted order.",
+      "24. Two Pointers: Find the length of the longest substring without repeating characters (sliding window).",
+      "25. Two Pointers: Detect if a linked list has a cycle using the fast and slow pointer technique.",
+      "26. Sliding Window: Find the length of the longest substring without repeating characters.",
+      "27. Sliding Window: Find the longest substring with at most k distinct characters.",
+      "28. Sliding Window: Find all anagrams of a pattern p within a string s and return their start indices.",
+      "29. Sliding Window: Given a binary array, find the maximum number of consecutive 1s if you can flip at most k zeros.",
+      "30. Backtracking: Solve the combination sum problem — find all unique combinations that sum to a target.",
+      "31. Backtracking: Generate all valid combinations of n pairs of balanced parentheses.",
+      "32. Backtracking: Given a board of letters, find all words from a dictionary that can be formed (word search)."
     ],
     "Senior (5+ yrs)": [
       "1. Implement Dijkstra's shortest path algorithm in Java.",
@@ -762,10 +867,20 @@
       "16. Permutations with Backtracking (Advanced): Implement LeetCode #46 - Permutations in Java using backtracking. Given nums=[1,2,3], return all 6 permutations. Use a boolean[] visited array and a List<Integer> path. Then solve LeetCode #47 - Permutations II with duplicates (nums=[1,1,2]) using sorting + skip-duplicate pruning in backtracking. Explain how to prune: if nums[i]==nums[i-1] && !visited[i-1], skip. Analyze time complexity O(n * n!) and space O(n).",
       "17. Combination Sum Complete Set (Senior): Solve all four LeetCode Combination Sum variants in Java: (1) #39 - reuse allowed, (2) #40 - each number once, duplicates in input, (3) #216 - exactly k numbers summing to n from 1-9, (4) #377 - count combinations (order matters, DP). For #39 and #40, implement backtracking with pruning. For #377, implement bottom-up DP. Compare when to use backtracking vs DP and the time complexities of each.",
       "18. Pair Difference (Senior Design): Solve the pair difference problem at scale: Given a stream of 1 billion integers and a target K, find all pairs |a-b|=K. Design using: (1) External sort + two-pointer for disk-based processing, (2) Bloom filter for approximate membership, (3) Distributed approach using consistent hashing across nodes. Also implement the in-memory version using a sorted TreeSet: for each x, check if (x+K) or (x-K) exists. Handle duplicates and K=0 edge case. Time O(n log n), Space O(n).",
-      "19. N-Queens Problem (Complete Java Implementation - LeetCode #51 & #52): Implement the full N-Queens solution in Java using backtracking. Use a char[][] board initialized with '.', place 'Q' when safe. Write complete isSafe(board, row, col, n) checking: (1) column above rows 0..row-1, (2) upper-left diagonal, (3) upper-right diagonal. Recursive solve(board, row, n, result): if row==n add board snapshot to result, else try each col 0..n-1. Also solve #52 (count solutions only). For N=8 there are 92 solutions. Optimize using three boolean arrays (cols[], diag1[], diag2[]) for O(1) safety check. Code both the board-based and optimized bit-manipulation versions. Time: O(N!), Space: O(N^2). Explain why we only need to check upward diagonals and not downward."
+      "19. N-Queens Problem (Complete Java Implementation - LeetCode #51 & #52): Implement the full N-Queens solution in Java using backtracking. Use a char[][] board initialized with '.', place 'Q' when safe. Write complete isSafe(board, row, col, n) checking: (1) column above rows 0..row-1, (2) upper-left diagonal, (3) upper-right diagonal. Recursive solve(board, row, n, result): if row==n add board snapshot to result, else try each col 0..n-1. Also solve #52 (count solutions only). For N=8 there are 92 solutions. Optimize using three boolean arrays (cols[], diag1[], diag2[]) for O(1) safety check. Code both the board-based and optimized bit-manipulation versions. Time: O(N!), Space: O(N^2). Explain why we only need to check upward diagonals and not downward.",
+      "20. Two Pointers: Solve the 4Sum problem — find all unique quadruplets summing to a target — and analyze its complexity.",
+      "21. Two Pointers: Compute how much water can be trapped between bars (Trapping Rain Water) using two pointers.",
+      "22. Two Pointers: Find the minimum window substring in s that contains all characters of t.",
+      "23. Two Pointers: Explain when a two-pointer or sliding-window approach reduces an O(n^2) brute force to O(n), and what conditions the data must satisfy.",
+      "24. Two Pointers: Find the middle of a linked list and detect the start of a cycle using slow/fast pointers.",
+      "25. Sliding Window: Find the minimum window substring in s that contains all characters of t.",
+      "26. Sliding Window: Find the maximum value in each sliding window of size k (use a deque) in O(n).",
+      "27. Sliding Window: Explain how to recognize when a problem is solvable with a sliding window, and the difference between fixed-size and variable-size windows.",
+      "28. Backtracking: Solve the N-Queens problem and explain how pruning reduces the search space.",
+      "29. Backtracking: Solve a Sudoku board using backtracking and describe the constraints you check.",
+      "30. Backtracking: Explain the general backtracking template (choose, explore, un-choose) and how to prune branches for efficiency."
     ]
   },
-
   "Core Python": {
     "Junior (0-2 yrs)": [
       "1. What is the difference between a list and a tuple in Python?",
@@ -819,7 +934,6 @@
       "15. What are the performance implications of Python's dynamic typing?"
     ]
   },
-
   "CI/CD Pipelines": {
     "Junior (0-2 yrs)": [
       "1. What is CI/CD and why is it important?",
@@ -836,7 +950,12 @@
       "12. What is a staging environment?",
       "13. What is a rollback strategy in deployment?",
       "14. What is the purpose of environment variables in a CI/CD pipeline?",
-      "15. What is a Dockerfile and how does it relate to CI/CD?"
+      "15. What is a Dockerfile and how does it relate to CI/CD?",
+      "16. Real scenario: Your pipeline fails at the build stage but works on your local machine. How do you start troubleshooting?",
+      "17. Real scenario: A teammate's commit broke the build for everyone. What steps do you take to identify and fix it?",
+      "18. Real scenario: The pipeline passes but the deployed app shows an old version. What could be wrong?",
+      "19. Real scenario: Your automated tests pass locally but fail in the CI pipeline. What are the common causes?",
+      "20. Real scenario: A build is taking 40 minutes and slowing the team down. What quick wins would you look for to speed it up?"
     ],
     "Mid-level (2-5 yrs)": [
       "1. How do you implement blue-green deployments in a CI/CD pipeline?",
@@ -853,7 +972,14 @@
       "12. What is SonarQube and how do you integrate it into a pipeline?",
       "13. How do you handle flaky tests in a CI pipeline?",
       "14. What is artifact versioning and why is it important?",
-      "15. How do you implement approval gates in a CD pipeline?"
+      "15. How do you implement approval gates in a CD pipeline?",
+      "16. Real scenario: A deployment to production succeeded but users are reporting errors. Walk through how you'd investigate and roll back safely.",
+      "17. Real scenario: Your pipeline intermittently fails about 1 in 5 runs with no code change. How do you diagnose and fix flaky behavior?",
+      "18. Real scenario: A secret (API key) was accidentally committed and the pipeline pushed it to an artifact. What do you do immediately and long-term?",
+      "19. Real scenario: You need to deploy a hotfix to production while a large feature branch is mid-pipeline. How do you handle it without breaking things?",
+      "20. Real scenario: A database migration in the pipeline failed halfway, leaving the schema in a bad state. How do you recover?",
+      "21. Real scenario: Two teams' pipelines both deploy to the same shared environment and keep overwriting each other. How would you fix this?",
+      "22. Real scenario: Your Docker image size ballooned to 2GB and deploys are slow. How would you reduce it?"
     ],
     "Senior (5+ yrs)": [
       "1. How would you design a zero-downtime deployment pipeline for a microservices system?",
@@ -870,10 +996,16 @@
       "12. How would you implement automated performance testing in a pipeline?",
       "13. Describe your experience designing pipelines for ML model deployment.",
       "14. How do you manage technical debt in CI/CD infrastructure?",
-      "15. What is the role of observability in a mature CI/CD system?"
+      "15. What is the role of observability in a mature CI/CD system?",
+      "16. Real scenario: Production went down right after a deploy, but the pipeline reported success. How do you design detection and automatic rollback so this doesn't recur?",
+      "17. Real scenario: A supply-chain attack injected malicious code via a compromised dependency. How would you have prevented it and how do you respond now?",
+      "18. Real scenario: Your CI costs have tripled as the team scaled. How do you analyze and reduce pipeline compute costs without hurting velocity?",
+      "19. Real scenario: Deploys to 50 microservices are coordinated manually and error-prone. How would you redesign the release process?",
+      "20. Real scenario: A regulated audit requires you to prove exactly what code was deployed to prod six months ago. How do you ensure your pipeline can answer that?",
+      "21. Real scenario: The team wants to move from nightly releases to multiple deploys per day. What changes to pipeline, testing, and culture would you drive?",
+      "22. Real scenario: A canary deployment showed healthy metrics but a latent bug surfaced hours later at full rollout. How do you improve your progressive-delivery safety?"
     ]
   },
-
   "Docker & Containers": {
     "Junior (0-2 yrs)": [
       "1. What is Docker and what problem does it solve?",
@@ -927,7 +1059,6 @@
       "15. How do you monitor and trace containers in production?"
     ]
   },
-
   "EC2 & VPC": {
     "Junior (0-2 yrs)": [
       "1. What is Amazon EC2?",
@@ -981,7 +1112,6 @@
       "15. How would you architect a zero-trust network on AWS?"
     ]
   },
-
   "Kafka Architecture": {
     "Junior (0-2 yrs)": [
       "1. What is Apache Kafka and what problem does it solve?",
@@ -1035,7 +1165,6 @@
       "15. How would you architect a change data capture (CDC) pipeline using Kafka?"
     ]
   },
-
   "Microservices Architecture": {
     "Junior (0-2 yrs)": [
       "1. What are microservices and how do they differ from monolithic architecture?",
@@ -1089,7 +1218,6 @@
       "15. What are anti-patterns in microservices architecture and how do you avoid them?"
     ]
   },
-
   "Spring Core & DI": {
     "Junior (0-2 yrs)": [
       "1. What is the Spring Framework and what are its core features?",
@@ -1143,7 +1271,6 @@
       "15. How would you implement a plugin architecture in Spring?"
     ]
   },
-
   "LLM Fundamentals": {
     "Junior (0-2 yrs)": [
       "1. What is a Large Language Model (LLM)?",
@@ -1197,7 +1324,6 @@
       "15. How do you implement human-in-the-loop workflows for AI applications?"
     ]
   },
-
   "SQL Basics & Queries": {
     "Junior (0-2 yrs)": [
       "1. What is SQL and what is it used for?",
@@ -1251,7 +1377,6 @@
       "15. How would you design a time-series data storage solution using SQL?"
     ]
   },
-
   "Vector Databases": {
     "Junior (0-2 yrs)": [
       "1. What is a vector database and how does it differ from a traditional relational database?",
@@ -1305,7 +1430,6 @@
       "15. How would you implement a self-correcting AI pipeline using output guardrails and retry logic?"
     ]
   },
-
   "RAG (Retrieval Augmented Generation)": {
     "Junior (0-2 yrs)": [
       "1. What is RAG (Retrieval Augmented Generation)?",
@@ -1358,6 +1482,58 @@
       "14. How would you architect a multi-modal RAG system that handles text, images, and tables?",
       "15. How do you quantify and reduce hallucination rates in a production RAG system?"
     ]
+  },
+  "Kubernetes": {
+    "Junior (0-2 yrs)": [
+      "1. What is Kubernetes and what problem does it solve?",
+      "2. What is a Pod in Kubernetes?",
+      "3. What is a container, and how is it different from a Pod?",
+      "4. What is a Node in a Kubernetes cluster?",
+      "5. What is a cluster in Kubernetes?",
+      "6. What is kubectl and what is it used for?",
+      "7. What happens when you run 'kubectl apply -f pod.yaml' at a high level?",
+      "8. What is a Deployment in Kubernetes and why is it used?",
+      "9. What is a Service in Kubernetes and why do Pods need one?",
+      "10. What is a namespace in Kubernetes?",
+      "11. What is a container image and how does Kubernetes use it?",
+      "12. What is the difference between a Deployment and a Pod?",
+      "13. What is a ReplicaSet and what does it guarantee?",
+      "14. What is a YAML manifest in Kubernetes?",
+      "15. What does it mean when a Pod is in 'Pending' status?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Explain what happens internally, step by step, when you run 'kubectl apply -f pod.yaml'.",
+      "2. What is the role of the kube-apiserver in the cluster?",
+      "3. What is etcd and why is it called the source of truth in Kubernetes?",
+      "4. How does the kube-scheduler decide which node a Pod runs on (filtering and scoring)?",
+      "5. What does the kubelet do on each node?",
+      "6. Why don't Kubernetes components talk to each other directly, and how do they coordinate instead?",
+      "7. What is the control plane, and what components make it up?",
+      "8. What is the difference between a ReplicaSet and a Deployment?",
+      "9. What are liveness and readiness probes, and when does each matter?",
+      "10. What are requests and limits for CPU and memory, and how do they affect scheduling?",
+      "11. What are taints and tolerations, and how do they influence Pod placement?",
+      "12. What is node affinity and anti-affinity, and when would you use them?",
+      "13. How do rolling updates work in a Deployment, and how do you roll back?",
+      "14. What is a ConfigMap and a Secret, and how do they differ?",
+      "15. How does a Service route traffic to the correct Pods (labels and selectors)?",
+      "16. What is an Ingress and how is it different from a Service?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Walk through the full internal flow from 'kubectl apply' to a Running Pod, naming each component (apiserver, etcd, scheduler, kubelet) and its role.",
+      "2. How does the kube-scheduler's filtering and scoring work in detail, and how would you influence its decisions?",
+      "3. How does the controller manager reconcile desired state vs actual state, and what is the reconciliation loop?",
+      "4. How would you debug a Pod stuck in 'Pending' — what components and conditions do you check?",
+      "5. How does Kubernetes networking work — how do Pods on different nodes communicate (CNI, pod CIDR)?",
+      "6. How would you design a highly available control plane, and what happens if etcd loses quorum?",
+      "7. What are the failure modes if the kube-apiserver goes down, and what still keeps running?",
+      "8. How do you secure a Kubernetes cluster (RBAC, network policies, admission controllers, secrets encryption)?",
+      "9. How would you design autoscaling — horizontal pod autoscaler, vertical, and cluster autoscaler — and their trade-offs?",
+      "10. How would you perform a zero-downtime deployment and safe rollback strategy in production Kubernetes?",
+      "11. What are admission controllers, and how would you use them to enforce policy in a cluster?",
+      "12. How would you troubleshoot a node that shows 'NotReady', and what could cause it?",
+      "13. How does Kubernetes handle stateful workloads (StatefulSets, persistent volumes), and when would you use them?",
+      "14. How would you design multi-tenancy and resource isolation for many teams sharing one cluster?"
+    ]
   }
 }
-
