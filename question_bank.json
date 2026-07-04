@@ -1483,7 +1483,7 @@
       "15. How do you quantify and reduce hallucination rates in a production RAG system?"
     ]
   },
-  "Kubernetes": {
+  "Kubernetes (K8s)": {
     "Junior (0-2 yrs)": [
       "1. What is Kubernetes and what problem does it solve?",
       "2. What is a Pod in Kubernetes?",
@@ -1534,6 +1534,186 @@
       "12. How would you troubleshoot a node that shows 'NotReady', and what could cause it?",
       "13. How does Kubernetes handle stateful workloads (StatefulSets, persistent volumes), and when would you use them?",
       "14. How would you design multi-tenancy and resource isolation for many teams sharing one cluster?"
+    ]
+  },
+  "Terraform & IaC": {
+    "Junior (0-2 yrs)": [
+      "1. What is Infrastructure as Code (IaC) and why is it useful?",
+      "2. What is Terraform and what problem does it solve?",
+      "3. What is a Terraform provider?",
+      "4. What is a resource in Terraform?",
+      "5. What is the purpose of the terraform.tfstate file?",
+      "6. What do 'terraform init', 'terraform plan', and 'terraform apply' each do?",
+      "7. What is a variable in Terraform and how do you define one?",
+      "8. What is the difference between Terraform and a configuration tool like Ansible?",
+      "9. What is a Terraform module?",
+      "10. What does 'terraform destroy' do?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. How does Terraform track state, and why is remote state important for teams?",
+      "2. How do you manage Terraform state for a team to avoid conflicts (locking, remote backends)?",
+      "3. What is the difference between 'terraform plan' and 'terraform apply' in a CI pipeline?",
+      "4. How do you use modules to keep Terraform code reusable and DRY?",
+      "5. How do you manage secrets and sensitive variables in Terraform?",
+      "6. What are workspaces in Terraform and when would you use them?",
+      "7. How do you handle multiple environments (dev/staging/prod) in Terraform?",
+      "8. What is a data source in Terraform and when do you use it?",
+      "9. How do you import existing infrastructure into Terraform?",
+      "10. What is the meaning of idempotency in Terraform and why does it matter?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Real scenario: Your Terraform state file got corrupted or out of sync with real infrastructure. How do you recover?",
+      "2. How would you design a Terraform structure for a large organization with many teams and environments?",
+      "3. How do you safely refactor Terraform code (moving resources, renaming) without destroying live infrastructure?",
+      "4. How do you implement a secure remote backend with state locking and encryption?",
+      "5. How would you enforce policy and compliance in Terraform (e.g., Sentinel, OPA, tfsec)?",
+      "6. How do you handle drift between Terraform state and actual cloud resources?",
+      "7. What are the trade-offs of a monorepo vs multiple repos for Terraform code?",
+      "8. How would you design a CI/CD pipeline that runs Terraform plan/apply safely with approvals?"
+    ]
+  },
+  "Jenkins / GitLab CI": {
+    "Junior (0-2 yrs)": [
+      "1. What is Jenkins and what is it used for?",
+      "2. What is a Jenkins job or pipeline?",
+      "3. What is a Jenkinsfile?",
+      "4. What is GitLab CI and how does it run pipelines?",
+      "5. What is a .gitlab-ci.yml file?",
+      "6. What is a build stage in a CI pipeline?",
+      "7. What is a runner (Jenkins agent / GitLab runner)?",
+      "8. What triggers a pipeline to run automatically?",
+      "9. What is the difference between a stage and a step in a pipeline?",
+      "10. What is a build artifact and how is it stored?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. What is the difference between a declarative and a scripted Jenkins pipeline?",
+      "2. How do you pass artifacts between stages in GitLab CI or Jenkins?",
+      "3. How do you manage credentials and secrets in Jenkins or GitLab CI?",
+      "4. How do you run jobs in parallel in a pipeline?",
+      "5. How do you cache dependencies to speed up pipelines?",
+      "6. How do you set up a multi-stage pipeline (build, test, deploy)?",
+      "7. What are GitLab CI 'rules' / 'only' / 'except' and how do you control when jobs run?",
+      "8. How do you integrate automated tests and fail the pipeline on failures?",
+      "9. How do you deploy to different environments from a single pipeline?",
+      "10. How do you use shared libraries in Jenkins to reuse pipeline code?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Real scenario: A Jenkins pipeline intermittently fails on one agent but not others. How do you diagnose it?",
+      "2. How would you design a scalable Jenkins setup with many agents and high job volume?",
+      "3. How do you migrate a large set of pipelines from Jenkins to GitLab CI (or GitHub Actions)?",
+      "4. How do you secure a CI system against secret leakage and malicious pipeline code?",
+      "5. How would you implement dynamic, ephemeral build agents (e.g., Kubernetes-based runners)?",
+      "6. How do you design pipelines for a monorepo so only affected services rebuild?",
+      "7. How do you implement approval gates and audit trails for production deployments?",
+      "8. How do you optimize a slow CI pipeline that's blocking developer productivity?"
+    ]
+  },
+  "Monitoring & Logging": {
+    "Junior (0-2 yrs)": [
+      "1. What is monitoring and why is it important for applications?",
+      "2. What is logging and why do applications produce logs?",
+      "3. What is the difference between monitoring and logging?",
+      "4. What is a metric in monitoring?",
+      "5. What is an alert and when should one fire?",
+      "6. What is Prometheus used for?",
+      "7. What is Grafana used for?",
+      "8. What are the ELK/EFK stack components (Elasticsearch, Logstash/Fluentd, Kibana)?",
+      "9. What is a log level (INFO, WARN, ERROR) and why does it matter?",
+      "10. What is uptime and how is it measured?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. What are the three pillars of observability (metrics, logs, traces)?",
+      "2. How does Prometheus collect metrics (pull model, exporters)?",
+      "3. What is the difference between a counter, gauge, and histogram metric?",
+      "4. How do you design a good alert to avoid alert fatigue?",
+      "5. What is distributed tracing and when do you need it?",
+      "6. How do you centralize logs from many services?",
+      "7. What is an SLI, SLO, and SLA, and how do they relate?",
+      "8. How do you monitor a containerized/Kubernetes environment?",
+      "9. What is structured logging and why is it better than plain text?",
+      "10. How do you correlate logs, metrics, and traces for a single request?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Real scenario: Production is slow but all dashboards look green. How do you investigate?",
+      "2. How would you design an observability strategy for a large microservices system?",
+      "3. How do you set meaningful SLOs and error budgets, and act on them?",
+      "4. How do you reduce monitoring/logging costs at scale without losing critical signal?",
+      "5. How would you design alerting that minimizes false positives while catching real incidents?",
+      "6. How do you implement end-to-end distributed tracing across many services?",
+      "7. How would you approach root-cause analysis during a major production incident?",
+      "8. How do you monitor for security threats and anomalies, not just performance?"
+    ]
+  },
+  "Linux & Shell Scripting": {
+    "Junior (0-2 yrs)": [
+      "1. What is the difference between a file and a directory in Linux?",
+      "2. What do the commands ls, cd, pwd, and mkdir do?",
+      "3. How do you view the contents of a file (cat, less, head, tail)?",
+      "4. What are file permissions in Linux (read, write, execute)?",
+      "5. What does the chmod command do?",
+      "6. What is a shell, and what is bash?",
+      "7. How do you write and run a simple shell script?",
+      "8. What is a variable in a shell script and how do you use it?",
+      "9. How do you find running processes (ps, top)?",
+      "10. How do you search for text in files using grep?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. How do you use pipes and redirection (|, >, >>, 2>) in the shell?",
+      "2. How do you write a for loop and an if condition in bash?",
+      "3. What is the difference between a hard link and a symbolic link?",
+      "4. How do you find files using the find command?",
+      "5. How do you manage environment variables and the PATH?",
+      "6. How do you check disk usage and free space (df, du)?",
+      "7. How do you view and follow logs in real time (tail -f, journalctl)?",
+      "8. How do you schedule tasks with cron?",
+      "9. How do you kill or manage a misbehaving process (kill, signals)?",
+      "10. What is the difference between a foreground and background process, and how do you manage jobs?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Real scenario: A Linux server is running out of memory. How do you diagnose what's consuming it?",
+      "2. Real scenario: Disk is full on a production server. Walk through how you find and safely free space.",
+      "3. How would you write a robust shell script with error handling (set -euo pipefail, traps)?",
+      "4. How do you troubleshoot high CPU load on a Linux server?",
+      "5. How do you debug a network connectivity issue (netstat, ss, curl, dig, tcpdump)?",
+      "6. How would you harden and secure a Linux server?",
+      "7. How do you analyze system performance (vmstat, iostat, sar)?",
+      "8. How would you automate a recurring operational task safely with a script and scheduling?"
+    ]
+  },
+  "Git & Version Control": {
+    "Junior (0-2 yrs)": [
+      "1. What is Git and why is version control important?",
+      "2. What is the difference between Git and GitHub?",
+      "3. What do git add, git commit, and git push do?",
+      "4. What is a commit in Git?",
+      "5. What is a branch and why do we use branches?",
+      "6. What is the difference between git pull and git fetch?",
+      "7. What is a merge in Git?",
+      "8. What is a remote repository?",
+      "9. What is a .gitignore file used for?",
+      "10. How do you clone a repository?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. What is the difference between git merge and git rebase?",
+      "2. What is a merge conflict and how do you resolve one?",
+      "3. What is the difference between git reset, git revert, and git checkout?",
+      "4. What is a pull request / merge request and what is its purpose?",
+      "5. What is a Git stash and when do you use it?",
+      "6. What are common branching strategies (Git Flow, trunk-based, feature branches)?",
+      "7. What is a fast-forward merge vs a three-way merge?",
+      "8. How do you undo the last commit without losing your changes?",
+      "9. What is git cherry-pick and when would you use it?",
+      "10. What is a tag in Git and how is it used for releases?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Real scenario: A secret was committed and pushed to a shared repo. How do you remove it from history?",
+      "2. Real scenario: The main branch is broken after a bad merge. How do you safely recover?",
+      "3. How do you handle a large, long-lived feature branch that has diverged heavily from main?",
+      "4. What branching and release strategy would you recommend for a team doing continuous delivery, and why?",
+      "5. How does git rebase -i (interactive rebase) work, and when would you use it to clean history?",
+      "6. How do you recover a commit that seems lost (git reflog)?",
+      "7. How would you structure a monorepo vs multiple repos, and what are the Git implications?",
+      "8. How do you enforce code quality and review with Git (protected branches, hooks, CI checks)?"
     ]
   }
 }
