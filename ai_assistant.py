@@ -2682,6 +2682,7 @@ if language_mode in MOCK_INTERVIEW_MODES:
                     stream=False,
                 )
                 analysis_text = final_analysis.choices[0].message.content.strip()
+                st.session_state["final_analysis_text"] = analysis_text
                 st.markdown(
                     f'<div class="feedback-box">{analysis_text}</div>',
                     unsafe_allow_html=True,
@@ -2696,14 +2697,43 @@ if language_mode in MOCK_INTERVIEW_MODES:
             st.markdown("</div>", unsafe_allow_html=True)
 
             st.markdown("---")
-            if st.button("🔄 Start New Interview", use_container_width=True):
-                st.session_state["interview_active"] = False
-                st.session_state["interview_done"] = False
-                st.session_state["interview_questions"] = []
-                st.session_state["interview_index"] = 0
-                st.session_state["interview_answers"] = []
-                st.session_state["waiting_for_answer"] = False
-                st.rerun()
+
+            # ── Email the report card to the user (and admin) ──
+            colA, colB = st.columns(2)
+            with colA:
+                if st.button("📧 Email me this report card", use_container_width=True):
+                    try:
+                        import report_email
+                        user_email = st.session_state.get("user_email", "")
+                        ok, msg = report_email.send_report_card(
+                            to_user_email=user_email,
+                            username=st.session_state.get("username", "candidate"),
+                            topic=st.session_state["interview_topic"],
+                            level=st.session_state["interview_difficulty"],
+                            total_q=total_q,
+                            avg_score=avg_score,
+                            best_score=max(scores),
+                            lowest_score=min(scores),
+                            passed=passed,
+                            per_question=answers,
+                            analysis=st.session_state.get("final_analysis_text", ""),
+                            also_admin=True,
+                        )
+                        if ok:
+                            st.success(msg)
+                        else:
+                            st.warning(msg)
+                    except Exception as e:
+                        st.warning(f"Could not send email: {e}")
+            with colB:
+                if st.button("🔄 Start New Interview", use_container_width=True):
+                    st.session_state["interview_active"] = False
+                    st.session_state["interview_done"] = False
+                    st.session_state["interview_questions"] = []
+                    st.session_state["interview_index"] = 0
+                    st.session_state["interview_answers"] = []
+                    st.session_state["waiting_for_answer"] = False
+                    st.rerun()
 
 # ============================================================
 # 📁 File Upload Analysis (non-interview modes)
