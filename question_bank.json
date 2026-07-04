@@ -1867,5 +1867,481 @@
       "5. How do you monitor and control cost, latency, and scaling for large model inference?",
       "6. How do you ensure governance, auditability, and compliance for models in production?"
     ]
+  },
+  "System Design Fundamentals": {
+    "Junior (0-2 yrs)": [
+      "1. What is system design and why is it important?",
+      "2. What is the difference between functional and non-functional requirements?",
+      "3. What is latency vs throughput?",
+      "4. What is horizontal vs vertical scaling?",
+      "5. What is a client-server architecture?",
+      "6. What is an API and how do services communicate?",
+      "7. What is availability and how is it measured?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. How do you estimate capacity (QPS, storage, bandwidth) for a system?",
+      "2. What is the difference between stateless and stateful services?",
+      "3. How do you design for high availability?",
+      "4. What is a single point of failure and how do you avoid it?",
+      "5. What are the trade-offs between SQL and NoSQL for a given system?",
+      "6. How do you approach a system design interview question step by step?",
+      "7. What is eventual consistency?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. How would you design a URL shortener like bit.ly?",
+      "2. How would you design a rate limiter?",
+      "3. How do you approach designing a system for 100 million users?",
+      "4. How do you balance consistency, availability, and partition tolerance in a real design?",
+      "5. How would you evolve a monolith into a scalable distributed system?",
+      "6. How do you design for observability and failure recovery from day one?"
+    ]
+  },
+  "Scalability & Load Balancing": {
+    "Junior (0-2 yrs)": [
+      "1. What is scalability?",
+      "2. What is a load balancer and what does it do?",
+      "3. What is the difference between horizontal and vertical scaling?",
+      "4. What is a server cluster?",
+      "5. What is round-robin load balancing?",
+      "6. What is a health check in load balancing?",
+      "7. Why do we replicate services across multiple servers?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. What load balancing algorithms do you know (round robin, least connections, IP hash)?",
+      "2. What is the difference between L4 and L7 load balancing?",
+      "3. How do you scale a stateful service?",
+      "4. What is auto-scaling and when does it trigger?",
+      "5. How does a CDN help with scalability?",
+      "6. What is database read-replica scaling?",
+      "7. How do you handle session affinity (sticky sessions)?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. How would you design a load-balancing layer for a globally distributed service?",
+      "2. How do you scale writes when read replicas aren't enough?",
+      "3. How do you handle the thundering herd problem?",
+      "4. How would you design auto-scaling that reacts to real traffic without flapping?",
+      "5. How do you scale a system to handle sudden 10x traffic spikes?",
+      "6. What are the trade-offs of different sharding strategies for scaling?"
+    ]
+  },
+  "Caching Strategies": {
+    "Junior (0-2 yrs)": [
+      "1. What is caching and why is it used?",
+      "2. What is a cache hit vs cache miss?",
+      "3. What is Redis and what is it commonly used for?",
+      "4. What is TTL (time to live) in caching?",
+      "5. What is the difference between client-side and server-side caching?",
+      "6. What is a CDN cache?",
+      "7. Why can caching cause stale data?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. What are cache eviction policies (LRU, LFU, FIFO)?",
+      "2. What is cache-aside vs write-through vs write-back caching?",
+      "3. How do you handle cache invalidation?",
+      "4. What is the difference between caching and a database?",
+      "5. How do you decide what to cache?",
+      "6. What is a cache stampede and how do you prevent it?",
+      "7. How does distributed caching work?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. How would you design a caching layer for a read-heavy system at scale?",
+      "2. How do you keep a cache consistent with the source of truth?",
+      "3. How do you handle cache invalidation across a distributed system?",
+      "4. What are the trade-offs of different caching strategies for a specific workload?",
+      "5. How would you design a multi-level cache (browser, CDN, app, DB)?",
+      "6. How do you prevent and recover from a cache stampede in production?"
+    ]
+  },
+  "Database Design & Sharding": {
+    "Junior (0-2 yrs)": [
+      "1. What is a primary key and a foreign key?",
+      "2. What is database normalization?",
+      "3. What is the difference between SQL and NoSQL databases?",
+      "4. What is an index and why does it speed up queries?",
+      "5. What is a database transaction?",
+      "6. What is replication in databases?",
+      "7. What is sharding at a high level?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. What is sharding and what are common sharding keys?",
+      "2. What is the difference between horizontal and vertical partitioning?",
+      "3. What are the trade-offs of sharding a database?",
+      "4. What is a read replica and how does it help?",
+      "5. How do you handle joins across shards?",
+      "6. What is denormalization and when is it useful?",
+      "7. What is the difference between master-slave and multi-master replication?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. How would you design the data model and sharding strategy for a large social network?",
+      "2. How do you handle resharding when a shard gets too hot?",
+      "3. How do you maintain consistency across shards and replicas?",
+      "4. How would you design a database layer for both high write and high read throughput?",
+      "5. What are the trade-offs between different partitioning strategies (range, hash, geo)?",
+      "6. How do you handle distributed transactions across shards?"
+    ]
+  },
+  "Message Queues & Streaming": {
+    "Junior (0-2 yrs)": [
+      "1. What is a message queue and why is it used?",
+      "2. What is the difference between synchronous and asynchronous communication?",
+      "3. What is a producer and a consumer?",
+      "4. What is Kafka used for?",
+      "5. What is RabbitMQ?",
+      "6. What is a topic in a messaging system?",
+      "7. What is decoupling and how do queues help?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. What is the difference between a message queue and a pub/sub system?",
+      "2. What is at-least-once vs exactly-once delivery?",
+      "3. How do you handle message ordering?",
+      "4. What is a dead letter queue?",
+      "5. How do you handle consumer failures and retries?",
+      "6. What is backpressure and how do you handle it?",
+      "7. When would you use Kafka vs RabbitMQ vs SQS?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. How would you design an event-driven architecture for a large system?",
+      "2. How do you guarantee exactly-once processing in a streaming pipeline?",
+      "3. How do you handle a slow or failing consumer without losing messages?",
+      "4. How would you design a system to process millions of events per second?",
+      "5. How do you handle ordering and idempotency in distributed message processing?",
+      "6. How do you design for replay and recovery in an event-streaming system?"
+    ]
+  },
+  "API & Microservices Design": {
+    "Junior (0-2 yrs)": [
+      "1. What is a REST API?",
+      "2. What are the common HTTP methods and what do they do?",
+      "3. What is the difference between REST and GraphQL?",
+      "4. What is an API endpoint?",
+      "5. What is a microservice?",
+      "6. What is the difference between a monolith and microservices?",
+      "7. What is an API gateway?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. How do you version an API?",
+      "2. How do microservices communicate (REST, gRPC, messaging)?",
+      "3. What is service discovery?",
+      "4. How do you handle authentication and authorization across services?",
+      "5. What is idempotency in API design and why does it matter?",
+      "6. How do you handle partial failures between microservices?",
+      "7. What is a circuit breaker and why is it used?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. How would you design the API and service boundaries for a large e-commerce platform?",
+      "2. How do you handle distributed transactions across microservices (saga pattern)?",
+      "3. How do you design APIs for backward compatibility and evolution?",
+      "4. How do you handle cross-cutting concerns (auth, logging, tracing) across many services?",
+      "5. How would you design a resilient system that degrades gracefully when services fail?",
+      "6. What are the trade-offs between orchestration and choreography in microservices?"
+    ]
+  },
+  "Consistency & CAP Theorem": {
+    "Junior (0-2 yrs)": [
+      "1. What is the CAP theorem?",
+      "2. What do consistency, availability, and partition tolerance mean?",
+      "3. What is strong consistency vs eventual consistency?",
+      "4. What is a network partition?",
+      "5. Why can't you have all three of CAP at once?",
+      "6. What is a replica?",
+      "7. What is data consistency in simple terms?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Give an example of a CP system and an AP system.",
+      "2. What is eventual consistency and where is it acceptable?",
+      "3. What is the difference between consistency in CAP and ACID?",
+      "4. What are read-your-writes and monotonic-read consistency?",
+      "5. How do you choose between consistency and availability for a feature?",
+      "6. What is quorum-based consistency?",
+      "7. What is the PACELC theorem?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. How would you design a system that needs strong consistency for payments but high availability elsewhere?",
+      "2. How do you achieve consensus in a distributed system (Paxos/Raft at a high level)?",
+      "3. How do you handle conflict resolution in an eventually consistent system?",
+      "4. What are the trade-offs of tunable consistency (e.g., in Cassandra/DynamoDB)?",
+      "5. How would you design a globally distributed database with acceptable consistency guarantees?",
+      "6. How do you reason about consistency vs latency in a multi-region system?"
+    ]
+  },
+  "Real-World System Design": {
+    "Junior (0-2 yrs)": [
+      "1. How would you design a basic URL shortener?",
+      "2. How would you design a simple to-do list app backend?",
+      "3. What components does a typical web application have?",
+      "4. How would you design a basic chat application?",
+      "5. What is needed to design a simple file upload service?",
+      "6. How would you design a pastebin?",
+      "7. What are the main parts of a system design answer?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. How would you design a URL shortener like bit.ly with analytics?",
+      "2. How would you design a news feed like Twitter/Facebook?",
+      "3. How would you design a ride-sharing service like Uber at a basic level?",
+      "4. How would you design a rate limiter?",
+      "5. How would you design an image/video upload and serving system?",
+      "6. How would you design a notification system (email/SMS/push)?",
+      "7. How would you design a typeahead/autocomplete service?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. How would you design a globally scalable video streaming service like YouTube/Netflix?",
+      "2. How would you design a real-time messaging system like WhatsApp?",
+      "3. How would you design a distributed search engine?",
+      "4. How would you design a payment system with strong consistency and auditability?",
+      "5. How would you design a system like Uber (matching, location, pricing) at scale?",
+      "6. How would you design a highly available, low-latency system across multiple regions?"
+    ]
+  },
+  "Arrays & Strings": {
+    "Junior (0-2 yrs)": [
+      "1. Find the maximum and minimum element in an array.",
+      "2. Reverse an array in place.",
+      "3. Check if a string is a palindrome.",
+      "4. Find the second largest element in an array.",
+      "5. Remove duplicates from a sorted array.",
+      "6. Find the missing number in an array of 1 to n.",
+      "7. Count the frequency of each character in a string."
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Find the longest substring without repeating characters.",
+      "2. Find all pairs in an array that sum to a target.",
+      "3. Rotate an array by k positions.",
+      "4. Find the majority element (appears more than n/2 times).",
+      "5. Group anagrams together from a list of strings.",
+      "6. Find the longest common prefix among strings.",
+      "7. Move all zeros to the end while keeping order."
+    ],
+    "Senior (5+ yrs)": [
+      "1. Find the minimum window substring containing all characters of another string.",
+      "2. Find the maximum product subarray.",
+      "3. Implement string matching (KMP or similar) and explain its complexity.",
+      "4. Trapping rain water: compute trapped water between bars.",
+      "5. Find the longest palindromic substring efficiently.",
+      "6. Merge overlapping intervals."
+    ]
+  },
+  "Two Pointers & Sliding Window": {
+    "Junior (0-2 yrs)": [
+      "1. Given a sorted array, find a pair that sums to a target using two pointers.",
+      "2. Reverse a string using two pointers.",
+      "3. Check if a string is a palindrome with two pointers.",
+      "4. Find the maximum sum of a subarray of size k (sliding window).",
+      "5. Remove duplicates from a sorted array in place.",
+      "6. Find the average of every subarray of size k.",
+      "7. Move zeros to the end using two pointers."
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Find all unique triplets that sum to zero (3Sum).",
+      "2. Container with most water.",
+      "3. Longest substring without repeating characters.",
+      "4. Longest substring with at most k distinct characters.",
+      "5. Find all anagrams of a pattern in a string.",
+      "6. Max consecutive ones with at most k flips.",
+      "7. Detect a cycle in a linked list (fast/slow pointers)."
+    ],
+    "Senior (5+ yrs)": [
+      "1. Solve the 4Sum problem and analyze complexity.",
+      "2. Trapping rain water using two pointers.",
+      "3. Minimum window substring.",
+      "4. Sliding window maximum in O(n) using a deque.",
+      "5. Explain when two-pointer/sliding-window reduces O(n^2) to O(n).",
+      "6. Find the start of a cycle in a linked list."
+    ]
+  },
+  "Linked Lists": {
+    "Junior (0-2 yrs)": [
+      "1. What is a linked list and how does it differ from an array?",
+      "2. Reverse a singly linked list.",
+      "3. Find the middle of a linked list.",
+      "4. Detect if a linked list has a cycle.",
+      "5. Delete a node from a linked list.",
+      "6. Find the length of a linked list.",
+      "7. Merge two sorted linked lists."
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Find the nth node from the end of a linked list.",
+      "2. Remove duplicates from a sorted linked list.",
+      "3. Detect the starting node of a cycle.",
+      "4. Check if a linked list is a palindrome.",
+      "5. Add two numbers represented as linked lists.",
+      "6. Reverse a linked list in groups of k.",
+      "7. Find the intersection point of two linked lists."
+    ],
+    "Senior (5+ yrs)": [
+      "1. Merge k sorted linked lists efficiently.",
+      "2. Clone a linked list with random pointers.",
+      "3. Sort a linked list in O(n log n).",
+      "4. Flatten a multilevel doubly linked list.",
+      "5. Reverse nodes in k-groups with O(1) extra space.",
+      "6. Design an LRU cache using a doubly linked list and hashmap."
+    ]
+  },
+  "Stacks & Queues": {
+    "Junior (0-2 yrs)": [
+      "1. What is a stack and what is it used for?",
+      "2. What is a queue and how is it different from a stack?",
+      "3. Check for balanced parentheses using a stack.",
+      "4. Implement a stack using an array.",
+      "5. Reverse a string using a stack.",
+      "6. What is a circular queue?",
+      "7. Implement a queue using two stacks."
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Implement a min stack that returns the minimum in O(1).",
+      "2. Evaluate a postfix (RPN) expression.",
+      "3. Find the next greater element for each element.",
+      "4. Implement a stack using queues.",
+      "5. Design a queue using a circular buffer.",
+      "6. Sort a stack using only stack operations.",
+      "7. What is a monotonic stack and when is it used?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Largest rectangle in a histogram using a stack.",
+      "2. Design a max/min queue with O(1) operations.",
+      "3. Implement an LRU cache.",
+      "4. Evaluate a complex expression with operator precedence.",
+      "5. Sliding window maximum using a deque.",
+      "6. Design a stack that supports push, pop, and getMax in O(1)."
+    ]
+  },
+  "Trees & BST": {
+    "Junior (0-2 yrs)": [
+      "1. What is a binary tree vs a binary search tree?",
+      "2. What are inorder, preorder, and postorder traversals?",
+      "3. Find the height of a binary tree.",
+      "4. Why does inorder traversal of a BST give sorted order?",
+      "5. Count the number of nodes in a tree.",
+      "6. What is a leaf node?",
+      "7. Do a level-order traversal of a tree."
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Insert and search a value in a BST.",
+      "2. Delete a node from a BST (including two-children case).",
+      "3. Check if a binary tree is a valid BST.",
+      "4. Find the lowest common ancestor in a BST.",
+      "5. Find the diameter of a binary tree.",
+      "6. Check if a tree is balanced.",
+      "7. Convert a sorted array to a balanced BST."
+    ],
+    "Senior (5+ yrs)": [
+      "1. What is an AVL tree and how do rotations keep it balanced?",
+      "2. What is a Red-Black tree and how is it used in TreeMap?",
+      "3. Serialize and deserialize a binary tree.",
+      "4. Find the kth smallest element in a BST.",
+      "5. Compare AVL vs Red-Black trees.",
+      "6. Build a tree from inorder and preorder traversals."
+    ]
+  },
+  "Graphs (BFS/DFS)": {
+    "Junior (0-2 yrs)": [
+      "1. What is a graph and how is it represented (adjacency list vs matrix)?",
+      "2. What is the difference between BFS and DFS?",
+      "3. What is a directed vs undirected graph?",
+      "4. Traverse a graph using BFS.",
+      "5. Traverse a graph using DFS.",
+      "6. What is a connected component?",
+      "7. What is a weighted graph?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Detect a cycle in an undirected graph.",
+      "2. Detect a cycle in a directed graph.",
+      "3. Find the number of connected components.",
+      "4. Do a topological sort of a DAG.",
+      "5. Find the shortest path in an unweighted graph (BFS).",
+      "6. Check if a graph is bipartite.",
+      "7. Clone a graph."
+    ],
+    "Senior (5+ yrs)": [
+      "1. Implement Dijkstra's shortest path algorithm.",
+      "2. Explain and implement a minimum spanning tree (Prim's or Kruskal's).",
+      "3. Find shortest paths with negative edges (Bellman-Ford).",
+      "4. Solve the number of islands problem.",
+      "5. Detect a cycle and find order in course-schedule (topological sort).",
+      "6. Explain union-find and where it's used."
+    ]
+  },
+  "Recursion & Backtracking": {
+    "Junior (0-2 yrs)": [
+      "1. What is recursion and what is a base case?",
+      "2. Compute factorial recursively.",
+      "3. Generate the nth Fibonacci number recursively.",
+      "4. Print all elements of an array recursively.",
+      "5. What is the call stack in recursion?",
+      "6. Reverse a string recursively.",
+      "7. What is the difference between recursion and iteration?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Generate all subsets (power set) of an array.",
+      "2. Generate all permutations of an array or string.",
+      "3. Solve the combination sum problem.",
+      "4. Generate all valid parentheses combinations.",
+      "5. Solve a word search on a grid.",
+      "6. What is the difference between recursion and backtracking?",
+      "7. Solve the subset sum problem."
+    ],
+    "Senior (5+ yrs)": [
+      "1. Solve the N-Queens problem and explain pruning.",
+      "2. Solve a Sudoku board using backtracking.",
+      "3. Explain the general backtracking template (choose, explore, un-choose).",
+      "4. Solve the word break problem.",
+      "5. Generate all palindrome partitions of a string.",
+      "6. Solve the rat-in-a-maze / path-finding backtracking problem."
+    ]
+  },
+  "Dynamic Programming": {
+    "Junior (0-2 yrs)": [
+      "1. What is dynamic programming?",
+      "2. What is the difference between memoization and tabulation?",
+      "3. Compute the nth Fibonacci number with DP.",
+      "4. What is an overlapping subproblem?",
+      "5. What is optimal substructure?",
+      "6. Climbing stairs: count ways to reach the top.",
+      "7. What is the difference between DP and greedy?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Solve the 0/1 knapsack problem.",
+      "2. Find the longest common subsequence.",
+      "3. Find the longest increasing subsequence.",
+      "4. Coin change: minimum coins to make an amount.",
+      "5. Edit distance between two strings.",
+      "6. House robber problem.",
+      "7. Unique paths in a grid."
+    ],
+    "Senior (5+ yrs)": [
+      "1. Solve the weighted job scheduling problem.",
+      "2. Matrix chain multiplication.",
+      "3. Longest palindromic subsequence.",
+      "4. Partition equal subset sum.",
+      "5. Explain how to optimize DP space complexity.",
+      "6. Solve a hard DP like regular expression matching or wildcard matching."
+    ]
+  },
+  "Sorting & Searching": {
+    "Junior (0-2 yrs)": [
+      "1. What is binary search and what is its complexity?",
+      "2. What is the difference between bubble, selection, and insertion sort?",
+      "3. What is the time complexity of merge sort?",
+      "4. When is linear search used?",
+      "5. What does it mean for a sort to be stable?",
+      "6. Sort an array of 0s, 1s, and 2s.",
+      "7. Find an element in a sorted array."
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Explain how merge sort works and its complexity.",
+      "2. Explain how quicksort works and its worst case.",
+      "3. Find the first and last position of an element in a sorted array.",
+      "4. Search in a rotated sorted array.",
+      "5. Find the kth largest element.",
+      "6. Find the peak element in an array.",
+      "7. What is the difference between comparison-based and non-comparison sorts?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Find the median of two sorted arrays.",
+      "2. Explain quickselect and its average complexity.",
+      "3. Sort a nearly-sorted (k-sorted) array efficiently.",
+      "4. Count inversions in an array.",
+      "5. Search in a 2D sorted matrix.",
+      "6. When would you use counting/radix/bucket sort over comparison sorts?"
+    ]
   }
 }
