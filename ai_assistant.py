@@ -1661,6 +1661,8 @@ MOCK_INTERVIEW_MODES = [
     "🌱 Spring Boot Mock Interview",
     "🤖 AI Agents Mock Interview",
     "🗄️ SQL Mock Interview",
+    "🏛️ System Design Mock Interview",
+    "🧩 DSA Mock Interview",
 ]
 
 MOCK_INTERVIEW_TOPICS = {
@@ -1759,6 +1761,27 @@ MOCK_INTERVIEW_TOPICS = {
         "Window Functions",
         "NoSQL vs SQL",
     ],
+    "🏛️ System Design Mock Interview": [
+        "System Design Fundamentals",
+        "Scalability & Load Balancing",
+        "Caching Strategies",
+        "Database Design & Sharding",
+        "Message Queues & Streaming",
+        "API & Microservices Design",
+        "Consistency & CAP Theorem",
+        "Real-World System Design",
+    ],
+    "🧩 DSA Mock Interview": [
+        "Arrays & Strings",
+        "Two Pointers & Sliding Window",
+        "Linked Lists",
+        "Stacks & Queues",
+        "Trees & BST",
+        "Graphs (BFS/DFS)",
+        "Recursion & Backtracking",
+        "Dynamic Programming",
+        "Sorting & Searching",
+    ],
 }
 
 # ── Mock Interview Session State ──
@@ -1850,6 +1873,8 @@ with st.sidebar:
             "🌱 Spring Boot Mock Interview",
             "🤖 AI Agents Mock Interview",
             "🗄️ SQL Mock Interview",
+            "🏛️ System Design Mock Interview",
+            "🧩 DSA Mock Interview",
             RESUME_AGENT_MODE,
             "English ↔ Hindi Tutor",
             "English ↔ Spanish Tutor",
