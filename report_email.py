@@ -165,3 +165,136 @@ def send_report_card(
         return True, f"Report card sent to your email{who}."
     except Exception as e:
         return False, f"Failed to send email: {e}"
+
+
+# ============================================================
+# Shared low-level sender (reuses _cfg config)
+# ============================================================
+def _send(subject, html_body, recipients, plain_fallback="You have a new message."):
+    """Send an HTML email to a list of recipients. Returns (ok, message)."""
+    host = _cfg("SMTP_HOST")
+    port = int(_cfg("SMTP_PORT", "587") or 587)
+    user = _cfg("SMTP_USER")
+    password = _cfg("SMTP_PASSWORD")
+    sender = _cfg("SMTP_FROM", user)
+
+    if not (host and user and password):
+        return False, "Email is not configured (missing SMTP settings)."
+
+    recipients = [r for r in recipients if r]
+    if not recipients:
+        return False, "No recipient email available."
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = sender
+    msg["To"] = ", ".join(recipients)
+    msg.attach(MIMEText(plain_fallback, "plain"))
+    msg.attach(MIMEText(html_body, "html"))
+
+    try:
+        if port == 465:
+            with smtplib.SMTP_SSL(host, port, timeout=20) as server:
+                server.login(user, password)
+                server.sendmail(sender, recipients, msg.as_string())
+        else:
+            with smtplib.SMTP(host, port, timeout=20) as server:
+                server.starttls()
+                server.login(user, password)
+                server.sendmail(sender, recipients, msg.as_string())
+        return True, "Email sent."
+    except Exception as e:
+        return False, f"Failed to send email: {e}"
+
+
+def _shell(title, body_html):
+    """Wrap content in a simple branded email shell."""
+    return f"""\
+<div style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif;color:#12162b;">
+  <div style="background:linear-gradient(135deg,#3b82f6,#6d4aff);border-radius:12px 12px 0 0;
+              padding:22px 24px;">
+    <div style="color:#fff;font-size:20px;font-weight:700;">🧠 AI Mock Interview</div>
+  </div>
+  <div style="border:1px solid #e7ebf6;border-top:none;border-radius:0 0 12px 12px;
+              padding:26px 24px;">
+    <h2 style="margin-top:0;">{title}</h2>
+    {body_html}
+    <p style="color:#9aa5c0;font-size:12px;margin-top:28px;">
+      — The AI Mock Interview Team<br>
+      <a href="https://aimockinterview.net" style="color:#3b82f6;">aimockinterview.net</a>
+    </p>
+  </div>
+</div>
+"""
+
+
+# ============================================================
+# 1. Welcome email (on registration)
+# ============================================================
+def send_welcome_email(to_email, username):
+    if not to_email:
+        return False, "No email address."
+    body = _shell(
+        f"Welcome, {username}! 🎉",
+        """
+        <p style="font-size:15px;line-height:1.6;">
+          Thanks for joining AI Mock Interview. You're all set to start practicing
+          real interview questions and get instant, scored feedback.
+        </p>
+        <p style="font-size:15px;line-height:1.6;">Here's how to get started:</p>
+        <ul style="font-size:15px;line-height:1.7;">
+          <li>Pick a topic and difficulty in the sidebar</li>
+          <li>Answer questions by typing or speaking</li>
+          <li>Get a scored report card with what to improve</li>
+        </ul>
+        <p style="margin-top:22px;">
+          <a href="https://aimockinterview.net"
+             style="background:linear-gradient(135deg,#ff5c5c,#ff7a7a);color:#fff;
+                    text-decoration:none;font-weight:700;padding:12px 22px;border-radius:8px;
+                    display:inline-block;">Start Practicing →</a>
+        </p>
+        """,
+    )
+    return _send(f"Welcome to AI Mock Interview, {username}!", body, [to_email],
+                 plain_fallback=f"Welcome {username}! Start practicing at aimockinterview.net")
+
+
+# ============================================================
+# 2. Password reset CODE email (fits the existing verify->reset flow)
+#    (Emails a short code the user enters to prove they own the mailbox.
+#     Simpler & safer than tokenized links for this app's current flow.)
+# ============================================================
+def send_reset_code_email(to_email, username, code):
+    if not to_email:
+        return False, "No email address."
+    body = _shell(
+        "Password reset code",
+        f"""
+        <p style="font-size:15px;line-height:1.6;">
+          Hi {username}, we received a request to reset your password. Enter this
+          code in the app to continue:
+        </p>
+        <div style="font-size:30px;font-weight:700;letter-spacing:6px;
+                    background:#f7f8fc;border-radius:10px;padding:16px;text-align:center;
+                    margin:18px 0;">{code}</div>
+        <p style="font-size:13px;color:#5b6b8c;">
+          If you didn't request this, you can safely ignore this email — your
+          password won't change.
+        </p>
+        """,
+    )
+    return _send("Your password reset code", body, [to_email],
+                 plain_fallback=f"Your password reset code is: {code}")
+
+
+# ============================================================
+# 3. Announcement email (to one or many users)
+# ============================================================
+def send_announcement_email(to_emails, subject, message_html):
+    """Send an announcement. Pass a list of emails. BCC-style: one send per call.
+    Note: for large lists, send in small batches to respect provider limits."""
+    body = _shell(subject, message_html)
+    if isinstance(to_emails, str):
+        to_emails = [to_emails]
+    return _send(subject, body, to_emails,
+                 plain_fallback="You have a new announcement from AI Mock Interview.")
