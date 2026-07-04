@@ -391,6 +391,11 @@ def render_login_page(login_user, ensure_admin_plan, is_admin):
                     st.session_state["user_email"] = result
                     st.session_state["is_admin"] = is_admin(u)
                     st.session_state["auth_msg"] = ""
+                    try:
+                        import analytics
+                        analytics.track_login(u)
+                    except Exception:
+                        pass
                     st.rerun()
                 else:
                     st.error(result)
@@ -574,6 +579,11 @@ def render_signup_page(register_user, login_user=None, ensure_admin_plan=None, i
                 if ok:
                     st.session_state["auth_page"] = "login"
                     st.session_state["auth_msg"] = msg
+                    try:
+                        import analytics
+                        analytics.track_registration(su_username)
+                    except Exception:
+                        pass
                     st.success(msg)
                     st.rerun()
                 else:
