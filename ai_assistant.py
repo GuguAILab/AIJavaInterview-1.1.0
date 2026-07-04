@@ -13,7 +13,7 @@ if sys.platform == "win32":
         pass
 
 import streamlit as st
-
+st.write("Secrets the app can see:", list(st.secrets.keys()))
 # Designed after-login polish + onboarding + hero banner (app_polish.py same folder)
 from app_polish import inject_polish, render_steps_card, render_hero_banner
 from groq import Groq
