@@ -584,6 +584,11 @@ def render_signup_page(register_user, login_user=None, ensure_admin_plan=None, i
                         analytics.track_registration(su_username)
                     except Exception:
                         pass
+                    try:
+                        import report_email
+                        report_email.send_welcome_email(su_email, su_username)
+                    except Exception:
+                        pass
                     st.success(msg)
                     st.rerun()
                 else:
