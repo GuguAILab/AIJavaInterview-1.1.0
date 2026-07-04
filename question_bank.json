@@ -1715,5 +1715,157 @@
       "7. How would you structure a monorepo vs multiple repos, and what are the Git implications?",
       "8. How do you enforce code quality and review with Git (protected branches, hooks, CI checks)?"
     ]
+  },
+  "LangChain / LlamaIndex": {
+    "Junior (0-2 yrs)": [
+      "1. What is LangChain and what problem does it solve?",
+      "2. What is LlamaIndex and what is it mainly used for?",
+      "3. What is LangGraph and how is it different from LangChain?",
+      "4. What is LangFlow and who is it aimed at?",
+      "5. What is a 'chain' in LangChain?",
+      "6. What is a prompt template in LangChain?",
+      "7. What is an LLM wrapper in LangChain?",
+      "8. Why would you use a framework like LangChain instead of calling an LLM API directly?",
+      "9. What is a document loader in LangChain or LlamaIndex?",
+      "10. What is an 'agent' in the context of LangChain?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. What is the difference between LangChain and LlamaIndex, and when would you use each?",
+      "2. What is the difference between LangChain and LangGraph, and when would you choose LangGraph?",
+      "3. What are the benefits of LangGraph over plain LangChain chains for building agents?",
+      "4. What is LangFlow and how does it differ from writing LangChain code directly?",
+      "5. What is memory in LangChain and why do conversational agents need it?",
+      "6. What are tools in LangChain and how does an agent decide which tool to use?",
+      "7. How does retrieval work in LangChain vs LlamaIndex for a RAG application?",
+      "8. What are the benefits of using LangGraph for building stateful, multi-step agent workflows?",
+      "9. What is a retriever, and how do LangChain and LlamaIndex handle document indexing differently?",
+      "10. What are the trade-offs of using a low-code tool like LangFlow vs coding with LangChain?",
+      "11. How does LangGraph represent an agent workflow as a graph (nodes, edges, state)?",
+      "12. When would you pick LlamaIndex over LangChain for a document-heavy Q&A system, and why?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Compare LangChain, LangGraph, LangFlow, and LlamaIndex — their purposes, strengths, and when to use each.",
+      "2. Why does LangGraph exist if LangChain already supports agents — what limitations of LangChain does it address?",
+      "3. How would you design a complex, cyclic, multi-agent workflow, and why is LangGraph well-suited for it?",
+      "4. What are the benefits and risks of building production agents on LangChain/LangGraph vs a custom framework?",
+      "5. How do you add human-in-the-loop, checkpointing, and state persistence in a LangGraph workflow?",
+      "6. How would you evaluate and debug an unreliable LangChain agent in production?",
+      "7. When is a low-code tool like LangFlow appropriate for prototyping vs production, and what are its limits?",
+      "8. How do you manage cost, latency, and reliability when orchestrating multi-step LLM chains at scale?",
+      "9. How would you combine LlamaIndex for retrieval with LangGraph for orchestration in a production RAG-agent system?",
+      "10. What are common failure modes of agent frameworks (loops, tool misuse, hallucinated actions) and how do you guard against them?"
+    ]
+  },
+  "Prompt Engineering": {
+    "Junior (0-2 yrs)": [
+      "1. What is prompt engineering and why does it matter?",
+      "2. What is the difference between a system prompt and a user prompt?",
+      "3. What is zero-shot prompting?",
+      "4. What is few-shot prompting and when do you use it?",
+      "5. What is the role of clear instructions in a prompt?",
+      "6. What does 'temperature' control in an LLM response?",
+      "7. What is a prompt template and why is it useful?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. What is chain-of-thought prompting and when does it help?",
+      "2. How do you reduce hallucinations through prompt design?",
+      "3. How do you get an LLM to output structured data like JSON reliably?",
+      "4. What is the difference between few-shot and fine-tuning, and when do you choose each?",
+      "5. How do you handle prompts that exceed the context window?",
+      "6. What is prompt injection and how do you defend against it?",
+      "7. How do you use delimiters and formatting to make prompts more reliable?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Real scenario: Your LLM feature works in testing but gives inconsistent answers in production. How do you diagnose and stabilize the prompts?",
+      "2. How would you design a prompt-evaluation and testing pipeline for a production LLM app?",
+      "3. How do you version, manage, and A/B test prompts across a large application?",
+      "4. How would you design prompts that are robust against prompt injection in a user-facing product?",
+      "5. How do you balance prompt length, cost, and accuracy at scale?",
+      "6. How would you build a self-correcting or reflection-based prompting strategy for a complex task?"
+    ]
+  },
+  "AI Agent Design": {
+    "Junior (0-2 yrs)": [
+      "1. What is an AI agent, and how is it different from a single LLM call?",
+      "2. What is a tool (or function) in the context of an AI agent?",
+      "3. What is the ReAct (reason + act) pattern in agents?",
+      "4. What is agent memory and why is it needed?",
+      "5. What is the difference between a single-agent and a multi-agent system?",
+      "6. What is a 'planning' step in an agent?",
+      "7. What does it mean for an agent to 'call a tool'?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. How does an agent decide which tool to use for a given task?",
+      "2. What is the difference between orchestration and autonomy in agent design?",
+      "3. How do you give an agent short-term vs long-term memory?",
+      "4. What are the risks of letting an agent take actions autonomously, and how do you mitigate them?",
+      "5. How do you design an agent that can recover from a failed tool call?",
+      "6. What is human-in-the-loop, and when should an agent pause for human approval?",
+      "7. How do you prevent an agent from getting stuck in loops?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Real scenario: Your production agent occasionally takes a wrong, costly action. How do you add guardrails and safety?",
+      "2. How would you design a reliable multi-agent system with specialized agents, and how do they coordinate?",
+      "3. How do you evaluate and benchmark an agent's performance and correctness?",
+      "4. How do you manage cost and latency in an agent that makes many LLM and tool calls?",
+      "5. How would you add observability and tracing to debug complex agent behavior?",
+      "6. How do you design agent state, checkpointing, and recovery for long-running workflows?"
+    ]
+  },
+  "Fine-tuning & RLHF": {
+    "Junior (0-2 yrs)": [
+      "1. What is fine-tuning of a language model?",
+      "2. What is the difference between pre-training and fine-tuning?",
+      "3. When should you fine-tune a model instead of using prompting or RAG?",
+      "4. What is RLHF (Reinforcement Learning from Human Feedback)?",
+      "5. What is a training dataset and why does its quality matter for fine-tuning?",
+      "6. What is overfitting in the context of fine-tuning?",
+      "7. What is transfer learning?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. What is the difference between full fine-tuning and parameter-efficient fine-tuning (LoRA/PEFT)?",
+      "2. How does RLHF work at a high level (reward model + policy optimization)?",
+      "3. When would you choose RAG over fine-tuning, and vice versa?",
+      "4. How do you prepare and format data for fine-tuning a chat model?",
+      "5. What is instruction tuning?",
+      "6. How do you evaluate whether a fine-tuned model actually improved?",
+      "7. What is catastrophic forgetting and how do you avoid it during fine-tuning?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Real scenario: Your fine-tuned model performs worse than the base model on some tasks. How do you diagnose and fix it?",
+      "2. How would you design a full fine-tuning pipeline from data collection to evaluation to deployment?",
+      "3. What are the trade-offs between LoRA, QLoRA, and full fine-tuning for cost and quality?",
+      "4. How do you build a reward model for RLHF, and what are its failure modes?",
+      "5. How do you decide between fine-tuning, RAG, and prompt engineering for a real business problem?",
+      "6. How do you handle data quality, bias, and safety when fine-tuning on human feedback?"
+    ]
+  },
+  "MLOps": {
+    "Junior (0-2 yrs)": [
+      "1. What is MLOps and how is it different from DevOps?",
+      "2. What is model deployment?",
+      "3. What is model versioning and why is it needed?",
+      "4. What is a model registry?",
+      "5. What is the difference between training and inference?",
+      "6. What is a feature in machine learning, and what is a feature store?",
+      "7. What is model monitoring?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. What is model drift (data drift and concept drift), and why does it matter?",
+      "2. How do you serve a machine learning model in production (batch vs real-time)?",
+      "3. What is a CI/CD pipeline for machine learning, and how does it differ from software CI/CD?",
+      "4. How do you monitor a deployed model's performance over time?",
+      "5. What is A/B testing or shadow deployment for ML models?",
+      "6. How do you ensure reproducibility of an ML experiment?",
+      "7. How do you manage and version training data?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Real scenario: A model that performed well at launch is now making worse predictions. How do you detect and respond to drift?",
+      "2. How would you design an end-to-end MLOps platform from data to deployment to monitoring?",
+      "3. How do you design automated retraining pipelines, and when should retraining be triggered?",
+      "4. How do you roll back a bad model deployment safely with zero downtime?",
+      "5. How do you monitor and control cost, latency, and scaling for large model inference?",
+      "6. How do you ensure governance, auditability, and compliance for models in production?"
+    ]
   }
 }
