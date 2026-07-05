@@ -32,6 +32,22 @@ import uuid
 # ── Resume Agent module (resume_agent.py must be in the same folder) ──
 from resume_agent import RESUME_AGENT_MODE, render_resume_agent
 
+# ══════════════════════════════════════════════════════════════════
+# AGENTS REGISTRY — add future agents here (this is the ONLY place you
+# edit to add a new agent to the sidebar "Agents" dropdown).
+# Format:  "Label shown in dropdown": "the mode value used by the app"
+# To add a new agent later:
+#   1. Add a line here, e.g.  "📊 Data Analyst Agent": DATA_AGENT_MODE
+#   2. Add an `elif language_mode == DATA_AGENT_MODE:` block where the
+#      other modes are handled (near the RESUME_AGENT_MODE block).
+# ══════════════════════════════════════════════════════════════════
+AGENTS = {
+    "📄 Resume Agent": RESUME_AGENT_MODE,
+    # "📊 Data Analyst Agent": DATA_AGENT_MODE,      # ← future
+    # "🧾 Cover Letter Agent": COVER_LETTER_MODE,    # ← future
+    # "💼 Job Search Agent": JOB_SEARCH_MODE,        # ← future
+}
+
 # -------------------------------
 # 🔐 Auth System
 # -------------------------------
@@ -1893,6 +1909,26 @@ with st.sidebar:
         key="assistant_mode_select",
     )
 
+    # ── 🧩 Agents (separate section for specialized agents) ──
+    st.markdown(
+        '<div class="section-label">🧩 Agents</div>', unsafe_allow_html=True
+    )
+
+    def _launch_agent():
+        choice = st.session_state.get("agent_select", "— Select an agent —")
+        if choice in AGENTS:
+            st.session_state["assistant_mode_select"] = AGENTS[choice]
+
+    st.selectbox(
+        "",
+        ["— Select an agent —"] + list(AGENTS.keys()),
+        index=0,
+        label_visibility="collapsed",
+        key="agent_select",
+        on_change=_launch_agent,
+        help="Specialized agents. More coming soon!",
+    )
+
     # ── Mock Interview Sidebar Controls ──
     if language_mode in MOCK_INTERVIEW_MODES:
         st.markdown(
@@ -2244,6 +2280,32 @@ if language_mode in MOCK_INTERVIEW_MODES:
             ):
                 st.session_state["_trigger_start"] = True
                 st.rerun()
+
+        # ── 📄 Resume Agent quick-access card ──
+        st.markdown(
+            '<div style="margin-top:22px;padding:20px 24px;border-radius:16px;'
+            'background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;'
+            'display:flex;align-items:center;justify-content:space-between;'
+            'flex-wrap:wrap;gap:14px;box-shadow:0 8px 24px rgba(79,70,229,.35);">'
+            '<div><div style="font-size:19px;font-weight:800;margin-bottom:4px;">'
+            '📄 Optimize your Resume with AI</div>'
+            '<div style="opacity:.9;font-size:14px;">Get instant ATS analysis, '
+            'keyword tips, and improvement suggestions.</div></div>'
+            '<div style="font-size:40px;">🧠</div></div>',
+            unsafe_allow_html=True,
+        )
+
+        def _open_resume_agent():
+            st.session_state["assistant_mode_select"] = RESUME_AGENT_MODE
+
+        _rc1, _rc2, _rc3 = st.columns([1, 2, 1])
+        with _rc2:
+            st.button(
+                "📄 Open Resume Agent",
+                use_container_width=True,
+                key="home_resume_btn",
+                on_click=_open_resume_agent,
+            )
 
     # ── Interview in progress ──
     elif (
