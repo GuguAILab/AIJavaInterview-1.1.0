@@ -1909,26 +1909,6 @@ with st.sidebar:
         key="assistant_mode_select",
     )
 
-    # ── 🧩 Agents (separate section for specialized agents) ──
-    st.markdown(
-        '<div class="section-label">🧩 Agents</div>', unsafe_allow_html=True
-    )
-
-    def _launch_agent():
-        choice = st.session_state.get("agent_select", "— Select an agent —")
-        if choice in AGENTS:
-            st.session_state["assistant_mode_select"] = AGENTS[choice]
-
-    st.selectbox(
-        "",
-        ["— Select an agent —"] + list(AGENTS.keys()),
-        index=0,
-        label_visibility="collapsed",
-        key="agent_select",
-        on_change=_launch_agent,
-        help="Specialized agents. More coming soon!",
-    )
-
     # ── Mock Interview Sidebar Controls ──
     if language_mode in MOCK_INTERVIEW_MODES:
         st.markdown(
