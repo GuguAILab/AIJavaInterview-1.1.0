@@ -78,6 +78,13 @@ def get_bank_questions(topic, difficulty, num_questions):
 # ── Auth now backed by Supabase (Postgres) — see user_db.py ──
 import user_db
 
+# ── User feedback (star rating + comment → DB + email) ──
+try:
+    import feedback
+    feedback.init_feedback()
+except Exception as _fb_e:
+    print(f"[feedback] not available: {_fb_e}")
+
 
 def hash_password(password):
     return user_db.hash_password(password)
@@ -2191,6 +2198,17 @@ with st.sidebar:
         uploaded_file = st.file_uploader(
             "", type=["txt", "log", "csv"], label_visibility="collapsed"
         )
+
+    # ── 💬 User feedback (rate the app) ──
+    try:
+        import feedback as _fb
+        st.markdown("---")
+        _fb.render_feedback_widget(
+            username=st.session_state.get("username", "guest"),
+            user_email=st.session_state.get("user_email", ""),
+        )
+    except Exception as _e:
+        pass
 
     st.markdown("</div>", unsafe_allow_html=True)
 
