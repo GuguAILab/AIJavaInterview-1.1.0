@@ -1888,6 +1888,7 @@ with st.sidebar:
         "",
         [
             "☕ Java Mock Interview",
+            RESUME_AGENT_MODE,
             "🐍 Python Mock Interview",
             "⚙️ DevOps Mock Interview",
             "☁️ AWS Mock Interview",
@@ -1898,7 +1899,6 @@ with st.sidebar:
             "🗄️ SQL Mock Interview",
             "🏛️ System Design Mock Interview",
             "🧩 DSA Mock Interview",
-            RESUME_AGENT_MODE,
             "English ↔ Hindi Tutor",
             "English ↔ Spanish Tutor",
             "System Assistant",
