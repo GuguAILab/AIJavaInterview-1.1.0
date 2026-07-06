@@ -2264,30 +2264,60 @@ if language_mode in MOCK_INTERVIEW_MODES:
                 st.session_state["_trigger_start"] = True
                 st.rerun()
 
-        # ── 📄 Resume Agent quick-access card ──
-        st.markdown(
-            '<div style="margin-top:22px;padding:20px 24px;border-radius:16px;'
-            'background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;'
-            'display:flex;align-items:center;justify-content:space-between;'
-            'flex-wrap:wrap;gap:14px;box-shadow:0 8px 24px rgba(79,70,229,.35);">'
-            '<div><div style="font-size:19px;font-weight:800;margin-bottom:4px;">'
-            '📄 Optimize your Resume with AI</div>'
-            '<div style="opacity:.9;font-size:14px;">Get instant ATS analysis, '
-            'keyword tips, and improvement suggestions.</div></div>'
-            '<div style="font-size:40px;">🧠</div></div>',
-            unsafe_allow_html=True,
-        )
+        # ── 📄 Resume Agent  &  💼 Job Search Agent quick-access cards ──
+        #    Rendered side by side (two equal columns).
+        _card_col1, _card_col2 = st.columns(2)
 
-        def _open_resume_agent():
-            st.session_state["assistant_mode_select"] = RESUME_AGENT_MODE
+        # ---- Left: Resume Agent card ----
+        with _card_col1:
+            st.markdown(
+                '<div style="margin-top:22px;padding:20px 24px;border-radius:16px;'
+                'background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;'
+                'min-height:128px;box-sizing:border-box;'
+                'display:flex;align-items:center;justify-content:space-between;'
+                'flex-wrap:wrap;gap:14px;box-shadow:0 8px 24px rgba(79,70,229,.35);">'
+                '<div><div style="font-size:19px;font-weight:800;margin-bottom:4px;">'
+                '📄 Optimize your Resume with AI</div>'
+                '<div style="opacity:.9;font-size:14px;">Get instant ATS analysis, '
+                'keyword tips, and improvement suggestions.</div></div>'
+                '<div style="font-size:40px;">🧠</div></div>',
+                unsafe_allow_html=True,
+            )
 
-        _rc1, _rc2, _rc3 = st.columns([1, 2, 1])
-        with _rc2:
+            def _open_resume_agent():
+                st.session_state["assistant_mode_select"] = RESUME_AGENT_MODE
+
             st.button(
                 "📄 Open Resume Agent",
                 use_container_width=True,
                 key="home_resume_btn",
                 on_click=_open_resume_agent,
+            )
+
+        # ---- Right: Job Search Agent card ----
+        with _card_col2:
+            st.markdown(
+                '<div style="margin-top:22px;padding:20px 24px;border-radius:16px;'
+                'background:linear-gradient(135deg,#10b981,#0ea5e9);color:#fff;'
+                'min-height:128px;box-sizing:border-box;'
+                'display:flex;align-items:center;justify-content:space-between;'
+                'flex-wrap:wrap;gap:14px;box-shadow:0 8px 24px rgba(16,185,129,.35);">'
+                '<div><div style="font-size:19px;font-weight:800;margin-bottom:4px;">'
+                '💼 Find Jobs that Match You</div>'
+                '<div style="opacity:.9;font-size:14px;">Upload your resume → get '
+                'matched to real, live job openings.</div></div>'
+                '<div style="font-size:40px;">🔎</div></div>',
+                unsafe_allow_html=True,
+            )
+
+            def _open_job_search_agent():
+                st.session_state["assistant_mode_select"] = JOB_SEARCH_MODE
+
+            st.button(
+                "💼 Open Job Search Agent",
+                use_container_width=True,
+                key="home_jobs_btn",
+                on_click=_open_job_search_agent,
             )
 
     # ── Interview in progress ──
