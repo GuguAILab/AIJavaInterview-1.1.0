@@ -178,6 +178,8 @@ def render_job_search_agent():
     where = col2.text_input("City / area (optional)", placeholder="e.g. Bangalore")
 
     uploaded = st.file_uploader("📄 Upload your resume", type=["pdf", "docx", "txt"])
+    num_jobs = st.slider("How many jobs to show", min_value=5, max_value=50,
+                         value=20, step=5)
 
     if uploaded and st.button("🔍 Find matching jobs", type="primary"):
         with st.spinner("Reading your resume..."):
@@ -202,19 +204,35 @@ def render_job_search_agent():
         st.write("**Skills:** " + ", ".join(profile.get("skills", [])))
         st.write("**Suitable roles:** " + ", ".join(profile.get("job_titles", [])))
 
-        # Search jobs
+        # Search jobs — try the specific query first
         query = profile.get("primary_search") or " ".join(profile.get("job_titles", [])[:1])
         with st.spinner(f"Searching real jobs for '{query}'..."):
             jobs, err = search_jobs(
-                query, country_code=ADZUNA_COUNTRIES[country], where=where)
+                query, country_code=ADZUNA_COUNTRIES[country], where=where,
+                results=num_jobs)
 
-        st.markdown("### 💼 Matching Jobs")
+        # If few results, broaden the search using the top job title (no city filter)
+        if not err and len(jobs) < 3:
+            fallback_q = (profile.get("job_titles") or [query])[0]
+            if fallback_q and fallback_q != query:
+                with st.spinner(f"Broadening search to '{fallback_q}'..."):
+                    more, err2 = search_jobs(
+                        fallback_q, country_code=ADZUNA_COUNTRIES[country],
+                        where="", results=num_jobs)
+                if not err2:
+                    # merge, avoiding duplicate URLs
+                    seen = {j["url"] for j in jobs}
+                    jobs += [j for j in more if j["url"] not in seen]
+
         if err:
             st.error(err)
             return
         if not jobs:
-            st.info("No jobs found. Try a different city or check back later.")
+            st.info("No jobs found for this profile in the selected country. "
+                    "Try a different city, or broaden your resume keywords.")
             return
+
+        st.markdown(f"### 💼 Matching Jobs ({len(jobs)} found)")
 
         for j in jobs:
             with st.container(border=True):
