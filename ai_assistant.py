@@ -32,6 +32,8 @@ import uuid
 # ── Resume Agent module (resume_agent.py must be in the same folder) ──
 from resume_agent import RESUME_AGENT_MODE, render_resume_agent
 
+JOB_SEARCH_MODE = "💼 Job Search Agent"
+
 # ══════════════════════════════════════════════════════════════════
 # AGENTS REGISTRY — add future agents here (this is the ONLY place you
 # edit to add a new agent to the sidebar "Agents" dropdown).
@@ -1889,6 +1891,7 @@ with st.sidebar:
         [
             "☕ Java Mock Interview",
             RESUME_AGENT_MODE,
+            JOB_SEARCH_MODE,
             "🐍 Python Mock Interview",
             "⚙️ DevOps Mock Interview",
             "☁️ AWS Mock Interview",
@@ -2863,9 +2866,32 @@ if language_mode == RESUME_AGENT_MODE:
     )
 
 # ============================================================
+# 💼 Job Search Agent Panel
+# ============================================================
+if language_mode == JOB_SEARCH_MODE:
+    uploaded_file = None
+
+    def _go_back_from_jobs():
+        st.session_state["assistant_mode_select"] = "☕ Java Mock Interview"
+
+    back_col, _ = st.columns([1, 5])
+    with back_col:
+        st.button(
+            "⬅️ Back to AI Mock Interview",
+            use_container_width=True,
+            on_click=_go_back_from_jobs,
+            key="jobs_back_btn",
+        )
+
+    import job_search_agent
+    job_search_agent.render_job_search_agent()
+
+# ============================================================
 # 💬 General Chat (non-interview modes)
 # ============================================================
-if language_mode not in MOCK_INTERVIEW_MODES and language_mode != RESUME_AGENT_MODE:
+if (language_mode not in MOCK_INTERVIEW_MODES
+        and language_mode != RESUME_AGENT_MODE
+        and language_mode != JOB_SEARCH_MODE):
 
     # Input handling
     prompt = None
