@@ -44,10 +44,9 @@ header[data-testid="stHeader"] {display:none !important; height:0 !important;}
 [data-testid="stMain"], section.main {padding-top:0 !important; margin-top:0 !important;}
 [data-testid="stMainBlockContainer"], [data-testid="stAppViewBlockContainer"],
 .block-container, div[class*="block-container"] {
-  padding:0 !important; margin-top:0 !important; max-width:100% !important;}
+  padding:0 !important; margin:0 !important; max-width:100% !important;}
 section.main > div {padding:0 !important;}
 .stApp, html, body {margin:0 !important; padding:0 !important;}
-/* belt-and-suspenders: pull the dark hero up over any residual top padding */
 .ml-page {margin-top:0 !important;}
 
 .ml-page {font-family:'Segoe UI',system-ui,sans-serif; color:#1e2230;}
@@ -55,7 +54,7 @@ section.main > div {padding:0 !important;}
 
 /* ---------- Header ---------- */
 .ml-hero-bg {background:linear-gradient(160deg,#0a0f24 0%,#0d1430 55%,#101a3d 100%);
-  border-radius:0 0 22px 22px; padding-bottom:34px;}
+  border-radius:0 0 22px 22px; padding-bottom:34px; margin-top:-80px; padding-top:80px;}
 .ml-header {display:flex; align-items:center; justify-content:space-between;
   padding:18px 22px; max-width:1180px; margin:0 auto;}
 .ml-logo {display:flex; align-items:center; gap:11px;}
@@ -111,7 +110,7 @@ section.main > div {padding:0 !important;}
 .ml-section {max-width:1180px;margin:0 auto;padding:34px 22px 0;}
 
 /* ---------- Feature cards ---------- */
-.ml-cards {display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:-46px;}
+.ml-cards {display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:26px;}
 .ml-fcard {background:#fff;border:1px solid #eef0f6;border-radius:16px;padding:20px 16px;
   box-shadow:0 10px 30px rgba(20,30,70,.06);text-align:center;display:flex;flex-direction:column;
   height:100%;}
