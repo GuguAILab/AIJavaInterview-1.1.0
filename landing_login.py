@@ -36,19 +36,10 @@ def _inject_css():
     st.markdown(
         _html("""
 <style>
-/* Hide default Streamlit chrome + remove the top gap on the login screen */
-#MainMenu, footer {visibility:hidden;}
-header[data-testid="stHeader"] {display:none !important; height:0 !important;}
-[data-testid="stDecoration"], [data-testid="stToolbar"], [data-testid="stStatusWidget"] {display:none !important;}
-[data-testid="stAppViewContainer"] {padding-top:0 !important; margin-top:0 !important;}
-[data-testid="stMain"], section.main {padding-top:0 !important; margin-top:0 !important;}
-[data-testid="stMainBlockContainer"], [data-testid="stAppViewBlockContainer"],
-.block-container, div[class*="block-container"] {
-  padding:0 !important; margin-top:0 !important; max-width:100% !important;}
+/* Hide default Streamlit chrome on the login screen */
+#MainMenu, header[data-testid="stHeader"], footer {visibility:hidden;}
+.block-container {padding:0 !important; max-width:100% !important;}
 section.main > div {padding:0 !important;}
-.stApp, html, body {margin:0 !important; padding:0 !important;}
-/* belt-and-suspenders: pull the dark hero up over any residual top padding */
-.ml-page {margin-top:0 !important;}
 
 .ml-page {font-family:'Segoe UI',system-ui,sans-serif; color:#1e2230;}
 .ml-wrap {max-width:1180px; margin:0 auto; padding:0 22px;}
@@ -113,8 +104,7 @@ section.main > div {padding:0 !important;}
 /* ---------- Feature cards ---------- */
 .ml-cards {display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:-46px;}
 .ml-fcard {background:#fff;border:1px solid #eef0f6;border-radius:16px;padding:20px 16px;
-  box-shadow:0 10px 30px rgba(20,30,70,.06);text-align:center;display:flex;flex-direction:column;
-  height:100%;}
+  box-shadow:0 10px 30px rgba(20,30,70,.06);text-align:center;display:flex;flex-direction:column;}
 .ml-fcard .ic {width:54px;height:54px;border-radius:14px;margin:0 auto 14px;display:flex;
   align-items:center;justify-content:center;font-size:26px;}
 .ml-fcard h4 {font-size:15.5px;font-weight:800;margin:0 0 8px;}
@@ -225,22 +215,19 @@ def _render_marketing():
     features = [
         ("📋", "#16a34a", "#eafaf0", "5K+ Questions Practice",
          "5000+ curated questions across 50+ topics &amp; technologies.", "Start Practicing", "#16a34a"),
-        ("💼", "#0d9488", "#e6fbf6", "Search Your Dream Job",
-         "AI Java Job Search agent — upload your resume &amp; get matched to real, live job openings.",
-         "Search Jobs", "#0d9488"),
         ("📄", "#2563eb", "#eaf1ff", "Resume Preparation",
          "AI-powered resume builder with ATS-friendly templates and expert tips.", "Build Resume", "#2563eb"),
         ("🎬", "#7c3aed", "#f3edff", "Mock Interviews",
          "Realistic AI mock interviews with instant feedback and improvement tips.", "Start Mock", "#7c3aed"),
         ("📊", "#f59e0b", "#fff4e6", "Performance Analytics",
          "Track your progress with in-depth analytics and personalized insights.", "View Analytics", "#f59e0b"),
+        ("🔖", "#e11d48", "#ffeaf0", "Saved Resources",
+         "Access your saved questions, resumes, and interview sessions anytime.", "View Resources", "#e11d48"),
     ]
     cards = "".join(
-        f'<a href="#ml-login" style="text-decoration:none;color:inherit;display:flex;'
-        f'flex-direction:column;height:100%">'
         f'<div class="ml-fcard"><div class="ic" style="background:{bg};color:{col}">{ic}</div>'
         f'<h4 style="color:{col}">{title}</h4><p>{desc}</p>'
-        f'<div class="pill" style="background:{col}">{btn} →</div></div></a>'
+        f'<div class="pill" style="background:{col}">{btn} →</div></div>'
         for ic, col, bg, title, desc, btn, _ in features
     )
 
@@ -256,10 +243,8 @@ def _render_marketing():
     )
 
     topics = ["DSA", "JAVA", "System Design", "AWS", "Devops",
-              "SpringBoot", "Python", "Java", "Agentic AI", "SQL", "Job Search", "Resume build"]
-    chips = "".join(
-        f'<a href="#ml-login" style="text-decoration:none"><span class="chip">{t}</span></a>'
-        for t in topics)
+              "SpringBoot", "Python", "Java", "Agentic AI", "SQL", "Resume build"]
+    chips = "".join(f'<span class="chip">{t}</span>' for t in topics)
 
     tests = [
         ("RS", "Rahul Sharma", "SDE at Amazon", "emp4.png",
@@ -301,11 +286,11 @@ def _render_marketing():
       <div>
         <div class="ml-badge">🎯 Your Success, Our Mission</div>
         <h1 class="ml-h1">Practice. Prepare.<br>Crack Your <span class="grad">Dream Job.</span></h1>
-        <p class="ml-sub">AI-powered mock interviews, 5K+ practice questions, resume builder,
-          and a Job Search agent that matches you to real jobs — everything to land your dream job.</p>
+        <p class="ml-sub">AI-powered mock interviews, 5K+ practice questions, resume builder
+          and performance analytics to help you land your dream job.</p>
         <div class="ml-cta">
           <a class="primary" href="#ml-login">Start Practicing Now →</a>
-          <a class="ghost" href="#ml-login">💼 Search Your Dream Job</a>
+          <a class="ghost" href="#">▶ Explore Features</a>
         </div>
         <div class="ml-checks">
           <span><b>✔</b> AI-Powered Feedback</span>
