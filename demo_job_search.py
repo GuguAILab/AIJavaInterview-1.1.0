@@ -106,7 +106,10 @@ def render_demo_job_search():
 
     st.markdown(f"### {len(jobs)} jobs for **{query}**"
                 + (f" in {where}" if where else ""))
-    for j in jobs:
+
+    demo_limit = 4
+    shown = jobs[:demo_limit]
+    for j in shown:
         with st.container(border=True):
             st.markdown(f"#### {j['title']}")
             st.markdown(f"**{j['company']}** · 📍 {j['location']}")
@@ -115,6 +118,29 @@ def render_demo_job_search():
                 st.caption(f"💰 {lo:,} – {hi:,}")
             st.write((j.get("description") or "") + "…")
             st.markdown(f"[🔗 View & Apply]({j['url']})")
+
+    # Teaser: gate the rest behind signup
+    remaining = max(0, len(jobs) - demo_limit)
+    st.markdown(
+        f"""<div style="margin-top:18px;padding:22px 26px;border-radius:16px;text-align:center;
+        background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;">
+        <div style="font-size:20px;font-weight:800;margin-bottom:6px;">
+        🔒 {remaining}+ more jobs — plus resume-based matching</div>
+        <div style="opacity:.95;font-size:15px;">This is a free demo showing only {demo_limit} jobs.
+        Sign up free to see all matches, get jobs matched to <b>your resume &amp; skills</b>,
+        and unlock mock interviews and resume tools.</div></div>""",
+        unsafe_allow_html=True,
+    )
+    cta = st.columns([1, 2, 1])
+    with cta[1]:
+        if st.button("🔓 Sign up free for full access & better matches",
+                     type="primary", use_container_width=True, key="demo_signup_cta"):
+            st.session_state["auth_page"] = "signup"
+            try:
+                st.query_params.clear()
+            except Exception:
+                pass
+            st.rerun()
     st.caption("Jobs provided by Adzuna. Verify details on the employer's site before applying.")
 
 
