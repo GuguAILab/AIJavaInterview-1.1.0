@@ -725,6 +725,31 @@ if "reset_username" not in st.session_state:
 # ============================================================
 if not st.session_state["logged_in"]:
 
+    # ── Free "Search Your Dream Job" demo (no login required) ──
+    try:
+        _demo = st.query_params.get("demo")
+    except Exception:
+        _demo = (st.experimental_get_query_params().get("demo") or [None])[0]
+    if _demo == "jobs":
+        def _clear_demo():
+            try:
+                st.query_params.clear()
+            except Exception:
+                st.experimental_set_query_params()
+        _d1, _d2, _d3 = st.columns([3, 1, 1])
+        _d1.info("🎁 Free demo — **Search Your Dream Job**. Sign up free to save results, "
+                 "get resume matching, and unlock mock interviews.")
+        if _d2.button("🔓 Sign up free", type="primary"):
+            _clear_demo(); st.session_state["auth_page"] = "signup"; st.rerun()
+        if _d3.button("← Back to home"):
+            _clear_demo(); st.rerun()
+        try:
+            import govt_job_agent
+            govt_job_agent.render_govt_job_agent()
+        except Exception as _e:
+            st.error(f"Demo unavailable: {_e}")
+        st.stop()
+
     # ── Branded landing + login page (login view only) ──
     if st.session_state.get("auth_page", "login") == "login":
         from landing_login import render_login_page
