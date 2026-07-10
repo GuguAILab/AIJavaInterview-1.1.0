@@ -235,7 +235,8 @@ def _render_marketing():
          "Track your progress with in-depth analytics and personalized insights.", "View Analytics", "#f59e0b"),
     ]
     cards = "".join(
-        f'<a href="#ml-login" style="text-decoration:none;color:inherit;display:flex;'
+        f'<a href="{"?demo=jobs" if title == "Search Your Dream Job" else "#ml-login"}" '
+        f'style="text-decoration:none;color:inherit;display:flex;'
         f'flex-direction:column;height:100%">'
         f'<div class="ml-fcard"><div class="ic" style="background:{bg};color:{col}">{ic}</div>'
         f'<h4 style="color:{col}">{title}</h4><p>{desc}</p>'
@@ -257,7 +258,8 @@ def _render_marketing():
     topics = ["DSA", "JAVA", "System Design", "AWS", "Devops",
               "SpringBoot", "Python", "Java", "Agentic AI", "SQL", "Job Search", "Resume build"]
     chips = "".join(
-        f'<a href="#ml-login" style="text-decoration:none"><span class="chip">{t}</span></a>'
+        f'<a href="{"?demo=jobs" if t == "Job Search" else "#ml-login"}" '
+        f'style="text-decoration:none"><span class="chip">{t}</span></a>'
         for t in topics)
 
     tests = [
@@ -304,7 +306,7 @@ def _render_marketing():
           and a Job Search agent that matches you to real jobs — everything to land your dream job.</p>
         <div class="ml-cta">
           <a class="primary" href="#ml-login">Start Practicing Now →</a>
-          <a class="ghost" href="#ml-login">💼 Search Your Dream Job</a>
+          <a class="ghost" href="?demo=jobs">💼 Search Your Dream Job</a>
         </div>
         <div class="ml-checks">
           <span><b>✔</b> AI-Powered Feedback</span>
