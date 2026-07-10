@@ -36,14 +36,19 @@ def _inject_css():
     st.markdown(
         _html("""
 <style>
-/* Hide default Streamlit chrome on the login screen */
+/* Hide default Streamlit chrome + remove the top gap on the login screen */
 #MainMenu, footer {visibility:hidden;}
 header[data-testid="stHeader"] {display:none !important; height:0 !important;}
-.block-container {padding:0 !important; max-width:100% !important;}
+[data-testid="stDecoration"], [data-testid="stToolbar"], [data-testid="stStatusWidget"] {display:none !important;}
+[data-testid="stAppViewContainer"] {padding-top:0 !important; margin-top:0 !important;}
+[data-testid="stMain"], section.main {padding-top:0 !important; margin-top:0 !important;}
+[data-testid="stMainBlockContainer"], [data-testid="stAppViewBlockContainer"],
+.block-container, div[class*="block-container"] {
+  padding:0 !important; margin-top:0 !important; max-width:100% !important;}
 section.main > div {padding:0 !important;}
-[data-testid="stMainBlockContainer"], [data-testid="stAppViewBlockContainer"] {padding-top:0 !important;}
-[data-testid="stAppViewContainer"] > .main {padding-top:0 !important;}
-.stApp {margin-top:0 !important;}
+.stApp, html, body {margin:0 !important; padding:0 !important;}
+/* belt-and-suspenders: pull the dark hero up over any residual top padding */
+.ml-page {margin-top:0 !important;}
 
 .ml-page {font-family:'Segoe UI',system-ui,sans-serif; color:#1e2230;}
 .ml-wrap {max-width:1180px; margin:0 auto; padding:0 22px;}
