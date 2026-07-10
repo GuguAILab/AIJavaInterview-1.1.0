@@ -736,12 +736,13 @@ if not st.session_state["logged_in"]:
                 st.query_params.clear()
             except Exception:
                 st.experimental_set_query_params()
-        _d1, _d2, _d3 = st.columns([3, 1, 1])
-        _d1.info("🎁 Free demo — **Search Your Dream Job**. Sign up free to save results, "
-                 "get resume matching, and unlock mock interviews.")
-        if _d2.button("🔓 Sign up free", type="primary"):
+        st.info("🎁 **Free demo — Search Your Dream Job.** Sign up free to save results, "
+                "get resume-based matching, and unlock mock interviews.")
+        _b1, _b2, _b3 = st.columns([1, 1, 3])
+        if _b1.button("🔓 Sign up free", type="primary", use_container_width=True,
+                      key="demo_top_signup"):
             _clear_demo(); st.session_state["auth_page"] = "signup"; st.rerun()
-        if _d3.button("← Back to home"):
+        if _b2.button("← Back to home", use_container_width=True, key="demo_top_back"):
             _clear_demo(); st.rerun()
         try:
             import demo_job_search
