@@ -215,6 +215,9 @@ def _render_marketing():
     features = [
         ("📋", "#16a34a", "#eafaf0", "5K+ Questions Practice",
          "5000+ curated questions across 50+ topics &amp; technologies.", "Start Practicing", "#16a34a"),
+        ("💼", "#0d9488", "#e6fbf6", "Search Your Dream Job",
+         "AI Java Job Search agent — upload your resume &amp; get matched to real, live job openings.",
+         "Search Jobs", "#0d9488"),
         ("📄", "#2563eb", "#eaf1ff", "Resume Preparation",
          "AI-powered resume builder with ATS-friendly templates and expert tips.", "Build Resume", "#2563eb"),
         ("🎬", "#7c3aed", "#f3edff", "Mock Interviews",
@@ -243,7 +246,7 @@ def _render_marketing():
     )
 
     topics = ["DSA", "JAVA", "System Design", "AWS", "Devops",
-              "SpringBoot", "Python", "Java", "Agentic AI", "SQL", "Resume build"]
+              "SpringBoot", "Python", "Java", "Agentic AI", "SQL", "Job Search", "Resume build"]
     chips = "".join(f'<span class="chip">{t}</span>' for t in topics)
 
     tests = [
@@ -286,11 +289,11 @@ def _render_marketing():
       <div>
         <div class="ml-badge">🎯 Your Success, Our Mission</div>
         <h1 class="ml-h1">Practice. Prepare.<br>Crack Your <span class="grad">Dream Job.</span></h1>
-        <p class="ml-sub">AI-powered mock interviews, 5K+ practice questions, resume builder
-          and performance analytics to help you land your dream job.</p>
+        <p class="ml-sub">AI-powered mock interviews, 5K+ practice questions, resume builder,
+          and a Job Search agent that matches you to real jobs — everything to land your dream job.</p>
         <div class="ml-cta">
           <a class="primary" href="#ml-login">Start Practicing Now →</a>
-          <a class="ghost" href="#">▶ Explore Features</a>
+          <a class="ghost" href="#ml-login">💼 Search Your Dream Job</a>
         </div>
         <div class="ml-checks">
           <span><b>✔</b> AI-Powered Feedback</span>
