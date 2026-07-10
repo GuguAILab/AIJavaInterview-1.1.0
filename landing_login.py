@@ -441,7 +441,7 @@ def render_signup_page(register_user, login_user=None, ensure_admin_plan=None, i
         _html("""
 <style>
 .ml-su-hero{background:linear-gradient(160deg,#0a0f24 0%,#0d1430 55%,#101a3d 100%);
-  border-radius:0 0 22px 22px;padding-bottom:30px;}
+  border-radius:0 0 22px 22px;padding-bottom:30px;margin-top:-80px;padding-top:80px;}
 .ml-su-stats{background:#fff;border:1px solid #eef0f6;border-radius:16px;
   box-shadow:0 14px 36px rgba(20,30,70,.10);display:grid;grid-template-columns:repeat(4,1fr);
   gap:8px;padding:20px;max-width:1180px;margin:-34px auto 0;}
@@ -648,7 +648,7 @@ def render_forgot_page(verify_email_for_reset, reset_password,
         _html("""
 <style>
 .ml-su-hero{background:linear-gradient(160deg,#0a0f24 0%,#0d1430 55%,#101a3d 100%);
-  border-radius:0 0 22px 22px;padding-bottom:30px;}
+  border-radius:0 0 22px 22px;padding-bottom:30px;margin-top:-80px;padding-top:80px;}
 .ml-su-stats{background:#fff;border:1px solid #eef0f6;border-radius:16px;
   box-shadow:0 14px 36px rgba(20,30,70,.10);display:grid;grid-template-columns:repeat(4,1fr);
   gap:8px;padding:20px;max-width:1180px;margin:-34px auto 0;}
