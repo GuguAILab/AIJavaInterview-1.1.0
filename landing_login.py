@@ -37,9 +37,13 @@ def _inject_css():
         _html("""
 <style>
 /* Hide default Streamlit chrome on the login screen */
-#MainMenu, header[data-testid="stHeader"], footer {visibility:hidden;}
+#MainMenu, footer {visibility:hidden;}
+header[data-testid="stHeader"] {display:none !important; height:0 !important;}
 .block-container {padding:0 !important; max-width:100% !important;}
 section.main > div {padding:0 !important;}
+[data-testid="stMainBlockContainer"], [data-testid="stAppViewBlockContainer"] {padding-top:0 !important;}
+[data-testid="stAppViewContainer"] > .main {padding-top:0 !important;}
+.stApp {margin-top:0 !important;}
 
 .ml-page {font-family:'Segoe UI',system-ui,sans-serif; color:#1e2230;}
 .ml-wrap {max-width:1180px; margin:0 auto; padding:0 22px;}
@@ -217,7 +221,7 @@ def _render_marketing():
         ("📋", "#16a34a", "#eafaf0", "5K+ Questions Practice",
          "5000+ curated questions across 50+ topics &amp; technologies.", "Start Practicing", "#16a34a"),
         ("💼", "#0d9488", "#e6fbf6", "Search Your Dream Job",
-         "AI Job Search agent — upload your resume &amp; get matched to real, live job openings.",
+         "AI Java Job Search agent — upload your resume &amp; get matched to real, live job openings.",
          "Search Jobs", "#0d9488"),
         ("📄", "#2563eb", "#eaf1ff", "Resume Preparation",
          "AI-powered resume builder with ATS-friendly templates and expert tips.", "Build Resume", "#2563eb"),
