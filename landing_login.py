@@ -104,7 +104,8 @@ section.main > div {padding:0 !important;}
 /* ---------- Feature cards ---------- */
 .ml-cards {display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:-46px;}
 .ml-fcard {background:#fff;border:1px solid #eef0f6;border-radius:16px;padding:20px 16px;
-  box-shadow:0 10px 30px rgba(20,30,70,.06);text-align:center;display:flex;flex-direction:column;}
+  box-shadow:0 10px 30px rgba(20,30,70,.06);text-align:center;display:flex;flex-direction:column;
+  height:100%;}
 .ml-fcard .ic {width:54px;height:54px;border-radius:14px;margin:0 auto 14px;display:flex;
   align-items:center;justify-content:center;font-size:26px;}
 .ml-fcard h4 {font-size:15.5px;font-weight:800;margin:0 0 8px;}
@@ -224,11 +225,10 @@ def _render_marketing():
          "Realistic AI mock interviews with instant feedback and improvement tips.", "Start Mock", "#7c3aed"),
         ("📊", "#f59e0b", "#fff4e6", "Performance Analytics",
          "Track your progress with in-depth analytics and personalized insights.", "View Analytics", "#f59e0b"),
-        ("🔖", "#e11d48", "#ffeaf0", "Saved Resources",
-         "Access your saved questions, resumes, and interview sessions anytime.", "View Resources", "#e11d48"),
     ]
     cards = "".join(
-        f'<a href="#ml-login" style="text-decoration:none;color:inherit;display:block">'
+        f'<a href="#ml-login" style="text-decoration:none;color:inherit;display:flex;'
+        f'flex-direction:column;height:100%">'
         f'<div class="ml-fcard"><div class="ic" style="background:{bg};color:{col}">{ic}</div>'
         f'<h4 style="color:{col}">{title}</h4><p>{desc}</p>'
         f'<div class="pill" style="background:{col}">{btn} →</div></div></a>'
