@@ -744,8 +744,8 @@ if not st.session_state["logged_in"]:
         if _d3.button("← Back to home"):
             _clear_demo(); st.rerun()
         try:
-            import govt_job_agent
-            govt_job_agent.render_govt_job_agent()
+            import demo_job_search
+            demo_job_search.render_demo_job_search()
         except Exception as _e:
             st.error(f"Demo unavailable: {_e}")
         st.stop()
