@@ -228,9 +228,10 @@ def _render_marketing():
          "Access your saved questions, resumes, and interview sessions anytime.", "View Resources", "#e11d48"),
     ]
     cards = "".join(
+        f'<a href="#ml-login" style="text-decoration:none;color:inherit;display:block">'
         f'<div class="ml-fcard"><div class="ic" style="background:{bg};color:{col}">{ic}</div>'
         f'<h4 style="color:{col}">{title}</h4><p>{desc}</p>'
-        f'<div class="pill" style="background:{col}">{btn} →</div></div>'
+        f'<div class="pill" style="background:{col}">{btn} →</div></div></a>'
         for ic, col, bg, title, desc, btn, _ in features
     )
 
@@ -247,7 +248,9 @@ def _render_marketing():
 
     topics = ["DSA", "JAVA", "System Design", "AWS", "Devops",
               "SpringBoot", "Python", "Java", "Agentic AI", "SQL", "Job Search", "Resume build"]
-    chips = "".join(f'<span class="chip">{t}</span>' for t in topics)
+    chips = "".join(
+        f'<a href="#ml-login" style="text-decoration:none"><span class="chip">{t}</span></a>'
+        for t in topics)
 
     tests = [
         ("RS", "Rahul Sharma", "SDE at Amazon", "emp4.png",
