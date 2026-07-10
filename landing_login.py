@@ -217,7 +217,7 @@ def _render_marketing():
         ("📋", "#16a34a", "#eafaf0", "5K+ Questions Practice",
          "5000+ curated questions across 50+ topics &amp; technologies.", "Start Practicing", "#16a34a"),
         ("💼", "#0d9488", "#e6fbf6", "Search Your Dream Job",
-         "AI Java Job Search agent — upload your resume &amp; get matched to real, live job openings.",
+         "AI Job Search agent — upload your resume &amp; get matched to real, live job openings.",
          "Search Jobs", "#0d9488"),
         ("📄", "#2563eb", "#eaf1ff", "Resume Preparation",
          "AI-powered resume builder with ATS-friendly templates and expert tips.", "Build Resume", "#2563eb"),
