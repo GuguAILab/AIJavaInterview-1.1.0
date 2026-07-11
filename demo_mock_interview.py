@@ -467,7 +467,14 @@ def render_demo_mock_interview():
 
     do_start = st.button("🎯 Start Demo Interview", type="primary")
 
-    chosen = picked or (track if do_start else "")
+    # Persist the selection so the demo — and its Sign-up button — survive reruns.
+    # Without this, clicking the Sign-up button reruns with picked=None/do_start=False,
+    # the function returns early, the button is never re-rendered, and its click is lost.
+    if picked:
+        st.session_state["demo_iv_chosen"] = picked
+    elif do_start:
+        st.session_state["demo_iv_chosen"] = track
+    chosen = st.session_state.get("demo_iv_chosen", "")
     if not chosen:
         return
 
@@ -515,7 +522,7 @@ def render_demo_mock_interview():
     <div style="font-size:13.5px;opacity:.96;line-height:1.5;">Drill <b>senior, system-design &amp; DSA</b> rounds, get a brutally honest <b>0–10 score</b> on each answer, and target the exact weak spots before your <b>next big switch or hike</b>.</div>
     </div>
     </div>
-    <div style="text-align:center;font-size:13.5px;line-height:2;opacity:.97;">✅ Answer by <b>voice or text</b> &nbsp;·&nbsp; ✅ <b>Instant AI score &amp; feedback</b> &nbsp;·&nbsp; ✅ End-of-interview <b>report card</b><br>✅ <b>10 tracks × 3 levels</b> &nbsp;·&nbsp; ✅ <b>Unlimited fresh questions</b> &nbsp;·&nbsp; ✅ Emailed results you can revisit</div>
+    <div style="text-align:center;font-size:13.5px;line-height:2;opacity:.97;">✅ Answer by <b>voice or text</b> &nbsp;·&nbsp; ✅ <b>Instant AI score &amp; feedback</b> &nbsp;·&nbsp; ✅ End-of-interview <b>report card</b><br>✅ <b>13 tracks × 3 levels</b> &nbsp;·&nbsp; ✅ <b>Unlimited fresh questions</b> &nbsp;·&nbsp; ✅ Emailed results you can revisit</div>
     </div>
     """
     # Collapse to a single line: Streamlit's markdown renders indented/blank-line
@@ -531,11 +538,18 @@ def render_demo_mock_interview():
     with cta[1]:
         if st.button("🔓 Sign up free — start your full mock interview",
                      type="primary", use_container_width=True, key="demo_iv_signup_cta"):
+            # Same behavior as the top-of-page "Sign up free" button: route to the
+            # create-account page and drop the ?demo=interview param so we don't
+            # bounce back into the demo on rerun.
             st.session_state["auth_page"] = "signup"
+            st.session_state.pop("demo_iv_chosen", None)
             try:
                 st.query_params.clear()
             except Exception:
-                pass
+                try:
+                    st.experimental_set_query_params()
+                except Exception:
+                    pass
             st.rerun()
         st.link_button(
             "▶️ or open the live practice app →",
