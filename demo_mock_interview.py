@@ -53,258 +53,258 @@ DIFFICULTIES = ["Junior (0-2 yrs)", "Mid (2-5 yrs)", "Senior (5+ yrs)"]
 _BANK = {
     "Core Java": {
         "junior": [
-            "What is the difference between `==` and `.equals()` in Java?",
-            "Explain the four pillars of OOP with a quick example of each.",
-            "What is the difference between an interface and an abstract class?",
-            "How does the `String` pool work, and why are Strings immutable?",
-            "What happens during autoboxing, and what pitfall can it cause in loops?",
+            "Walk me through, step by step, what happens when you call `map.put(key, value)` on a `HashMap`.",
+            "Why is `String` immutable in Java, and how does that help the string pool and security?",
+            "What's the difference between `ArrayList` and `LinkedList`, and when would you actually pick one?",
+            "Explain the difference between `final`, `finally`, and `finalize`.",
+            "What's the difference between a checked and an unchecked exception? Give a real example of each.",
         ],
         "mid": [
-            "How does the JVM handle garbage collection, and what are the generations?",
-            "Explain the difference between `HashMap`, `LinkedHashMap`, and `TreeMap`.",
-            "What is the difference between `synchronized` and a `ReentrantLock`?",
-            "How do `Stream`s differ from collections, and when would lazy evaluation matter?",
-            "What is the difference between `Comparable` and `Comparator`?",
+            "A `HashMap` shared across threads shows occasional corrupted reads. What's going wrong and how do you fix it?",
+            "How does `ConcurrentHashMap` stay thread-safe without locking the entire map?",
+            "Explain the `equals()` / `hashCode()` contract — what breaks if you override one but not the other?",
+            "What is the difference between `wait()`/`notify()` and using a `BlockingQueue`?",
+            "How does the JVM decide when to promote objects from the young to the old generation?",
         ],
         "senior": [
-            "Design a thread-safe in-memory cache with TTL eviction. Walk through the tradeoffs.",
-            "How would you diagnose and fix a memory leak in a long-running JVM service?",
-            "Explain the Java Memory Model and how `volatile` and `happens-before` relate.",
-            "When would you choose virtual threads (Project Loom) over a thread pool?",
-            "Explain how you would design a plugin architecture using the service-loader pattern.",
+            "Design a thread-safe, bounded producer-consumer system. Which classes would you use and why?",
+            "A production service has rising latency and frequent full-GC pauses. Walk me through diagnosing it.",
+            "Explain the Java Memory Model: what does `volatile` guarantee, and what does it not?",
+            "Design an LRU cache in Java with O(1) get and put.",
+            "When would you use virtual threads over a fixed thread pool, and what breaks if you block inside one?",
         ],
     },
     "Python": {
         "junior": [
-            "What is the difference between a list, a tuple, and a set?",
-            "Explain how Python's `for` loop uses iterators under the hood.",
-            "What are `*args` and `**kwargs`, and when do you use them?",
-            "What is a list comprehension, and rewrite a simple loop as one.",
-            "What is the difference between `is` and `==`?",
+            "What's the difference between a list, a tuple, and a set — and when would you use each?",
+            "What does `if __name__ == '__main__':` actually do?",
+            "Explain the mutable-default-argument bug and how you'd avoid it.",
+            "What's the difference between `is` and `==`?",
+            "Rewrite `[x*2 for x in nums if x > 0]` as a plain loop and explain comprehensions.",
         ],
         "mid": [
-            "Explain the GIL and how it affects CPU-bound vs I/O-bound work.",
-            "What is a decorator? Write one that times a function's execution.",
-            "Explain generators and how `yield` differs from `return`.",
-            "How does `asyncio` achieve concurrency without threads?",
-            "What is the difference between a shallow copy and a deep copy?",
+            "What is the GIL, and how does it affect a CPU-bound vs an I/O-bound program?",
+            "Write a decorator that retries a function up to 3 times on exception.",
+            "Explain generators and when you'd use `yield` instead of returning a list.",
+            "How does `async`/`await` work, and when does it NOT improve performance?",
+            "What's the difference between `@staticmethod`, `@classmethod`, and an instance method?",
         ],
         "senior": [
-            "Design a rate limiter in Python. Discuss token-bucket vs sliding-window.",
-            "How would you profile and optimize a slow data-processing pipeline?",
-            "Explain how Python's memory management and reference counting work.",
-            "When would you reach for multiprocessing over asyncio, and why?",
-            "How would you design a caching layer with an LRU eviction policy in Python?",
+            "A data pipeline over millions of rows is slow and memory-hungry. How do you profile and fix it?",
+            "Design a rate limiter in Python — compare token-bucket vs sliding-window.",
+            "Explain CPython memory management (ref counting + cyclic GC) and how leaks still happen.",
+            "When would you choose multiprocessing vs threading vs asyncio? Give a concrete example of each.",
+            "How would you make a Python service handle 10k concurrent connections?",
         ],
     },
     "DevOps": {
         "junior": [
-            "What is the difference between a container and a virtual machine?",
-            "Explain what a CI/CD pipeline does at a high level.",
-            "What is the purpose of a Dockerfile, and name three common instructions.",
-            "What is the difference between `git merge` and `git rebase`?",
-            "What is the difference between an image and a running container?",
+            "What actually happens, step by step, when you run `docker run`?",
+            "What's the difference between a container and a virtual machine?",
+            "Explain the stages of a typical CI/CD pipeline.",
+            "What's the difference between `git merge` and `git rebase`, and when do you use each?",
+            "What's the difference between `CMD` and `ENTRYPOINT` in a Dockerfile?",
         ],
         "mid": [
-            "Explain the components of a Kubernetes cluster (pods, nodes, services).",
-            "How would you design a zero-downtime deployment (blue-green vs canary)?",
-            "What is Infrastructure as Code, and why is Terraform state important?",
-            "How do you handle secrets in a CI/CD pipeline securely?",
-            "How would you roll back a bad Kubernetes deployment quickly?",
+            "A pod keeps crash-looping in Kubernetes. Walk me through how you'd debug it.",
+            "Explain blue-green vs canary deployments and when you'd choose each.",
+            "How do you manage secrets in a CI/CD pipeline without leaking them?",
+            "What is Terraform state, why does it matter, and how do you manage it in a team?",
+            "How would you set up monitoring and alerting for a brand-new microservice?",
         ],
         "senior": [
-            "Design an observability stack for a microservices platform (logs, metrics, traces).",
-            "How would you architect multi-region failover for a critical service?",
-            "Walk through debugging a production outage caused by a bad rollout.",
-            "How do you keep a Kubernetes cluster secure and cost-efficient at scale?",
-            "Design a CI/CD pipeline for a fleet of microservices with independent releases.",
+            "Design a zero-downtime deployment strategy for a service handling live traffic.",
+            "A bad 2am rollout caused a production outage. Walk me through your response and prevention plan.",
+            "How would you architect multi-region failover for a critical API?",
+            "How do you keep a large Kubernetes cluster both secure and cost-efficient?",
+            "Design an observability stack (logs, metrics, traces) for 50 microservices.",
         ],
     },
     "AWS": {
         "junior": [
-            "What is the difference between EC2, Lambda, and Fargate?",
-            "Explain what an S3 bucket is and a few common storage classes.",
-            "What is an IAM role, and how does it differ from an IAM user?",
-            "What is a VPC, and why would you use a private subnet?",
-            "What is the difference between a security group and a network ACL?",
+            "When would you use EC2 vs Lambda vs Fargate? Give a real scenario for each.",
+            "What are the main S3 storage classes, and when would you use Glacier?",
+            "What's the difference between an IAM role and an IAM user?",
+            "What is a VPC, and why would you put a database in a private subnet?",
+            "What's the difference between a security group and a network ACL?",
         ],
         "mid": [
-            "How would you design a serverless REST API on AWS?",
-            "Explain the difference between RDS and DynamoDB and when to use each.",
-            "How do you secure traffic between services inside a VPC?",
-            "What are the tradeoffs of SQS vs SNS vs EventBridge?",
-            "How would you design least-privilege IAM for a team of developers?",
+            "Design a serverless REST API on AWS — walk me through the services involved.",
+            "When would you choose DynamoDB over RDS, and what are the tradeoffs?",
+            "How do SQS, SNS, and EventBridge differ, and when do you use each?",
+            "How would you make an application highly available across availability zones?",
+            "How do you secure and monitor traffic between services inside a VPC?",
         ],
         "senior": [
-            "Design a highly available, auto-scaling web platform on AWS. Justify each choice.",
-            "How would you reduce a large monthly AWS bill without hurting reliability?",
-            "Explain a disaster-recovery strategy and the RTO/RPO tradeoffs involved.",
-            "How would you architect a multi-account AWS organization for a large company?",
-            "Design a globally low-latency read path using CloudFront and edge caching.",
+            "Design a highly available, auto-scaling web platform on AWS and justify each choice.",
+            "Your AWS bill doubled this month. How do you find the cause and cut cost without hurting reliability?",
+            "Explain a disaster-recovery strategy that hits an RTO of 15 minutes.",
+            "How would you design a multi-account AWS organization for a growing company?",
+            "Design a globally low-latency read path for a read-heavy application.",
         ],
     },
     "SQL": {
         "junior": [
-            "What is the difference between `INNER JOIN` and `LEFT JOIN`?",
-            "Explain the difference between `WHERE` and `HAVING`.",
-            "What is a primary key vs a foreign key?",
-            "Write a query to find the second-highest salary from an `employees` table.",
-            "What is the difference between `DELETE`, `TRUNCATE`, and `DROP`?",
+            "What's the difference between `INNER JOIN` and `LEFT JOIN`? Give a case where they return different rows.",
+            "Write a query to find the second-highest salary in an `employees` table.",
+            "What's the difference between `WHERE` and `HAVING`?",
+            "What's the difference between `DELETE`, `TRUNCATE`, and `DROP`?",
+            "What's the difference between a primary key, a unique key, and a foreign key?",
         ],
         "mid": [
-            "What is an index, and how does it speed up (or slow down) queries?",
-            "Explain database normalization up to 3NF with an example.",
-            "What is the difference between a transaction's isolation levels?",
-            "How would you find and fix a slow query?",
-            "What is the difference between a clustered and a non-clustered index?",
+            "This query is slow in production. How do you find out why, and what do you try first?",
+            "What is an index, and when can adding one actually hurt performance?",
+            "Write a query to find duplicate emails in a `users` table.",
+            "Explain the difference between a clustered and a non-clustered index.",
+            "Explain transaction isolation levels and the problem each one prevents.",
         ],
         "senior": [
             "Design the schema for a multi-tenant SaaS app and discuss the tradeoffs.",
-            "How do you scale a relational database (replication, sharding, partitioning)?",
-            "Explain how a window function works and give a real use case.",
-            "Walk through diagnosing a deadlock in a high-traffic database.",
-            "How would you design an audit-log table that stays fast as it grows to billions of rows?",
+            "A reporting query on a billion-row table takes minutes. How do you make it fast?",
+            "How do you scale a relational database — replication, sharding, or partitioning?",
+            "Walk me through diagnosing and preventing a deadlock in production.",
+            "Use a window function to rank each employee by salary within their department.",
         ],
     },
     "Spring Boot": {
         "junior": [
             "What is dependency injection, and how does Spring provide it?",
-            "What is the difference between `@Component`, `@Service`, and `@Repository`?",
-            "How does Spring Boot auto-configuration work at a high level?",
-            "What is the purpose of `application.properties` / `application.yml`?",
-            "What is a Spring bean's scope, and name the common scopes.",
+            "What's the difference between `@Component`, `@Service`, `@Repository`, and `@Controller`?",
+            "How does Spring Boot auto-configuration work?",
+            "What's the difference between `@RequestParam`, `@PathVariable`, and `@RequestBody`?",
+            "How do you externalize configuration across dev, staging, and prod?",
         ],
         "mid": [
             "How do you handle exceptions globally in a Spring Boot REST API?",
-            "Explain the request lifecycle of a Spring MVC controller.",
             "How would you secure a REST API with Spring Security and JWT?",
-            "What is the difference between `@Transactional` propagation levels?",
-            "How would you add caching to a hot endpoint with Spring Cache?",
+            "Explain `@Transactional` — how do propagation and rollback behavior work?",
+            "Your app is slow on the very first request. What's happening and how do you fix it?",
+            "How would you add caching to an expensive endpoint?",
         ],
         "senior": [
             "Design a resilient microservice with retries, timeouts, and circuit breakers.",
-            "How would you profile and reduce startup time of a large Spring Boot app?",
-            "Explain how you'd implement distributed tracing across services.",
-            "How do you manage configuration and secrets across many environments?",
-            "Design health checks and graceful shutdown for a service behind a load balancer.",
+            "How would you implement distributed tracing across several Spring Boot services?",
+            "It works locally but times out in production under load. How do you investigate?",
+            "How do you run database migrations safely with zero downtime?",
+            "How would you reduce startup time and memory footprint of a large Spring Boot app?",
         ],
     },
     "Microservices": {
         "junior": [
-            "What is a microservice, and how does it differ from a monolith?",
-            "What is an API gateway, and why is it useful?",
-            "How do services typically communicate (sync vs async)?",
-            "What is service discovery?",
-            "What is the difference between orchestration and choreography?",
+            "What's the difference between a monolith and microservices, and why would you split one up?",
+            "What is an API gateway, and what problems does it solve?",
+            "How do microservices usually communicate — synchronous vs asynchronous?",
+            "What is service discovery, and why do you need it?",
+            "What's the difference between orchestration and choreography?",
         ],
         "mid": [
-            "How do you handle a distributed transaction across services (saga pattern)?",
-            "Explain eventual consistency and where it's acceptable.",
-            "How would you design idempotent APIs, and why does it matter?",
-            "What strategies help prevent cascading failures?",
-            "How would you implement distributed tracing across service boundaries?",
+            "How do you handle a transaction that spans multiple services? Explain the saga pattern.",
+            "Why do you need idempotent APIs, and how do you make one?",
+            "How do you stop one slow service from taking down the whole system?",
+            "Explain eventual consistency and where it's acceptable in a real system.",
+            "How do you version an API without breaking existing clients?",
         ],
         "senior": [
             "Design an event-driven order-processing system end to end.",
-            "How do you version and evolve APIs without breaking consumers?",
-            "Explain how you'd roll out a schema change across many services safely.",
-            "How would you decompose a large monolith into microservices incrementally?",
-            "Design a reliable outbox pattern to publish events without dual-write bugs.",
+            "How would you break a large monolith into microservices incrementally, without a big-bang rewrite?",
+            "Explain the outbox pattern and the dual-write problem it solves.",
+            "How do you trace and debug a single request that touches eight services?",
+            "How would you safely roll out a breaking schema change across many services?",
         ],
     },
     "System Design": {
         "junior": [
-            "What is the difference between horizontal and vertical scaling?",
-            "What is a load balancer, and where does it sit in an architecture?",
-            "What is caching, and name two places you might add a cache.",
-            "What is the difference between SQL and NoSQL databases?",
+            "What's the difference between horizontal and vertical scaling?",
+            "What does a load balancer do, and where does it sit in the architecture?",
+            "What is caching, and where would you add it in a web app?",
+            "What's the difference between SQL and NoSQL, and when would you pick each?",
             "What is a CDN, and what problem does it solve?",
         ],
         "mid": [
-            "Design a URL shortener like bit.ly. Walk through the data model.",
-            "How would you design a rate limiter for a public API?",
-            "Explain the CAP theorem with a concrete tradeoff example.",
-            "How would you design a news feed for a social app?",
-            "How would you design a distributed rate limiter that works across many servers?",
+            "Design a URL shortener like bit.ly — data model and how you generate short codes.",
+            "Design a rate limiter for a public API.",
+            "Explain the CAP theorem with a real tradeoff you'd have to make.",
+            "Design a news feed for a social app — how do you handle celebrity fan-out?",
+            "How would you design a system to send 10 million emails without overloading anything?",
         ],
         "senior": [
             "Design a globally distributed chat system like WhatsApp.",
             "Design the backend for a video-streaming service at scale.",
-            "How would you design a system to handle 1M writes per second?",
-            "Design a distributed job scheduler with exactly-once guarantees.",
-            "Design a globally distributed key-value store and discuss consistency tradeoffs.",
+            "How would you design a system handling 1 million writes per second?",
+            "Design a distributed job scheduler with exactly-once execution.",
+            "Design a distributed rate limiter that stays consistent across many servers.",
         ],
     },
     "AI Agents": {
         "junior": [
-            "What is an LLM agent, and how does it differ from a plain chatbot?",
-            "What is a 'tool' in an agent, and why do agents call tools?",
-            "Explain what a system prompt does in an agent.",
-            "What is RAG (retrieval-augmented generation) at a high level?",
-            "What is the difference between an agent's short-term and long-term memory?",
+            "What's the difference between an LLM agent and a plain chatbot?",
+            "What is a 'tool' in an agent, and why do agents call tools instead of just answering?",
+            "What is RAG (retrieval-augmented generation), and what problem does it solve?",
+            "What does the system prompt do, and why does it shape agent behavior so much?",
+            "What's the difference between an agent's short-term and long-term memory?",
         ],
         "mid": [
-            "How does a ReAct-style agent loop (reason → act → observe) work?",
-            "How would you stop an agent from getting stuck in an infinite loop?",
-            "Explain how a vector database supports semantic search in RAG.",
-            "How do you evaluate whether an agent is actually reliable?",
-            "How would you design retries and fallbacks when a tool call fails?",
+            "Explain the ReAct loop (reason → act → observe). Why is it more reliable than a single call?",
+            "Your agent keeps looping and burning tokens without finishing. How do you stop it?",
+            "How does a vector database support semantic search in a RAG pipeline?",
+            "How do you evaluate whether an agent is actually reliable, not just demo-good?",
+            "How do you make a tool call robust to malformed or hostile model output?",
         ],
         "senior": [
-            "Design a multi-agent system where agents hand off tasks. Discuss coordination.",
-            "How would you control cost and latency in a production agent pipeline?",
-            "How do you make tool-calling robust to malformed or hostile inputs?",
-            "Design guardrails and evals for an agent that takes real-world actions.",
-            "How would you design a caching + batching layer to cut LLM cost by 10x?",
+            "Design a multi-agent system where agents hand off tasks. How do they coordinate?",
+            "How would you cut the cost and latency of a production agent pipeline by 10x?",
+            "Design guardrails and evals for an agent that can send email or make payments.",
+            "How do you prevent prompt injection when an agent reads untrusted web pages?",
+            "How would you design retries, fallbacks, and human-in-the-loop for a production agent?",
         ],
     },
     "DSA": {
         "junior": [
-            "What is the time complexity of searching in a sorted array with binary search?",
-            "Explain the difference between an array and a linked list.",
-            "What is a stack, and give one real-world use case.",
-            "Reverse a string in place — describe your approach.",
-            "What is the time and space complexity of merge sort?",
+            "Given an array and a target, find two numbers that add up to the target. What's the optimal approach?",
+            "How would you reverse a linked list — iteratively and recursively?",
+            "What's the difference between an array and a linked list, and when do you use each?",
+            "Check whether a string is a palindrome. Walk through your approach.",
+            "What's the time complexity of binary search, and what does it require?",
         ],
         "mid": [
-            "Find whether a linked list has a cycle. What's the optimal approach?",
-            "Explain how a hash map achieves average O(1) lookups.",
-            "Given an array, find two numbers that sum to a target. Optimize it.",
-            "What is the difference between BFS and DFS, and when to use each?",
-            "Detect if a string has all unique characters without extra data structures.",
+            "Detect whether a linked list has a cycle using O(1) extra space.",
+            "Find the first non-repeating character in a string.",
+            "Given a string of brackets, check whether the parentheses are balanced.",
+            "What's the difference between BFS and DFS, and when would you use each?",
+            "Merge two sorted arrays into one sorted array in place.",
         ],
         "senior": [
-            "Design an LRU cache with O(1) get and put. Which data structures?",
-            "Find the median of two sorted arrays in logarithmic time.",
-            "Explain dynamic programming using the edit-distance problem.",
+            "Design an LRU cache with O(1) get and put — which data structures?",
+            "Find the median of two sorted arrays in O(log(m+n)).",
+            "Explain dynamic programming using the coin-change or edit-distance problem.",
             "Serialize and deserialize a binary tree — walk through your design.",
             "Given a stream of numbers, return the running median efficiently.",
         ],
     },
 }
 
-# A short "what a strong answer covers" hint for the first sample question, per track.
+# A short "what a strong answer covers" hint for the FIRST (signature) question of each track.
 _ANSWER_HINTS = {
-    "Core Java": "A strong answer notes `==` compares references while `.equals()` compares "
-                 "logical value, and that `.equals()`/`hashCode()` should be overridden together.",
-    "Python": "A strong answer covers mutability (list mutable, tuple immutable), that sets are "
-              "unordered and unique, and the performance/use-case tradeoffs of each.",
-    "DevOps": "A strong answer explains that containers share the host kernel (lightweight, fast) "
-              "while VMs virtualize hardware with a full guest OS (heavier, stronger isolation).",
-    "AWS": "A strong answer contrasts EC2 (you manage the server), Lambda (event-driven, "
-           "no server management), and Fargate (serverless containers), with cost/latency tradeoffs.",
-    "SQL": "A strong answer explains `INNER JOIN` returns only matching rows while `LEFT JOIN` keeps "
-           "all left-table rows with NULLs where there's no match.",
-    "Spring Boot": "A strong answer defines DI as inversion of control, and shows how Spring's "
-                   "container wires beans so classes don't construct their own dependencies.",
-    "Microservices": "A strong answer covers independent deployability, bounded contexts, and the "
-                     "operational tradeoffs (network calls, data consistency) vs a monolith.",
-    "System Design": "A strong answer explains horizontal scaling adds more machines (better for "
-                     "availability) while vertical scaling grows one machine (simpler, but a ceiling).",
-    "AI Agents": "A strong answer describes an agent as an LLM that plans and calls tools in a loop "
-                 "toward a goal, versus a chatbot that just responds turn-by-turn.",
-    "DSA": "A strong answer states binary search is O(log n) because it halves the search space each "
-           "step, and notes it requires the array to be sorted.",
+    "Core Java": "A strong answer traces it: hash the key, map it to a bucket index, handle collisions "
+                 "(linked list that treeifies past a threshold), and resize/rehash when the load factor is hit.",
+    "Python": "A strong answer covers mutability (list mutable, tuple immutable), that sets are unordered "
+              "and unique, and the performance/use-case tradeoffs of each.",
+    "DevOps": "A strong answer walks through it: pull the image if missing, create a writable container layer, "
+              "set up namespaces and cgroups for isolation, then run the entrypoint as PID 1.",
+    "AWS": "A strong answer contrasts EC2 (you manage the server), Lambda (event-driven, no servers, short "
+           "tasks), and Fargate (serverless containers), with cold-start, cost, and control tradeoffs.",
+    "SQL": "A strong answer explains `INNER JOIN` returns only matching rows while `LEFT JOIN` keeps every "
+           "left-table row with NULLs where there's no match — and names a case where counts differ.",
+    "Spring Boot": "A strong answer defines DI as inversion of control, and shows how Spring's container wires "
+                   "beans so classes declare dependencies instead of constructing them.",
+    "Microservices": "A strong answer weighs independent deployability and bounded contexts against the added "
+                     "cost of network calls, data consistency, and operational complexity vs a monolith.",
+    "System Design": "A strong answer explains horizontal scaling adds more machines (better availability, needs "
+                     "statelessness) while vertical scaling grows one machine (simpler, but has a ceiling).",
+    "AI Agents": "A strong answer describes an agent as an LLM that plans and calls tools in a loop toward a "
+                 "goal, versus a chatbot that just responds turn-by-turn with no actions.",
+    "DSA": "A strong answer notes the brute-force O(n²) double loop, then the optimal O(n) pass using a hash "
+           "map of value→index to find the complement in one scan.",
 }
 
 
@@ -321,8 +321,12 @@ def _bank_questions(track, difficulty, n):
     tier = _tier(difficulty)
     track_bank = _BANK.get(track) or _BANK["Core Java"]
     pool = list(track_bank.get(tier, [])) or list(track_bank.get("junior", []))
-    random.shuffle(pool)
-    return pool[:n]
+    if not pool:
+        return []
+    # Lead with the signature question (its answer hint is shown), shuffle the rest.
+    first, rest = pool[0], pool[1:]
+    random.shuffle(rest)
+    return [first] + rest[: max(0, n - 1)]
 
 
 def generate_questions(track, difficulty, n=5):  # noqa: demo shows all 5
@@ -413,29 +417,65 @@ def render_demo_mock_interview():
                     with st.expander("💡 What a strong answer covers"):
                         st.write(hint)
 
-    # Teaser: the demo just lists questions — the real value (answering + being
-    # scored) is gated behind the CTA.
+    # Teaser: the demo only lists questions — answering + being scored is the
+    # real value. Speak to BOTH freshers and experienced candidates, then push
+    # a free signup (primary) with the live practice app as a secondary link.
     st.markdown(
-        f"""<div style="margin-top:18px;padding:22px 26px;border-radius:16px;text-align:center;
-        background:linear-gradient(135deg,#7c3aed,#0ea5e9);color:#fff;">
-        <div style="font-size:20px;font-weight:800;margin-bottom:6px;">
-        🔒 Ready to actually answer these?</div>
-        <div style="opacity:.95;font-size:15px;">This free demo just shows the questions.
-        Practice a full mock interview to answer by <b>voice or text</b>, get
-        <b>instant AI feedback &amp; a 0–10 score</b> per answer, unlimited fresh
-        questions, and a <b>report card</b> at the end.</div></div>""",
+        """<div style="margin-top:18px;padding:24px 26px;border-radius:18px;color:#fff;
+        background:linear-gradient(135deg,#7c3aed,#0ea5e9);box-shadow:0 10px 30px rgba(124,58,237,.25);">
+        <div style="font-size:21px;font-weight:800;text-align:center;margin-bottom:4px;">
+        🔒 You've seen the questions — now go ace them</div>
+        <div style="opacity:.95;font-size:15px;text-align:center;margin-bottom:16px;">
+        Reading questions is easy. <b>Answering them under pressure</b> is what gets you hired.
+        Practice out loud, get scored, and fix your gaps before the real thing.</div>
+
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;">
+          <div style="flex:1;min-width:230px;background:rgba(255,255,255,.14);
+          border-radius:14px;padding:14px 16px;">
+            <div style="font-size:15px;font-weight:800;margin-bottom:4px;">🎓 New grad / fresher</div>
+            <div style="font-size:13.5px;opacity:.96;line-height:1.5;">
+            Build real interview confidence with unlimited beginner→intermediate rounds,
+            friendly AI feedback that shows you <b>what a strong answer looks like</b>,
+            and steady progress toward your <b>first job offer</b>.</div>
+          </div>
+          <div style="flex:1;min-width:230px;background:rgba(255,255,255,.14);
+          border-radius:14px;padding:14px 16px;">
+            <div style="font-size:15px;font-weight:800;margin-bottom:4px;">💼 Experienced / switching</div>
+            <div style="font-size:13.5px;opacity:.96;line-height:1.5;">
+            Drill <b>senior, system-design &amp; DSA</b> rounds, get a brutally honest
+            <b>0–10 score</b> on each answer, and target the exact weak spots
+            before your <b>next big switch or hike</b>.</div>
+          </div>
+        </div>
+
+        <div style="text-align:center;font-size:13.5px;line-height:2;opacity:.97;">
+        ✅ Answer by <b>voice or text</b> &nbsp;·&nbsp; ✅ <b>Instant AI score &amp; feedback</b>
+        &nbsp;·&nbsp; ✅ End-of-interview <b>report card</b><br>
+        ✅ <b>10 tracks × 3 levels</b> &nbsp;·&nbsp; ✅ <b>Unlimited fresh questions</b>
+        &nbsp;·&nbsp; ✅ Emailed results you can revisit
+        </div>
+        </div>""",
         unsafe_allow_html=True,
     )
 
+    st.markdown("")  # small spacer
+
     cta = st.columns([1, 2, 1])
     with cta[1]:
+        if st.button("🔓 Sign up free — start your full mock interview",
+                     type="primary", use_container_width=True, key="demo_iv_signup_cta"):
+            st.session_state["auth_page"] = "signup"
+            try:
+                st.query_params.clear()
+            except Exception:
+                pass
+            st.rerun()
         st.link_button(
-            "🚀 Start Practicing Now →",
+            "▶️ or open the live practice app →",
             FULL_APP_URL,
-            type="primary",
             use_container_width=True,
         )
-    st.caption("Free demo. Full scoring, voice answers, and report cards unlock in the live app.")
+    st.caption("100% free to start. No card required. Scoring, voice answers, and report cards unlock instantly.")
 
 
 if __name__ == "__main__":
