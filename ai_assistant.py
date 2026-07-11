@@ -751,6 +751,28 @@ if not st.session_state["logged_in"]:
             st.error(f"Demo unavailable: {_e}")
         st.stop()
 
+    # ── Free "Try a Mock Interview" demo (no login required) ──
+    if _demo == "interview":
+        def _clear_demo():
+            try:
+                st.query_params.clear()
+            except Exception:
+                st.experimental_set_query_params()
+        st.info("🎁 **Free demo — Try a Mock Interview.** Sign up free to answer by "
+                "voice or text, get AI scoring & feedback, and receive a report card.")
+        _b1, _b2, _b3 = st.columns([1, 1, 3])
+        if _b1.button("🔓 Sign up free", type="primary", use_container_width=True,
+                      key="demo_iv_signup"):
+            _clear_demo(); st.session_state["auth_page"] = "signup"; st.rerun()
+        if _b2.button("← Back to home", use_container_width=True, key="demo_iv_back"):
+            _clear_demo(); st.rerun()
+        try:
+            import demo_mock_interview
+            demo_mock_interview.render_demo_mock_interview()
+        except Exception as _e:
+            st.error(f"Demo unavailable: {_e}")
+        st.stop()
+
     # ── Branded landing + login page (login view only) ──
     if st.session_state.get("auth_page", "login") == "login":
         from landing_login import render_login_page
