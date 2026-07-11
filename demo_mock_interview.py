@@ -447,6 +447,47 @@ def generate_questions(track, difficulty, n=5):  # noqa: demo shows all 5
     return _bank_questions(track, difficulty, n), "📖 Sample bank"
 
 
+def generate_answer(track, difficulty, question):
+    """Return a concise model answer for one question. Uses Groq if a key is set,
+    otherwise falls back to the track's built-in hint so it's still useful."""
+    api_key = _cfg("GROQ_API_KEY")
+    if api_key:
+        try:
+            from groq import Groq
+            client = Groq(api_key=api_key)
+            prompt = (
+                f"You are a senior {track} interviewer and mentor.\n"
+                f"Interview question ({difficulty} level): {question}\n\n"
+                f"Write a concise model answer a candidate could give to score well. "
+                f"Begin with a direct 1-2 sentence answer, then 3-5 key points, and finish "
+                f"with a short concrete example or tradeoff. Keep it under 180 words, plain "
+                f"prose, no markdown headings."
+            )
+            res = client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=[
+                    {"role": "system",
+                     "content": f"You are an expert {track} interviewer who gives crisp, correct model answers."},
+                    {"role": "user", "content": prompt},
+                ],
+                stream=False, temperature=0.4, top_p=0.9,
+            )
+            ans = (res.choices[0].message.content or "").strip()
+            if ans:
+                return ans
+        except Exception as e:
+            return f"_Couldn't generate an AI answer right now ({e}). Please try again._"
+
+    # No key: give something useful instead of nothing.
+    hint = _ANSWER_HINTS.get(track)
+    if hint:
+        return (f"**Answer outline:** {hint}\n\n"
+                f"_Set `GROQ_API_KEY` (or sign up for the live app) to get full, "
+                f"question-specific AI answers._")
+    return ("_Full AI model answers unlock with a free account (or by setting "
+            "`GROQ_API_KEY`). Sign up below to try them._")
+
+
 def render_demo_mock_interview():
     st.title("🎤 Try a Mock Interview")
     st.caption("Pick a track, choose your level, and get real interview questions — instant, no login.")
@@ -467,19 +508,26 @@ def render_demo_mock_interview():
 
     do_start = st.button("🎯 Start Demo Interview", type="primary")
 
-    # Persist the selection so the demo — and its Sign-up button — survive reruns.
-    # Without this, clicking the Sign-up button reruns with picked=None/do_start=False,
-    # the function returns early, the button is never re-rendered, and its click is lost.
-    if picked:
-        st.session_state["demo_iv_chosen"] = picked
-    elif do_start:
-        st.session_state["demo_iv_chosen"] = track
+    # A fresh selection = a chip tap or the Start button.
+    new_selection = picked if picked else (track if do_start else None)
+    if new_selection:
+        st.session_state["demo_iv_chosen"] = new_selection
+        st.session_state["demo_iv_diff"] = difficulty
+        with st.spinner(f"Preparing '{new_selection}' questions…"):
+            qs, label = generate_questions(new_selection, difficulty, n=5)
+        # Persist so questions (and their AI answers) stay stable across reruns
+        # instead of reshuffling/regenerating on every button click.
+        st.session_state["demo_iv_questions"] = qs
+        st.session_state["demo_iv_label"] = label
+        st.session_state["demo_iv_answers"] = {}   # reset cached AI answers
+
     chosen = st.session_state.get("demo_iv_chosen", "")
     if not chosen:
         return
 
-    with st.spinner(f"Preparing '{chosen}' questions…"):
-        questions, source_label = generate_questions(chosen, difficulty, n=5)
+    questions = st.session_state.get("demo_iv_questions", [])
+    source_label = st.session_state.get("demo_iv_label", "")
+    difficulty = st.session_state.get("demo_iv_diff", difficulty)
 
     if not questions:
         st.info(f"No questions available for '{chosen}'. Try another track.")
@@ -493,8 +541,9 @@ def render_demo_mock_interview():
         f"<span style='font-size:13px;opacity:.7'>({source_label})</span>",
         unsafe_allow_html=True,
     )
-    st.caption(f"Here are {len(shown)} sample questions to warm up 👇")
+    st.caption("Here are 5 sample questions — tap **🤖 Show AI answer** on any of them 👇")
 
+    answers = st.session_state.setdefault("demo_iv_answers", {})
     for i, q in enumerate(shown, start=1):
         with st.container(border=True):
             st.markdown(f"#### Question {i}")
@@ -504,6 +553,22 @@ def render_demo_mock_interview():
                 if hint:
                     with st.expander("💡 What a strong answer covers"):
                         st.write(hint)
+
+            # AI model answer (generated on demand, cached per question)
+            if answers.get(q):
+                with st.expander("🤖 AI model answer", expanded=True):
+                    st.markdown(answers[q])
+                if st.button("🔄 Regenerate", key=f"demo_iv_regen_{i}"):
+                    with st.spinner("Regenerating…"):
+                        answers[q] = generate_answer(chosen, difficulty, q)
+                    st.session_state["demo_iv_answers"] = answers
+                    st.rerun()
+            else:
+                if st.button("🤖 Show AI answer", key=f"demo_iv_showans_{i}"):
+                    with st.spinner("Generating a model answer…"):
+                        answers[q] = generate_answer(chosen, difficulty, q)
+                    st.session_state["demo_iv_answers"] = answers
+                    st.rerun()
 
     # Teaser: the demo only lists questions — answering + being scored is the
     # real value. Speak to BOTH freshers and experienced candidates, then push
@@ -543,6 +608,8 @@ def render_demo_mock_interview():
             # bounce back into the demo on rerun.
             st.session_state["auth_page"] = "signup"
             st.session_state.pop("demo_iv_chosen", None)
+            for _k in ("demo_iv_questions", "demo_iv_answers", "demo_iv_label", "demo_iv_diff"):
+                st.session_state.pop(_k, None)
             try:
                 st.query_params.clear()
             except Exception:
