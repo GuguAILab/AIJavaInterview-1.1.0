@@ -420,41 +420,27 @@ def render_demo_mock_interview():
     # Teaser: the demo only lists questions — answering + being scored is the
     # real value. Speak to BOTH freshers and experienced candidates, then push
     # a free signup (primary) with the live practice app as a secondary link.
+    _teaser_html = """
+    <div style="margin-top:18px;padding:24px 26px;border-radius:18px;color:#fff;background:linear-gradient(135deg,#7c3aed,#0ea5e9);box-shadow:0 10px 30px rgba(124,58,237,.25);">
+    <div style="font-size:21px;font-weight:800;text-align:center;margin-bottom:4px;">🔒 You've seen the questions — now go ace them</div>
+    <div style="opacity:.95;font-size:15px;text-align:center;margin-bottom:16px;">Reading questions is easy. <b>Answering them under pressure</b> is what gets you hired. Practice out loud, get scored, and fix your gaps before the real thing.</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;">
+    <div style="flex:1;min-width:230px;background:rgba(255,255,255,.14);border-radius:14px;padding:14px 16px;">
+    <div style="font-size:15px;font-weight:800;margin-bottom:4px;">🎓 New grad / fresher</div>
+    <div style="font-size:13.5px;opacity:.96;line-height:1.5;">Build real interview confidence with unlimited beginner→intermediate rounds, friendly AI feedback that shows you <b>what a strong answer looks like</b>, and steady progress toward your <b>first job offer</b>.</div>
+    </div>
+    <div style="flex:1;min-width:230px;background:rgba(255,255,255,.14);border-radius:14px;padding:14px 16px;">
+    <div style="font-size:15px;font-weight:800;margin-bottom:4px;">💼 Experienced / switching</div>
+    <div style="font-size:13.5px;opacity:.96;line-height:1.5;">Drill <b>senior, system-design &amp; DSA</b> rounds, get a brutally honest <b>0–10 score</b> on each answer, and target the exact weak spots before your <b>next big switch or hike</b>.</div>
+    </div>
+    </div>
+    <div style="text-align:center;font-size:13.5px;line-height:2;opacity:.97;">✅ Answer by <b>voice or text</b> &nbsp;·&nbsp; ✅ <b>Instant AI score &amp; feedback</b> &nbsp;·&nbsp; ✅ End-of-interview <b>report card</b><br>✅ <b>10 tracks × 3 levels</b> &nbsp;·&nbsp; ✅ <b>Unlimited fresh questions</b> &nbsp;·&nbsp; ✅ Emailed results you can revisit</div>
+    </div>
+    """
+    # Collapse to a single line: Streamlit's markdown renders indented/blank-line
+    # HTML as a code block, so strip every line and join before rendering.
     st.markdown(
-        """<div style="margin-top:18px;padding:24px 26px;border-radius:18px;color:#fff;
-        background:linear-gradient(135deg,#7c3aed,#0ea5e9);box-shadow:0 10px 30px rgba(124,58,237,.25);">
-        <div style="font-size:21px;font-weight:800;text-align:center;margin-bottom:4px;">
-        🔒 You've seen the questions — now go ace them</div>
-        <div style="opacity:.95;font-size:15px;text-align:center;margin-bottom:16px;">
-        Reading questions is easy. <b>Answering them under pressure</b> is what gets you hired.
-        Practice out loud, get scored, and fix your gaps before the real thing.</div>
-
-        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;">
-          <div style="flex:1;min-width:230px;background:rgba(255,255,255,.14);
-          border-radius:14px;padding:14px 16px;">
-            <div style="font-size:15px;font-weight:800;margin-bottom:4px;">🎓 New grad / fresher</div>
-            <div style="font-size:13.5px;opacity:.96;line-height:1.5;">
-            Build real interview confidence with unlimited beginner→intermediate rounds,
-            friendly AI feedback that shows you <b>what a strong answer looks like</b>,
-            and steady progress toward your <b>first job offer</b>.</div>
-          </div>
-          <div style="flex:1;min-width:230px;background:rgba(255,255,255,.14);
-          border-radius:14px;padding:14px 16px;">
-            <div style="font-size:15px;font-weight:800;margin-bottom:4px;">💼 Experienced / switching</div>
-            <div style="font-size:13.5px;opacity:.96;line-height:1.5;">
-            Drill <b>senior, system-design &amp; DSA</b> rounds, get a brutally honest
-            <b>0–10 score</b> on each answer, and target the exact weak spots
-            before your <b>next big switch or hike</b>.</div>
-          </div>
-        </div>
-
-        <div style="text-align:center;font-size:13.5px;line-height:2;opacity:.97;">
-        ✅ Answer by <b>voice or text</b> &nbsp;·&nbsp; ✅ <b>Instant AI score &amp; feedback</b>
-        &nbsp;·&nbsp; ✅ End-of-interview <b>report card</b><br>
-        ✅ <b>10 tracks × 3 levels</b> &nbsp;·&nbsp; ✅ <b>Unlimited fresh questions</b>
-        &nbsp;·&nbsp; ✅ Emailed results you can revisit
-        </div>
-        </div>""",
+        "".join(l.strip() for l in _teaser_html.splitlines() if l.strip()),
         unsafe_allow_html=True,
     )
 
