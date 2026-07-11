@@ -39,11 +39,14 @@ def _cfg(key, default=""):
 
 # Tracks shown in the dropdown (mirrors the mock-interview modes in the main app).
 TRACKS = [
-    "Core Java", "Python", "DevOps", "AWS", "SQL",
-    "Spring Boot", "Microservices", "System Design", "AI Agents", "DSA",
+    "Core Java", "Python", "DSA", "Spring Boot", "Microservices", "Kafka",
+    "DevOps", "AWS", "SQL", "PL/SQL", "System Design", "AI Agents", "LangChain / LLM",
 ]
 
-POPULAR_TRACKS = ["Core Java", "Python", "SQL", "AWS", "System Design", "AI Agents"]
+POPULAR_TRACKS = [
+    "Core Java", "Python", "DSA", "Spring Boot", "Microservices", "Kafka",
+    "DevOps", "SQL", "PL/SQL", "AWS", "System Design", "AI Agents", "LangChain / LLM",
+]
 
 DIFFICULTIES = ["Junior (0-2 yrs)", "Mid (2-5 yrs)", "Senior (5+ yrs)"]
 
@@ -281,6 +284,75 @@ _BANK = {
             "Given a stream of numbers, return the running median efficiently.",
         ],
     },
+    "Kafka": {
+        "junior": [
+            "What is Apache Kafka, and how does it differ from a traditional message queue?",
+            "What's the difference between a topic and a partition?",
+            "What is a consumer group, and how does it let you scale consumers?",
+            "What's the difference between a producer and a consumer?",
+            "What does the replication factor control, and why does it matter?",
+        ],
+        "mid": [
+            "Explain how consumer offsets work and what happens during a rebalance.",
+            "What do `acks=0`, `acks=1`, and `acks=all` mean, and what are the durability tradeoffs?",
+            "How does Kafka guarantee message ordering, and what breaks it?",
+            "Your consumer lag keeps growing. How do you diagnose and fix it?",
+            "What's the difference between at-least-once and exactly-once delivery?",
+        ],
+        "senior": [
+            "Design a Kafka-based pipeline to process 1 million events per second reliably.",
+            "How would you achieve exactly-once processing end to end?",
+            "A broker died and partitions are under-replicated. Walk me through your response.",
+            "How do you handle a hot partition caused by a skewed key?",
+            "How would you tune producers and consumers to hit sub-10ms p99 at high throughput?",
+        ],
+    },
+    "PL/SQL": {
+        "junior": [
+            "What is PL/SQL, and how does it differ from plain SQL?",
+            "What is the block structure of a PL/SQL program (DECLARE / BEGIN / EXCEPTION / END)?",
+            "What's the difference between a procedure and a function in PL/SQL?",
+            "What is a cursor, and when do you need one?",
+            "How do you handle exceptions in PL/SQL?",
+        ],
+        "mid": [
+            "What's the difference between an implicit and an explicit cursor?",
+            "What are `BULK COLLECT` and `FORALL`, and why do they improve performance?",
+            "How do triggers work, and what are the risks of overusing them?",
+            "What's the difference between `%TYPE` and `%ROWTYPE`?",
+            "A PL/SQL job is slow because it processes row-by-row. How would you speed it up?",
+        ],
+        "senior": [
+            "How would you optimize a PL/SQL package that processes millions of rows nightly?",
+            "Explain how to avoid mutating-table errors in triggers.",
+            "How do you manage transactions and savepoints across nested procedures?",
+            "When should logic live in PL/SQL vs the application layer? Discuss the tradeoffs.",
+            "How would you debug and profile a slow stored procedure in production?",
+        ],
+    },
+    "LangChain / LLM": {
+        "junior": [
+            "What is an LLM, and what does the context window limit?",
+            "What is LangChain, and what problem does it solve for building LLM apps?",
+            "What is a prompt template, and why use one?",
+            "What is RAG (retrieval-augmented generation) at a high level?",
+            "What is an embedding, and how is it used in semantic search?",
+        ],
+        "mid": [
+            "What's the difference between a LangChain 'chain' and an 'agent', and when do you use each?",
+            "What is LangGraph, and how does it differ from a simple LangChain chain?",
+            "How does an agent decide which tool to call, and how do you make that reliable?",
+            "How do you add memory to a conversational LLM app?",
+            "Your RAG app returns irrelevant answers. How do you debug the retrieval step?",
+        ],
+        "senior": [
+            "Design a production RAG system over millions of documents with LangChain.",
+            "Model a multi-step agent workflow as a LangGraph state machine — how do you handle loops and retries?",
+            "How do you evaluate and monitor an LLM app in production (quality, cost, latency)?",
+            "How do you defend an agent against prompt injection from untrusted documents?",
+            "How would you cut LLM cost and latency by 10x in a high-traffic LangChain pipeline?",
+        ],
+    },
 }
 
 # A short "what a strong answer covers" hint for the FIRST (signature) question of each track.
@@ -305,6 +377,12 @@ _ANSWER_HINTS = {
                  "goal, versus a chatbot that just responds turn-by-turn with no actions.",
     "DSA": "A strong answer notes the brute-force O(n²) double loop, then the optimal O(n) pass using a hash "
            "map of value→index to find the complement in one scan.",
+    "Kafka": "A strong answer explains Kafka is a distributed, replayable commit log — messages persist and "
+             "aren't deleted on read, multiple consumer groups read independently, and it scales via partitioning.",
+    "PL/SQL": "A strong answer notes PL/SQL is Oracle's procedural extension to SQL — it adds variables, loops, "
+              "conditionals, cursors, and exception handling so procedural logic runs right next to the data.",
+    "LangChain / LLM": "A strong answer explains an LLM predicts text from a prompt within a fixed token "
+                       "context window, so anything beyond that window must be retrieved or summarized, not passed in whole.",
 }
 
 
@@ -378,11 +456,14 @@ def render_demo_mock_interview():
     difficulty = c2.selectbox("Difficulty", DIFFICULTIES, index=0)
 
     st.caption("Popular tracks — tap to try:")
-    chip_cols = st.columns(len(POPULAR_TRACKS))
     picked = None
-    for i, ch in enumerate(POPULAR_TRACKS):
-        if chip_cols[i].button(ch, key=f"track_chip_{ch}"):
-            picked = ch
+    per_row = 6
+    for start in range(0, len(POPULAR_TRACKS), per_row):
+        row = POPULAR_TRACKS[start:start + per_row]
+        cols = st.columns(per_row)  # fixed width keeps chips aligned across rows
+        for i, ch in enumerate(row):
+            if cols[i].button(ch, key=f"track_chip_{ch}", use_container_width=True):
+                picked = ch
 
     do_start = st.button("🎯 Start Demo Interview", type="primary")
 
@@ -411,7 +492,7 @@ def render_demo_mock_interview():
         with st.container(border=True):
             st.markdown(f"#### Question {i}")
             st.write(q)
-            if i == 1:
+            if i == 1 and difficulty.lower().startswith("junior"):
                 hint = _ANSWER_HINTS.get(chosen)
                 if hint:
                     with st.expander("💡 What a strong answer covers"):
