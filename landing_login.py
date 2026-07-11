@@ -262,7 +262,7 @@ def _render_marketing():
 
     topics = ["DSA", "JAVA", "System Design", "AWS", "Devops",
               "SpringBoot", "Python", "Java", "Agentic AI", "SQL", "Job Search", "Resume build",
-              "Class 10 MCQ"]
+              "MCQ"]
     _chip_links = {"Job Search": "?demo=jobs", "Agentic AI": "?demo=interview",
                    "Class 10 MCQ": "?demo=class10"}
     chips = "".join(
