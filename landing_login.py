@@ -234,8 +234,9 @@ def _render_marketing():
         ("📊", "#f59e0b", "#fff4e6", "Performance Analytics",
          "Track your progress with in-depth analytics and personalized insights.", "View Analytics", "#f59e0b"),
     ]
+    _card_links = {"Search Your Dream Job": "?demo=jobs", "Mock Interviews": "?demo=interview"}
     cards = "".join(
-        f'<a href="{"?demo=jobs" if title == "Search Your Dream Job" else "#ml-login"}" '
+        f'<a href="{_card_links.get(title, "#ml-login")}" '
         f'style="text-decoration:none;color:inherit;display:flex;'
         f'flex-direction:column;height:100%">'
         f'<div class="ml-fcard"><div class="ic" style="background:{bg};color:{col}">{ic}</div>'
@@ -257,8 +258,9 @@ def _render_marketing():
 
     topics = ["DSA", "JAVA", "System Design", "AWS", "Devops",
               "SpringBoot", "Python", "Java", "Agentic AI", "SQL", "Job Search", "Resume build"]
+    _chip_links = {"Job Search": "?demo=jobs", "Agentic AI": "?demo=interview"}
     chips = "".join(
-        f'<a href="{"?demo=jobs" if t == "Job Search" else "#ml-login"}" '
+        f'<a href="{_chip_links.get(t, "#ml-login")}" '
         f'style="text-decoration:none"><span class="chip">{t}</span></a>'
         for t in topics)
 
@@ -306,6 +308,7 @@ def _render_marketing():
           and a Job Search agent that matches you to real jobs — everything to land your dream job.</p>
         <div class="ml-cta">
           <a class="primary" href="#ml-login">Start Practicing Now →</a>
+          <a class="ghost" href="?demo=interview">🎤 Try a Mock Interview</a>
           <a class="ghost" href="?demo=jobs">💼 Search Your Dream Job</a>
         </div>
         <div class="ml-checks">
