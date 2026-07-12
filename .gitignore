@@ -1,0 +1,33 @@
+# ── SECRETS — never commit ──
+.streamlit/secrets.toml
+.env
+*.pem
+*.key
+
+# ── Local user store (superseded by Supabase) ──
+users.json
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ── Build junk ──
+*.zip
+build/
+dist/
+
+# ── Testing ──
+.pytest_cache/
+.coverage
+
+# ── Editors / OS ──
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ── Runtime ──
+*.log
+temp_audio*

@@ -1,9 +1,25 @@
-streamlit>=1.38.0
-groq>=0.31.0
-streamlit-mic-recorder>=0.0.8
-openai>=1.0.0
-python-dotenv>=1.0.1
-pypdf>=4.0.0
+# ---- core ----
+streamlit>=1.40.0
+
+# ---- ai ----
+groq>=0.11.0
+
+# ---- database ----
+psycopg2-binary>=2.9.9
+
+# ---- auth / sessions ----
+bcrypt>=4.2.0
+streamlit-cookies-controller>=0.0.4
+
+# ---- resume parsing ----
+pypdf>=5.0.0
 python-docx>=1.1.0
-psycopg2-binary>=2.9
-razorpay
+
+# ---- http ----
+requests>=2.32.0
+
+# ---- voice ----
+streamlit-mic-recorder>=0.0.8
+
+# ---- dev ----
+pytest>=8.0.0
