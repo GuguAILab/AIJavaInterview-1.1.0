@@ -59,11 +59,28 @@ QUESTION_BANK_FILE = os.path.join(
 )
 
 
+@st.cache_data(show_spinner=False)
 def load_question_bank():
+    """Parse question_bank.json ONCE and cache it.
+
+    Streamlit re-runs this whole script on every click/keystroke. Without the
+    cache, this 570KB / 7,000-question JSON was being re-parsed from disk on
+    every single interaction — the main cause of the app feeling slow.
+    """
     if os.path.exists(QUESTION_BANK_FILE):
         with open(QUESTION_BANK_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     return {}
+
+
+@st.cache_data(show_spinner=False)
+def _img_b64(path):
+    """Base64-encode an image ONCE. Re-encoding PNGs on every rerun was slow."""
+    try:
+        with open(path, "rb") as f:
+            return base64.b64encode(f.read()).decode("utf-8")
+    except Exception:
+        return ""
 
 
 def get_bank_questions(topic, difficulty, num_questions):
@@ -845,15 +862,13 @@ if not st.session_state["logged_in"]:
     _nit_img_tag = ""
     _nit_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Nit.png")
     if os.path.exists(_nit_path):
-        with open(_nit_path, "rb") as _f:
-            _nit_b64 = base64.b64encode(_f.read()).decode("utf-8")
+        _nit_b64 = _img_b64(_nit_path)   # cached — was re-encoding every rerun
         _nit_img_tag = f'<img src="data:image/png;base64,{_nit_b64}" style="position:absolute;top:36px;right:14px;width:80px;height:80px;object-fit:contain;border-radius:10px;opacity:0.92;" alt="Nit Logo"/>'
 
     _robot_img_tag = ""
     _robot_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Robot.png")
     if os.path.exists(_robot_path):
-        with open(_robot_path, "rb") as _f:
-            _robot_b64 = base64.b64encode(_f.read()).decode("utf-8")
+        _robot_b64 = _img_b64(_robot_path)   # cached
         _robot_img_tag = f'<img src="data:image/png;base64,{_robot_b64}" style="position:absolute;top:36px;left:14px;width:80px;height:80px;object-fit:contain;border-radius:10px;opacity:0.92;" alt="Robot Logo"/>'
 
     st.markdown(
@@ -979,11 +994,10 @@ Smart Multilingual AI Career Assistant
     import base64 as _b64
 
     def _enc(fname):
+        # routed through the cached _img_b64 — these 3 PNGs were being re-read
+        # and re-encoded on every rerun
         p = os.path.join(os.path.dirname(os.path.abspath(__file__)), fname)
-        if os.path.exists(p):
-            with open(p, "rb") as f:
-                return _b64.b64encode(f.read()).decode()
-        return ""
+        return _img_b64(p) if os.path.exists(p) else ""
 
     _e1, _e2, _e3 = _enc("emp1.png"), _enc("emp2.png"), _enc("emp3.png")
 
