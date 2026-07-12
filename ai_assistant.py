@@ -403,6 +403,19 @@ st.set_page_config(page_title="AI Java Interview", page_icon="☕", layout="wide
 # Force UTF-8 charset in the browser (fixes emoji rendering on Windows)
 st.markdown('<meta charset="UTF-8">', unsafe_allow_html=True)
 
+# ── Hide Streamlit Cloud toolbar (Fork / GitHub badge), menu and footer ──
+st.markdown("""
+<style>
+[data-testid="stToolbar"] {visibility: hidden; height: 0%; position: fixed;}
+[data-testid="stDecoration"] {display: none;}
+[data-testid="stStatusWidget"] {visibility: hidden; height: 0%; position: fixed;}
+.stAppDeployButton {display: none;}
+#MainMenu {visibility: hidden; height: 0%;}
+header {visibility: hidden; height: 0%;}
+footer {visibility: hidden; height: 0%;}
+</style>
+""", unsafe_allow_html=True)
+
 st.markdown(
     """
 <style>
