@@ -360,8 +360,7 @@ def render_xray_search(default_role="", default_city="", default_skills=None):
     gq = build_xray_query(role, city, sites, skills, exclude_senior, recent_days)
     xq = build_x_twitter_query(role, city)
 
-    st.markdown("**Your Google query** (copy it, or use the button below):")
-    st.code(gq, language="text")
+   
 
     b1, b2 = st.columns(2)
     b1.link_button("🔍 Search on Google", _google_url(gq),
