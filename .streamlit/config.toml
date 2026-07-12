@@ -1,0 +1,38 @@
+# .streamlit/config.toml
+# Place this file in a folder named .streamlit at your project root:
+#
+#   your-project/
+#   ├── .streamlit/
+#   │   └── config.toml      <-- this file
+#   ├── ai_assistant.py
+#   ├── landing_login.py
+#   ├── job_search_agent.py
+#   └── question_bank.json
+
+[client]
+# "minimal" hides the developer toolbar for viewers — this removes the
+# "Fork" button and the GitHub badge on Streamlit Cloud.
+# Options: "auto" (default) | "developer" | "viewer" | "minimal"
+toolbarMode = "minimal"
+
+# Don't leak Python tracebacks to users if something breaks in production.
+showErrorDetails = false
+
+
+[browser]
+# Turn off usage stats collection.
+gatherUsageStats = false
+
+
+[theme]
+# Matches the purple/blue gradient branding used across your app.
+base = "light"
+primaryColor = "#7c3aed"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f5f7fb"
+textColor = "#0f172a"
+
+
+[server]
+# Keeps large resume/PDF uploads working (value is in MB).
+maxUploadSize = 200
