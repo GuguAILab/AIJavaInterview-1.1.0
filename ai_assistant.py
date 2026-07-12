@@ -76,11 +76,81 @@ def load_question_bank():
 @st.cache_data(show_spinner=False)
 def _img_b64(path):
     """Base64-encode an image ONCE. Re-encoding PNGs on every rerun was slow."""
+    import base64 as _b64_mod   # base64 is only imported inside functions in this file
     try:
         with open(path, "rb") as f:
-            return base64.b64encode(f.read()).decode("utf-8")
+            return _b64_mod.b64encode(f.read()).decode("utf-8")
     except Exception:
         return ""
+
+
+def secure_auth_overlay(steps, title="Signing you in",
+                        subtitle="Loading your interview dashboard"):
+    """Branded auth overlay in the app's purple-to-blue gradient.
+
+    `steps` is a list of (label, done) tuples. done=True renders a tick, the
+    first not-done step shows the live spinner, the rest are dimmed. The
+    progress bar reflects how many steps are complete.
+
+    Returns the placeholder so the caller can .empty() it when finished.
+    """
+    rows = []
+    spinner_used = False
+    for label, done in steps:
+        if done:
+            icon = ('<span style="display:inline-flex;align-items:center;justify-content:center;'
+                    'width:19px;height:19px;border-radius:50%;background:#fff;color:#7c3aed;'
+                    'font-size:11px;font-weight:800;flex:0 0 19px;">&#10003;</span>')
+            color = "rgba(255,255,255,.95)"
+        elif not spinner_used:
+            spinner_used = True
+            icon = ('<span class="ba-spin" style="display:inline-block;width:19px;height:19px;'
+                    'border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;'
+                    'border-radius:50%;flex:0 0 19px;"></span>')
+            color = "#ffffff"
+        else:
+            icon = ('<span style="display:inline-block;width:19px;height:19px;border-radius:50%;'
+                    'border:2px solid rgba(255,255,255,.25);flex:0 0 19px;"></span>')
+            color = "rgba(255,255,255,.45)"
+        rows.append(
+            f'<div style="display:flex;align-items:center;gap:11px;margin:10px 0;'
+            f'font-size:14px;color:{color};">{icon}<span>{label}</span></div>'
+        )
+
+    done_n = sum(1 for _, d in steps if d)
+    pct = int(100 * done_n / max(len(steps), 1))
+
+    html = (
+        '<style>@keyframes ba-spin{to{transform:rotate(360deg)}}'
+        '.ba-spin{animation:ba-spin .8s linear infinite}'
+        '@keyframes ba-in{from{opacity:0;transform:translateY(8px) scale(.98)}'
+        'to{opacity:1;transform:none}}'
+        '.ba-card{animation:ba-in .35s cubic-bezier(.2,.8,.2,1)}</style>'
+        '<div style="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;'
+        'justify-content:center;background:rgba(15,23,42,.55);backdrop-filter:blur(6px);">'
+        '<div class="ba-card" style="width:min(94vw,410px);border-radius:20px;'
+        'padding:32px 30px 26px;text-align:center;'
+        'background:linear-gradient(135deg,#7c3aed 0%,#0ea5e9 100%);'
+        'box-shadow:0 26px 60px rgba(124,58,237,.42);'
+        "font-family:system-ui,-apple-system,'Segoe UI',sans-serif;\">"
+        # brand mark
+        '<div style="width:54px;height:54px;margin:0 auto 14px;border-radius:15px;'
+        'background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);'
+        'display:flex;align-items:center;justify-content:center;font-size:25px;">&#127908;</div>'
+        f'<div style="font-size:17.5px;font-weight:700;color:#fff;letter-spacing:.2px;">{title}</div>'
+        f'<div style="font-size:13px;color:rgba(255,255,255,.78);margin:5px 0 18px;">{subtitle}</div>'
+        # progress bar
+        '<div style="height:5px;border-radius:99px;background:rgba(255,255,255,.22);'
+        'overflow:hidden;margin-bottom:16px;">'
+        f'<div style="height:100%;width:{pct}%;border-radius:99px;background:#fff;'
+        'transition:width .45s ease;"></div></div>'
+        # steps (left-aligned inside the centered card)
+        '<div style="text-align:left;">' + "".join(rows) + '</div>'
+        '</div></div>'
+    )
+    ph = st.empty()
+    ph.markdown(html, unsafe_allow_html=True)
+    return ph
 
 
 def get_bank_questions(topic, difficulty, num_questions):
@@ -1288,26 +1358,59 @@ Smart Multilingual AI Career Assistant
             if not login_user_input or not login_pass_input:
                 st.session_state["auth_msg"] = "⚠️ Please fill in all fields."
             else:
+                # Bank-style secure overlay: the page dims, a locked card shows
+                # each verification step completing. Silence during a wait feels
+                # broken — visible progress feels roughly half as long.
+                _s1 = "Checking your account"
+                _s2 = "Verifying your credentials"
+                _s3 = "Loading your profile"
+                _s4 = "Preparing your dashboard"
+
+                _ov = secure_auth_overlay([
+                    (_s1, True), (_s2, False), (_s3, False), (_s4, False),
+                ])
+
                 ok, result = login_user(login_user_input, login_pass_input)
+
                 if ok:
+                    _ov.empty()
+                    _ov = secure_auth_overlay([
+                        (_s1, True), (_s2, True), (_s3, False), (_s4, False),
+                    ])
                     ensure_admin_plan(login_user_input)
+                    _admin = is_admin(login_user_input)
+
+                    _ov.empty()
+                    _ov = secure_auth_overlay([
+                        (_s1, True), (_s2, True), (_s3, True), (_s4, False),
+                    ])
                     # start() sets logged_in/username/user_email/is_admin AND
                     # writes the signed cookie so the login survives a refresh.
                     session.start(
                         login_user_input,
-                        is_admin=is_admin(login_user_input),
+                        is_admin=_admin,
                         email=result,
                     )
+
+                    _ov.empty()
+                    secure_auth_overlay(
+                        [(_s1, True), (_s2, True), (_s3, True), (_s4, True)],
+                        title=f"Welcome back, {login_user_input}",
+                        subtitle="Loading your interview dashboard…",
+                    )
+                    time.sleep(0.35)   # let the final green ticks register
                     st.session_state["auth_msg"] = ""
                     st.rerun()
                 else:
+                    _ov.empty()        # clear the overlay so the error is visible
                     st.session_state["auth_msg"] = result
 
         if guest_btn:
-            st.session_state["logged_in"] = True
-            st.session_state["username"] = "Guest"
-            st.session_state["user_email"] = ""
-            st.session_state["auth_msg"] = ""
+            with st.spinner("👤 Setting up guest access…"):
+                st.session_state["logged_in"] = True
+                st.session_state["username"] = "Guest"
+                st.session_state["user_email"] = ""
+                st.session_state["auth_msg"] = ""
             st.rerun()
 
         if st.session_state["auth_msg"]:
@@ -1352,10 +1455,28 @@ Smart Multilingual AI Career Assistant
             elif su_pass != su_pass2:
                 st.session_state["auth_msg"] = "⚠️ Passwords do not match."
             else:
+                _c1 = "Checking username availability"
+                _c2 = "Creating your account"
+                _c3 = "Starting your 3-day free trial"
+
+                _ov = secure_auth_overlay(
+                    [(_c1, False), (_c2, False), (_c3, False)],
+                    title="Creating your account",
+                    subtitle="This will only take a moment",
+                )
                 ok, msg = register_user(su_username, su_pass, su_email)
-                st.session_state["auth_msg"] = msg
+                _ov.empty()
+
                 if ok:
+                    secure_auth_overlay(
+                        [(_c1, True), (_c2, True), (_c3, True)],
+                        title=f"Welcome aboard, {su_username}!",
+                        subtitle="Your 3-day free trial has started",
+                    )
+                    time.sleep(0.6)   # let the welcome land before redirecting
                     st.session_state["auth_page"] = "login"
+
+                st.session_state["auth_msg"] = msg
                 st.rerun()
 
         if st.session_state["auth_msg"]:
