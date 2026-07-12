@@ -85,27 +85,30 @@ def _img_b64(path):
 
 
 def secure_auth_overlay(steps, title="Signing you in",
-                        subtitle="Loading your interview dashboard"):
-    """Branded auth overlay in the app's purple-to-blue gradient.
+                        subtitle="Loading your interview dashboard",
+                        placeholder=None):
+    """Branded auth progress card in the app's purple-to-blue gradient.
 
-    `steps` is a list of (label, done) tuples. done=True renders a tick, the
-    first not-done step shows the live spinner, the rest are dimmed. The
-    progress bar reflects how many steps are complete.
+    Renders INLINE (not position:fixed). Streamlit nests markdown inside
+    containers that create stacking/clipping contexts, so a fixed-position
+    overlay silently never paints. An inline card always shows.
 
-    Returns the placeholder so the caller can .empty() it when finished.
+    `steps` is a list of (label, done) tuples. done=True -> tick, the first
+    not-done step -> live spinner, the rest -> dimmed.
+    Pass a `placeholder` (st.empty()) to animate in place across steps.
     """
     rows = []
     spinner_used = False
     for label, done in steps:
         if done:
             icon = ('<span style="display:inline-flex;align-items:center;justify-content:center;'
-                    'width:19px;height:19px;border-radius:50%;background:#fff;color:#7c3aed;'
+                    'width:19px;height:19px;border-radius:50%;background:#ffffff;color:#7c3aed;'
                     'font-size:11px;font-weight:800;flex:0 0 19px;">&#10003;</span>')
             color = "rgba(255,255,255,.95)"
         elif not spinner_used:
             spinner_used = True
             icon = ('<span class="ba-spin" style="display:inline-block;width:19px;height:19px;'
-                    'border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;'
+                    'border:2.5px solid rgba(255,255,255,.30);border-top-color:#ffffff;'
                     'border-radius:50%;flex:0 0 19px;"></span>')
             color = "#ffffff"
         else:
@@ -113,8 +116,8 @@ def secure_auth_overlay(steps, title="Signing you in",
                     'border:2px solid rgba(255,255,255,.25);flex:0 0 19px;"></span>')
             color = "rgba(255,255,255,.45)"
         rows.append(
-            f'<div style="display:flex;align-items:center;gap:11px;margin:10px 0;'
-            f'font-size:14px;color:{color};">{icon}<span>{label}</span></div>'
+            '<div style="display:flex;align-items:center;gap:11px;margin:10px 0;'
+            'font-size:14px;color:' + color + ';">' + icon + '<span>' + label + '</span></div>'
         )
 
     done_n = sum(1 for _, d in steps if d)
@@ -123,32 +126,28 @@ def secure_auth_overlay(steps, title="Signing you in",
     html = (
         '<style>@keyframes ba-spin{to{transform:rotate(360deg)}}'
         '.ba-spin{animation:ba-spin .8s linear infinite}'
-        '@keyframes ba-in{from{opacity:0;transform:translateY(8px) scale(.98)}'
-        'to{opacity:1;transform:none}}'
-        '.ba-card{animation:ba-in .35s cubic-bezier(.2,.8,.2,1)}</style>'
-        '<div style="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;'
-        'justify-content:center;background:rgba(15,23,42,.55);backdrop-filter:blur(6px);">'
-        '<div class="ba-card" style="width:min(94vw,410px);border-radius:20px;'
-        'padding:32px 30px 26px;text-align:center;'
+        '@keyframes ba-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}'
+        '.ba-card{animation:ba-in .3s ease-out}</style>'
+        '<div class="ba-card" style="max-width:430px;margin:14px auto 22px;border-radius:20px;'
+        'padding:30px 28px 24px;text-align:center;'
         'background:linear-gradient(135deg,#7c3aed 0%,#0ea5e9 100%);'
-        'box-shadow:0 26px 60px rgba(124,58,237,.42);'
-        "font-family:system-ui,-apple-system,'Segoe UI',sans-serif;\">"
-        # brand mark
-        '<div style="width:54px;height:54px;margin:0 auto 14px;border-radius:15px;'
+        'box-shadow:0 20px 45px rgba(124,58,237,.35);'
+        'font-family:system-ui,-apple-system,sans-serif;">'
+        '<div style="width:52px;height:52px;margin:0 auto 13px;border-radius:15px;'
         'background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);'
-        'display:flex;align-items:center;justify-content:center;font-size:25px;">&#127908;</div>'
-        f'<div style="font-size:17.5px;font-weight:700;color:#fff;letter-spacing:.2px;">{title}</div>'
-        f'<div style="font-size:13px;color:rgba(255,255,255,.78);margin:5px 0 18px;">{subtitle}</div>'
-        # progress bar
+        'display:flex;align-items:center;justify-content:center;font-size:24px;">&#127908;</div>'
+        '<div style="font-size:17px;font-weight:700;color:#ffffff;">' + str(title) + '</div>'
+        '<div style="font-size:13px;color:rgba(255,255,255,.78);margin:5px 0 17px;">'
+        + str(subtitle) + '</div>'
         '<div style="height:5px;border-radius:99px;background:rgba(255,255,255,.22);'
-        'overflow:hidden;margin-bottom:16px;">'
-        f'<div style="height:100%;width:{pct}%;border-radius:99px;background:#fff;'
-        'transition:width .45s ease;"></div></div>'
-        # steps (left-aligned inside the centered card)
+        'overflow:hidden;margin-bottom:15px;">'
+        '<div style="height:100%;width:' + str(pct) + '%;border-radius:99px;background:#ffffff;'
+        'transition:width .4s ease;"></div></div>'
         '<div style="text-align:left;">' + "".join(rows) + '</div>'
-        '</div></div>'
+        '</div>'
     )
-    ph = st.empty()
+
+    ph = placeholder if placeholder is not None else st.empty()
     ph.markdown(html, unsafe_allow_html=True)
     return ph
 
@@ -1366,24 +1365,34 @@ Smart Multilingual AI Career Assistant
                 _s3 = "Loading your profile"
                 _s4 = "Preparing your dashboard"
 
-                _ov = secure_auth_overlay([
-                    (_s1, True), (_s2, False), (_s3, False), (_s4, False),
-                ])
+                _STEP_MIN = 0.45   # min seconds each stage stays visible
+                _labels = [_s1, _s2, _s3, _s4]
+
+                # ONE placeholder, repainted each step — this is what animates the
+                # card in place. (Creating a new st.empty() per step stacks cards.)
+                _ov = st.empty()
+
+                def _paint(flags, title=None, subtitle=None):
+                    kw = {"placeholder": _ov}
+                    if title:
+                        kw["title"] = title
+                    if subtitle:
+                        kw["subtitle"] = subtitle
+                    secure_auth_overlay(list(zip(_labels, flags)), **kw)
+
+                _paint([True, False, False, False])
+                time.sleep(_STEP_MIN)
 
                 ok, result = login_user(login_user_input, login_pass_input)
 
                 if ok:
-                    _ov.empty()
-                    _ov = secure_auth_overlay([
-                        (_s1, True), (_s2, True), (_s3, False), (_s4, False),
-                    ])
+                    _paint([True, True, False, False])
+                    time.sleep(_STEP_MIN)
                     ensure_admin_plan(login_user_input)
                     _admin = is_admin(login_user_input)
 
-                    _ov.empty()
-                    _ov = secure_auth_overlay([
-                        (_s1, True), (_s2, True), (_s3, True), (_s4, False),
-                    ])
+                    _paint([True, True, True, False])
+                    time.sleep(_STEP_MIN)
                     # start() sets logged_in/username/user_email/is_admin AND
                     # writes the signed cookie so the login survives a refresh.
                     session.start(
@@ -1392,17 +1401,16 @@ Smart Multilingual AI Career Assistant
                         email=result,
                     )
 
+                    _paint([True, True, True, True],
+                           title=f"Welcome back, {login_user_input}",
+                           subtitle="Loading your interview dashboard…")
+                    time.sleep(0.9)    # let the welcome + green ticks register
+
                     _ov.empty()
-                    secure_auth_overlay(
-                        [(_s1, True), (_s2, True), (_s3, True), (_s4, True)],
-                        title=f"Welcome back, {login_user_input}",
-                        subtitle="Loading your interview dashboard…",
-                    )
-                    time.sleep(0.35)   # let the final green ticks register
                     st.session_state["auth_msg"] = ""
                     st.rerun()
                 else:
-                    _ov.empty()        # clear the overlay so the error is visible
+                    _ov.empty()        # clear the card so the error is visible
                     st.session_state["auth_msg"] = result
 
         if guest_btn:
@@ -1459,22 +1467,38 @@ Smart Multilingual AI Career Assistant
                 _c2 = "Creating your account"
                 _c3 = "Starting your 3-day free trial"
 
-                _ov = secure_auth_overlay(
-                    [(_c1, False), (_c2, False), (_c3, False)],
+                _ov = st.empty()
+                _clabels = [_c1, _c2, _c3]
+
+                secure_auth_overlay(
+                    list(zip(_clabels, [True, False, False])),
                     title="Creating your account",
                     subtitle="This will only take a moment",
+                    placeholder=_ov,
                 )
+                time.sleep(0.45)
+
                 ok, msg = register_user(su_username, su_pass, su_email)
-                _ov.empty()
 
                 if ok:
                     secure_auth_overlay(
-                        [(_c1, True), (_c2, True), (_c3, True)],
+                        list(zip(_clabels, [True, True, False])),
+                        title="Creating your account",
+                        subtitle="Setting up your free trial…",
+                        placeholder=_ov,
+                    )
+                    time.sleep(0.45)
+
+                    secure_auth_overlay(
+                        list(zip(_clabels, [True, True, True])),
                         title=f"Welcome aboard, {su_username}!",
                         subtitle="Your 3-day free trial has started",
+                        placeholder=_ov,
                     )
-                    time.sleep(0.6)   # let the welcome land before redirecting
+                    time.sleep(1.0)   # let the welcome land before redirecting
                     st.session_state["auth_page"] = "login"
+
+                _ov.empty()
 
                 st.session_state["auth_msg"] = msg
                 st.rerun()
