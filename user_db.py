@@ -179,7 +179,44 @@ def _all_users_cached():
 # Public API (unchanged signatures)
 # ---------------------------------------------------------------------------
 def hash_password(password):
+    """Hash a password with bcrypt (salted, slow — safe against rainbow tables).
+
+    Falls back to the legacy unsalted SHA-256 only if bcrypt isn't installed,
+    so the app still runs; install bcrypt to get real protection.
+    """
+    try:
+        import bcrypt
+        return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    except Exception:
+        return hashlib.sha256(password.encode()).hexdigest()
+
+
+def _legacy_sha256(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
+
+def verify_password(password, stored_hash):
+    """Check a password against either a bcrypt hash or a legacy SHA-256 hash.
+
+    Returns (ok, needs_upgrade). needs_upgrade is True when the stored hash is
+    the old unsalted SHA-256, so the caller can transparently re-hash it with
+    bcrypt on the user's next successful login — no password reset needed.
+    """
+    if not stored_hash:
+        return False, False
+
+    # bcrypt hashes start with $2a$ / $2b$ / $2y$
+    if stored_hash.startswith("$2"):
+        try:
+            import bcrypt
+            return bcrypt.checkpw(password.encode(), stored_hash.encode()), False
+        except Exception:
+            return False, False
+
+    # legacy unsalted SHA-256
+    if hashlib.sha256(password.encode()).hexdigest() == stored_hash:
+        return True, True
+    return False, False
 
 
 def get_user(username):
@@ -246,8 +283,32 @@ def login_user(username, password):
     data = get_user(username)
     if not data:
         return False, "❌ Username not found."
-    if data.get("password") != hash_password(password):
+
+    ok, needs_upgrade = verify_password(password, data.get("password", ""))
+    if not ok:
         return False, "❌ Incorrect password."
+
+    # Transparently migrate old SHA-256 hashes to bcrypt on successful login.
+    if needs_upgrade:
+        try:
+            with _conn() as conn, conn.cursor() as cur:
+                cur.execute(
+                    "SELECT data FROM app_users WHERE username = %s FOR UPDATE;",
+                    (username,),
+                )
+                row = cur.fetchone()
+                if row:
+                    d = row[0]
+                    d["password"] = hash_password(password)   # now bcrypt
+                    d["password_upgraded"] = time.strftime("%Y-%m-%d %H:%M:%S")
+                    cur.execute(
+                        "UPDATE app_users SET data = %s WHERE username = %s;",
+                        (Json(d), username),
+                    )
+            _invalidate()
+        except Exception:
+            pass  # never block a valid login just because the upgrade failed
+
     return True, data.get("email", "")
 
 
