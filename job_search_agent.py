@@ -159,12 +159,189 @@ def search_jobs(query, country_code="in", where="", max_days_old=30, results=10)
         return [], f"Job search failed: {e}"
 
 
+# ------------------------------------------------------------------ X-ray search
+# "X-ray search" = using Google's site: operator to search job boards / ATS
+# platforms directly. Costs zero API quota and often surfaces roles posted
+# straight to a company's ATS before they reach aggregators.
+XRAY_SITES = {
+    "LinkedIn Jobs": "site:linkedin.com/jobs",
+    "Naukri": "site:naukri.com",
+    "Greenhouse (startup ATS)": "site:boards.greenhouse.io",
+    "Lever (startup ATS)": "site:jobs.lever.co",
+    "Ashby (startup ATS)": "site:jobs.ashbyhq.com",
+    "Workable": "site:apply.workable.com",
+    "Wellfound / AngelList": "site:wellfound.com",
+    "Indeed": "site:indeed.com",
+    "Instahyre": "site:instahyre.com",
+    "Hirist": "site:hirist.tech",
+}
+
+# Cities that commonly have alias spellings — search all variants at once.
+_CITY_ALIASES = {
+    "bangalore": ["bangalore", "bengaluru"],
+    "bengaluru": ["bangalore", "bengaluru"],
+    "mumbai": ["mumbai", "bombay"],
+    "delhi": ["delhi", "new delhi", "ncr"],
+    "gurgaon": ["gurgaon", "gurugram"],
+    "pune": ["pune"],
+    "hyderabad": ["hyderabad"],
+    "chennai": ["chennai"],
+}
+
+
+def build_xray_query(role, city="", sites=None, extra_skills=None,
+                     exclude_senior=False, recent_only=True):
+    """Build a Google X-ray query string for job hunting."""
+    parts = []
+
+    # 1) site: block — OR them together so one search covers every source
+    site_ops = [XRAY_SITES[s] for s in (sites or []) if s in XRAY_SITES]
+    if len(site_ops) == 1:
+        parts.append(site_ops[0])
+    elif site_ops:
+        parts.append("(" + " OR ".join(site_ops) + ")")
+
+    # 2) role (exact phrase)
+    if role and role.strip():
+        parts.append(f'"{role.strip()}"')
+
+    # 3) city + its aliases (Bangalore OR Bengaluru)
+    if city and city.strip():
+        key = city.strip().lower()
+        variants = _CITY_ALIASES.get(key, [key])
+        parts.append("(" + " OR ".join(variants) + ")")
+
+    # 4) must-have skills, each an exact phrase
+    for sk in (extra_skills or []):
+        if sk and sk.strip():
+            parts.append(f'"{sk.strip()}"')
+
+    # 5) strip roles above the user's level
+    if exclude_senior:
+        parts.append("-senior -staff -principal -lead -director")
+
+    # 6) recency — Google supports after:YYYY-MM-DD
+    if recent_only:
+        import datetime as _dt
+        since = _dt.date.today() - _dt.timedelta(days=45)
+        parts.append(f"after:{since.isoformat()}")
+
+    return " ".join(parts)
+
+
+def build_x_twitter_query(role, city=""):
+    """Build a query for X/Twitter's own search — founders post openings there,
+    and replying to a founder often skips the resume pile entirely."""
+    q = '("hiring" OR "we\'re hiring" OR "now hiring")'
+    if role and role.strip():
+        q += f' "{role.strip()}"'
+    if city and city.strip():
+        key = city.strip().lower()
+        variants = _CITY_ALIASES.get(key, [key])
+        q += " (" + " OR ".join(variants) + " OR remote)"
+    return q + " min_faves:3"
+
+
+def _google_url(query):
+    from urllib.parse import quote_plus
+    return f"https://www.google.com/search?q={quote_plus(query)}"
+
+
+def _x_url(query):
+    from urllib.parse import quote_plus
+    return f"https://x.com/search?q={quote_plus(query)}&f=live"
+
+
+def render_xray_search(default_role="", default_city="", default_skills=None):
+    """Render the X-ray (Google dork) job search panel."""
+    st.markdown("### 🔎 X-ray Search (free — no API quota)")
+    st.caption("Search job boards and company ATS pages directly via Google. "
+               "Often surfaces roles *before* they hit the aggregators.")
+
+    c1, c2 = st.columns([2, 1])
+    role = c1.text_input("Role / title", value=default_role,
+                         placeholder="e.g. Software Engineer", key="xray_role")
+    city = c2.text_input("City (optional)", value=default_city,
+                         placeholder="e.g. Bangalore", key="xray_city")
+
+    sites = st.multiselect(
+        "Search these sites",
+        list(XRAY_SITES.keys()),
+        default=["LinkedIn Jobs", "Naukri", "Greenhouse (startup ATS)", "Lever (startup ATS)"],
+        key="xray_sites",
+        help="Tip: the ATS platforms (Greenhouse / Lever / Ashby) are where startups "
+             "post first — you often beat the crowd there.",
+    )
+
+    skills = st.multiselect(
+        "Must-have skills (optional)",
+        default_skills or [],
+        default=(default_skills or [])[:2],
+        key="xray_skills",
+        help="Each becomes an exact-match phrase in the query.",
+    ) if default_skills else []
+
+    o1, o2 = st.columns(2)
+    exclude_senior = o1.checkbox("Exclude senior/lead roles", value=False, key="xray_nosenior")
+    recent_only = o2.checkbox("Only recent (last 45 days)", value=True, key="xray_recent")
+
+    if not role.strip():
+        st.info("Enter a role above to build your search query.")
+        return
+
+    if not sites:
+        st.warning("Pick at least one site to search.")
+        return
+
+    gq = build_xray_query(role, city, sites, skills, exclude_senior, recent_only)
+    xq = build_x_twitter_query(role, city)
+
+    st.markdown("**Your Google query** (copy it, or use the button below):")
+    st.code(gq, language="text")
+
+    b1, b2 = st.columns(2)
+    b1.link_button("🔍 Search on Google", _google_url(gq),
+                   type="primary", use_container_width=True)
+    b2.link_button("𝕏 Search hiring posts on X", _x_url(xq),
+                   use_container_width=True)
+
+    with st.expander("💡 Why this works / how to get more out of it"):
+        st.markdown(
+            "- **ATS platforms (Greenhouse, Lever, Ashby) are the goldmine.** Startups post "
+            "there first, so you can apply directly to the company instead of being one of "
+            "800 applicants on a job board.\n"
+            "- **X/Twitter is underrated.** Founders tweet openings constantly. Replying to a "
+            "founder's hiring tweet often skips the resume screen entirely.\n"
+            "- **Tweak the query freely** — it's just text. Add `\"remote\"`, swap the city, "
+            "or delete the `after:` filter to see older posts.\n"
+            "- **X-ray search finds listings, not offers.** It's a sourcing tool: its value is "
+            "reaching postings *early* and applying direct."
+        )
+
+
 # ------------------------------------------------------------------ UI
 def render_job_search_agent():
     """Render the job search agent UI. Call this from your app or run standalone."""
     st.title("💼 Job Search Agent")
-    st.caption("Upload your resume → get matched to real job openings (via Adzuna)")
+    st.caption("Upload your resume → get matched to real job openings (via Adzuna), "
+               "or use free X-ray search to find jobs straight from company ATS pages.")
 
+    tab_resume, tab_xray = st.tabs(["📄 Resume match (Adzuna)", "🔎 X-ray search (free)"])
+
+    with tab_xray:
+        # Prefill from the resume profile if the user already ran a match.
+        _p = st.session_state.get("js_profile") or {}
+        render_xray_search(
+            default_role=_p.get("primary_search", "") or "",
+            default_city=st.session_state.get("js_city", "") or "",
+            default_skills=_p.get("skills", []) or [],
+        )
+
+    with tab_resume:
+        _render_resume_match()
+
+
+def _render_resume_match():
     # config check
     if not (_cfg("ADZUNA_APP_ID") and _cfg("ADZUNA_APP_KEY")):
         st.warning(
@@ -176,6 +353,7 @@ def render_job_search_agent():
     col1, col2 = st.columns(2)
     country = col1.selectbox("Country", list(ADZUNA_COUNTRIES.keys()), index=0)
     where = col2.text_input("City / area (optional)", placeholder="e.g. Bangalore")
+    st.session_state["js_city"] = where  # let the X-ray tab reuse the city
 
     uploaded = st.file_uploader("📄 Upload your resume", type=["pdf", "docx", "txt"])
     num_jobs = st.slider("How many jobs to show", min_value=5, max_value=50,
@@ -194,6 +372,9 @@ def render_job_search_agent():
         if not profile:
             st.error("Couldn't analyze the resume (is GROQ_API_KEY set?).")
             return
+
+        # Save so the X-ray tab can prefill role + skills from the resume.
+        st.session_state["js_profile"] = profile
 
         # Show the extracted profile
         st.markdown("### 🧠 Your Profile")
@@ -245,6 +426,9 @@ def render_job_search_agent():
                 st.markdown(f"[🔗 View & Apply]({j['url']})")
 
         st.caption("Jobs provided by Adzuna. Always verify details on the employer's site.")
+        st.info("💡 Want more? Open the **🔎 X-ray search** tab — it's now prefilled with your "
+                "role and skills, and searches company ATS pages (Greenhouse/Lever/Ashby) "
+                "where startups post first. Free, no API quota.")
 
 
 # standalone
