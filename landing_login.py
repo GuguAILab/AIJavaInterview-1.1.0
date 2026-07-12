@@ -229,16 +229,12 @@ def _render_marketing():
          "Search Jobs", "#0d9488"),
         ("📄", "#2563eb", "#eaf1ff", "Resume Preparation",
          "AI-powered resume builder with ATS-friendly templates and expert tips.", "Build Resume", "#2563eb"),
-        ("📝", "#e11d48", "#ffe4e6", "Class 10 MCQ (Odia)",
-         "Bilingual (Odia + English) MCQ practice for BSE Odisha Class 10 — Math, Science, English &amp; Social Science with instant scoring.",
-         "Start Test", "#e11d48"),
         ("🎬", "#7c3aed", "#f3edff", "Mock Interviews",
          "Realistic AI mock interviews with instant feedback and improvement tips.", "Start Mock", "#7c3aed"),
         ("📊", "#f59e0b", "#fff4e6", "Performance Analytics",
          "Track your progress with in-depth analytics and personalized insights.", "View Analytics", "#f59e0b"),
     ]
-    _card_links = {"Search Your Dream Job": "?demo=jobs", "Mock Interviews": "?demo=interview",
-                   "Class 10 MCQ (Odia)": "?demo=class10"}
+    _card_links = {"Search Your Dream Job": "?demo=jobs", "Mock Interviews": "?demo=interview"}
     cards = "".join(
         f'<a href="{_card_links.get(title, "#ml-login")}" '
         f'style="text-decoration:none;color:inherit;display:flex;'
@@ -261,10 +257,8 @@ def _render_marketing():
     )
 
     topics = ["DSA", "JAVA", "System Design", "AWS", "Devops",
-              "SpringBoot", "Python", "Java", "Agentic AI", "SQL", "Job Search", "Resume build",
-              "Class 10 MCQ"]
-    _chip_links = {"Job Search": "?demo=jobs", "Agentic AI": "?demo=interview",
-                   "Class 10 MCQ": "?demo=class10"}
+              "SpringBoot", "Python", "Java", "Agentic AI", "SQL", "Job Search", "Resume build"]
+    _chip_links = {"Job Search": "?demo=jobs", "Agentic AI": "?demo=interview"}
     chips = "".join(
         f'<a href="{_chip_links.get(t, "#ml-login")}" '
         f'style="text-decoration:none"><span class="chip">{t}</span></a>'
