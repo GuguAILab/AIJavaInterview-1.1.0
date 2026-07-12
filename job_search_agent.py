@@ -306,10 +306,7 @@ def count_results(query):
 
 
 def render_xray_search(default_role="", default_city="", default_skills=None):
-    """Render the Global Search (Google site: / X-ray) job search panel.
-    Admin-only — returns immediately for everyone else."""
-    if not _is_admin():
-        return
+    """Render the Global Search (Google site: / X-ray) job search panel."""
     st.markdown("### 🌐 Global Search")
     st.caption("Search job boards and company ATS pages directly via Google. "
                "Often surfaces roles *before* they hit the aggregators.")
@@ -364,13 +361,6 @@ def render_xray_search(default_role="", default_city="", default_skills=None):
     xq = build_x_twitter_query(role, city)
 
     st.markdown("**Your Google query** (copy it, or use the button below):")
-    # st.code() doesn't wrap; long queries scroll off-screen and look truncated.
-    st.markdown(
-        "<style>div[data-testid='stCode'] pre, div[data-testid='stCode'] code "
-        "{white-space:pre-wrap !important; word-break:break-word !important; "
-        "overflow-x:hidden !important;}</style>",
-        unsafe_allow_html=True,
-    )
     st.code(gq, language="text")
 
     b1, b2 = st.columns(2)
@@ -455,31 +445,15 @@ def render_xray_search(default_role="", default_city="", default_skills=None):
 
 
 # ------------------------------------------------------------------ UI
-def _is_admin():
-    """Global Search (incl. the Google query block) is admin-only.
-    The app already sets st.session_state["is_admin"] at login."""
-    return bool(st.session_state.get("is_admin"))
-
-
 def render_job_search_agent():
     """Render the job search agent UI. Call this from your app or run standalone."""
     st.title("💼 Job Search Agent")
-
-    # NON-ADMIN: resume match only. No tabs, no Google query block, no mention
-    # of Global Search anywhere on the page.
-    if not _is_admin():
-        st.caption("Upload your resume → get matched to real job openings.")
-        _render_resume_match()
-        return
-
-    # ADMIN: full experience.
     st.caption("Upload your resume → get matched to real job openings, "
                "or use Global Search to find jobs straight from company ATS pages.")
 
     tab_resume, tab_xray = st.tabs(["📄 Resume match", "🌐 Global search"])
 
     with tab_xray:
-        st.caption("👑 Admin only — not visible to other users.")
         # Prefill from the resume profile if the user already ran a match.
         _p = st.session_state.get("js_profile") or {}
         render_xray_search(
@@ -577,10 +551,9 @@ def _render_resume_match():
                 st.markdown(f"[🔗 View & Apply]({j['url']})")
 
         st.caption("Jobs provided by Adzuna. Always verify details on the employer's site.")
-        if _is_admin():
-            st.info("💡 Want more? Open the **🌐 Global search** tab — it's now prefilled with "
-                    "your role and skills, and searches company ATS pages "
-                    "(Greenhouse/Lever/Ashby) where startups post first.")
+        st.info("💡 Want more? Open the **🌐 Global search** tab — it's now prefilled with your "
+                "role and skills, and searches company ATS pages (Greenhouse/Lever/Ashby) "
+                "where startups post first. Free, no API quota.")
 
 
 # standalone
