@@ -413,9 +413,82 @@ def auth_progress_card(steps, title="Signing you in",
     return ph
 
 
+def _do_login(u, p, login_user, ensure_admin_plan, is_admin):
+    """Run the login, showing the branded progress card from the first frame."""
+    import time as _t
+
+    _labels = ["Checking your account", "Verifying your credentials",
+               "Loading your profile", "Preparing your dashboard"]
+    _ov = st.empty()
+
+    def _paint(flags, title=None, subtitle=None):
+        kw = {"placeholder": _ov}
+        if title:
+            kw["title"] = title
+        if subtitle:
+            kw["subtitle"] = subtitle
+        auth_progress_card(list(zip(_labels, flags)), **kw)
+
+    _STEP = 0.35  # min dwell per step so the sequence is perceivable
+
+    _paint([True, False, False, False])
+    _t.sleep(_STEP)
+
+    ok, result = login_user(u, p)
+
+    if not ok:
+        _ov.empty()
+        st.session_state["auth_msg"] = result
+        st.rerun()          # back to the normal page, error shown there
+        return
+
+    _paint([True, True, False, False])
+    _t.sleep(_STEP)
+    ensure_admin_plan(u)
+    _admin = is_admin(u)
+
+    _paint([True, True, True, False])
+    _t.sleep(_STEP)
+    try:
+        import session
+        session.start(u, is_admin=_admin, email=result)
+    except Exception:
+        st.session_state["logged_in"] = True
+        st.session_state["username"] = u
+        st.session_state["user_email"] = result
+        st.session_state["is_admin"] = _admin
+    st.session_state["auth_msg"] = ""
+
+    try:
+        import analytics
+        analytics.track_login(u)
+    except Exception:
+        pass
+
+    _paint([True, True, True, True],
+           title="Welcome back, " + str(u),
+           subtitle="Loading your interview dashboard…")
+    _t.sleep(0.8)
+
+    _ov.empty()
+    st.rerun()
+
+
 def render_login_page(login_user, ensure_admin_plan, is_admin):
     """Render the full landing page + functional login card."""
     _inject_css()
+
+    # ── FAST PATH ─────────────────────────────────────────────────────────
+    # When the user submits the login form we stash the credentials and rerun.
+    # On that rerun we land here FIRST and show the progress card immediately,
+    # skipping the whole marketing page render. Without this the browser has to
+    # paint the entire landing page (hero, cards, chips) before reaching the
+    # handler at the bottom — which is why the card felt late.
+    _pending = st.session_state.pop("_login_pending", None)
+    if _pending:
+        _do_login(_pending[0], _pending[1], login_user, ensure_admin_plan, is_admin)
+        return
+
     _render_marketing()
 
     # ---- Bottom login panel: left promo (HTML) + right form (native widgets) ----
@@ -463,63 +536,12 @@ def render_login_page(login_user, ensure_admin_plan, is_admin):
             if not u or not p:
                 st.error("⚠️ Please enter your username and password.")
             else:
-                import time as _t
-                _labels = ["Checking your account", "Verifying your credentials",
-                           "Loading your profile", "Preparing your dashboard"]
-                _ov = st.empty()   # ONE placeholder, repainted each step
-
-                def _paint(flags, title=None, subtitle=None):
-                    kw = {"placeholder": _ov}
-                    if title:
-                        kw["title"] = title
-                    if subtitle:
-                        kw["subtitle"] = subtitle
-                    auth_progress_card(list(zip(_labels, flags)), **kw)
-
-                # Login is sub-second now, so each stage needs a minimum dwell
-                # time or the card flashes past before the browser paints it.
-                _STEP = 0.45
-
-                _paint([True, False, False, False])
-                _t.sleep(_STEP)
-
-                ok, result = login_user(u, p)
-
-                if ok:
-                    _paint([True, True, False, False])
-                    _t.sleep(_STEP)
-                    ensure_admin_plan(u)
-                    _admin = is_admin(u)
-
-                    _paint([True, True, True, False])
-                    _t.sleep(_STEP)
-                    # Persistent signed-cookie session (survives page refresh).
-                    try:
-                        import session
-                        session.start(u, is_admin=_admin, email=result)
-                    except Exception:
-                        st.session_state["logged_in"] = True
-                        st.session_state["username"] = u
-                        st.session_state["user_email"] = result
-                        st.session_state["is_admin"] = _admin
-                    st.session_state["auth_msg"] = ""
-
-                    try:
-                        import analytics
-                        analytics.track_login(u)
-                    except Exception:
-                        pass
-
-                    _paint([True, True, True, True],
-                           title="Welcome back, " + str(u),
-                           subtitle="Loading your interview dashboard…")
-                    _t.sleep(0.9)
-
-                    _ov.empty()
-                    st.rerun()
-                else:
-                    _ov.empty()
-                    st.error(result)
+                # Don't do the work here — the page has already been rendered by
+                # the time we reach this point. Stash the credentials and rerun:
+                # the fast path at the top of render_login_page() picks them up
+                # and paints the progress card on the very first frame.
+                st.session_state["_login_pending"] = (u, p)
+                st.rerun()
 
         if guest_btn:
             st.session_state["logged_in"] = True
