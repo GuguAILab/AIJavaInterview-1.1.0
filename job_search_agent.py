@@ -252,9 +252,55 @@ def _x_url(query):
     return f"https://x.com/search?q={quote_plus(query)}&f=live"
 
 
+def count_results(query):
+    """Return (count, source) for a Google query, or (None, reason).
+
+    Google blocks scraping its result counts, so a real search API is required.
+    Supports either:
+      SERPER_API_KEY   (serper.dev — 2,500 free searches)
+      GOOGLE_CSE_KEY + GOOGLE_CSE_CX  (Google Custom Search JSON API — 100/day free)
+    """
+    # 1) Serper.dev
+    serper = _cfg("SERPER_API_KEY")
+    if serper:
+        try:
+            r = requests.post(
+                "https://google.serper.dev/search",
+                headers={"X-API-KEY": serper, "Content-Type": "application/json"},
+                json={"q": query, "num": 10}, timeout=15,
+            )
+            if r.status_code == 200:
+                d = r.json()
+                n = (d.get("searchInformation") or {}).get("totalResults")
+                if n is not None:
+                    return int(n), "serper"
+                return len(d.get("organic", [])), "serper"
+            return None, f"Serper error {r.status_code}"
+        except Exception as e:
+            return None, f"Serper failed: {e}"
+
+    # 2) Google Custom Search JSON API
+    cse_key, cse_cx = _cfg("GOOGLE_CSE_KEY"), _cfg("GOOGLE_CSE_CX")
+    if cse_key and cse_cx:
+        try:
+            r = requests.get(
+                "https://www.googleapis.com/customsearch/v1",
+                params={"key": cse_key, "cx": cse_cx, "q": query, "num": 1},
+                timeout=15,
+            )
+            if r.status_code == 200:
+                info = r.json().get("searchInformation") or {}
+                return int(info.get("totalResults", 0)), "google_cse"
+            return None, f"Google CSE error {r.status_code}"
+        except Exception as e:
+            return None, f"Google CSE failed: {e}"
+
+    return None, "no_key"
+
+
 def render_xray_search(default_role="", default_city="", default_skills=None):
-    """Render the X-ray (Google dork) job search panel."""
-    st.markdown("### 🔎 X-ray Search (free — no API quota)")
+    """Render the Global Search (Google site: / X-ray) job search panel."""
+    st.markdown("### 🌐 Global Search")
     st.caption("Search job boards and company ATS pages directly via Google. "
                "Often surfaces roles *before* they hit the aggregators.")
 
@@ -305,6 +351,48 @@ def render_xray_search(default_role="", default_city="", default_skills=None):
     b2.link_button("𝕏 Search hiring posts on X", _x_url(xq),
                    use_container_width=True)
 
+    # ── Per-site match counts ──
+    st.markdown("#### 📊 Matches per site")
+    has_key = bool(_cfg("SERPER_API_KEY") or (_cfg("GOOGLE_CSE_KEY") and _cfg("GOOGLE_CSE_CX")))
+
+    if not has_key:
+        st.caption("ℹ️ Live counts need a search API key (Google blocks scraping its result "
+                   "counts). Add **SERPER_API_KEY** (2,500 free searches at serper.dev) or "
+                   "**GOOGLE_CSE_KEY** + **GOOGLE_CSE_CX** to your secrets. "
+                   "Until then, open each site's results directly:")
+        for s in sites:
+            per_site_q = build_xray_query(role, city, [s], skills, exclude_senior, recent_only)
+            r1, r2 = st.columns([3, 1])
+            r1.markdown(f"**{s}** — `{XRAY_SITES[s]}`")
+            r2.link_button("Open ↗", _google_url(per_site_q), use_container_width=True)
+    else:
+        if st.button("🔢 Count matches on each site", key="xray_count"):
+            rows = []
+            prog = st.progress(0.0)
+            for i, s in enumerate(sites, start=1):
+                per_site_q = build_xray_query(role, city, [s], skills,
+                                              exclude_senior, recent_only)
+                n, src = count_results(per_site_q)
+                rows.append({"site": s, "count": n, "err": None if n is not None else src,
+                             "url": _google_url(per_site_q)})
+                prog.progress(i / len(sites))
+            prog.empty()
+            st.session_state["xray_counts"] = rows
+
+        for row in st.session_state.get("xray_counts", []):
+            r1, r2, r3 = st.columns([2.5, 1, 1])
+            r1.markdown(f"**{row['site']}**")
+            if row["count"] is None:
+                r2.markdown(f"<span style='color:#dc2626'>—</span>", unsafe_allow_html=True)
+                r1.caption(f"⚠️ {row['err']}")
+            else:
+                r2.markdown(f"### {row['count']:,}")
+            r3.link_button("Open ↗", row["url"], use_container_width=True)
+
+        if st.session_state.get("xray_counts"):
+            st.caption("Counts are Google's *estimated* totals — treat them as a rough signal "
+                       "of where the roles are, not an exact job count.")
+
     with st.expander("💡 Why this works / how to get more out of it"):
         st.markdown(
             "- **ATS platforms (Greenhouse, Lever, Ashby) are the goldmine.** Startups post "
@@ -314,7 +402,7 @@ def render_xray_search(default_role="", default_city="", default_skills=None):
             "founder's hiring tweet often skips the resume screen entirely.\n"
             "- **Tweak the query freely** — it's just text. Add `\"remote\"`, swap the city, "
             "or delete the `after:` filter to see older posts.\n"
-            "- **X-ray search finds listings, not offers.** It's a sourcing tool: its value is "
+            "- **This finds listings, not offers.** It's a sourcing tool: its value is "
             "reaching postings *early* and applying direct."
         )
 
@@ -323,10 +411,10 @@ def render_xray_search(default_role="", default_city="", default_skills=None):
 def render_job_search_agent():
     """Render the job search agent UI. Call this from your app or run standalone."""
     st.title("💼 Job Search Agent")
-    st.caption("Upload your resume → get matched to real job openings (via Adzuna), "
-               "or use free X-ray search to find jobs straight from company ATS pages.")
+    st.caption("Upload your resume → get matched to real job openings, "
+               "or use Global Search to find jobs straight from company ATS pages.")
 
-    tab_resume, tab_xray = st.tabs(["📄 Resume match (Adzuna)", "🔎 X-ray search (free)"])
+    tab_resume, tab_xray = st.tabs(["📄 Resume match", "🌐 Global search"])
 
     with tab_xray:
         # Prefill from the resume profile if the user already ran a match.
@@ -426,7 +514,7 @@ def _render_resume_match():
                 st.markdown(f"[🔗 View & Apply]({j['url']})")
 
         st.caption("Jobs provided by Adzuna. Always verify details on the employer's site.")
-        st.info("💡 Want more? Open the **🔎 X-ray search** tab — it's now prefilled with your "
+        st.info("💡 Want more? Open the **🌐 Global search** tab — it's now prefilled with your "
                 "role and skills, and searches company ATS pages (Greenhouse/Lever/Ashby) "
                 "where startups post first. Free, no API quota.")
 
