@@ -38,7 +38,7 @@ import streamlit as st
 import psycopg2
 from psycopg2 import OperationalError, InterfaceError
 from psycopg2.pool import ThreadedConnectionPool
-from psycopg2.extras import Json
+from psycopg2.extras import Json, execute_values
 
 _POOL_MIN = 1
 _POOL_MAX = int(os.environ.get("DB_POOL_MAX", "16"))
@@ -234,13 +234,33 @@ def load_users():
 
 
 def save_users(users):
+    """Upsert many users in ONE round-trip.
+
+    This used to loop and fire one INSERT per user. With ~31 users and a
+    ~700ms round-trip to the Supabase pooler that was 20+ SECONDS — and it ran
+    on every login via ensure_admin_plan(). Batched, it's a single round-trip.
+    """
+    if not users:
+        return
+    rows = [(u, Json(d)) for u, d in users.items()]
     with _conn() as conn, conn.cursor() as cur:
-        for username, data in users.items():
-            cur.execute(
-                "INSERT INTO app_users (username, data) VALUES (%s, %s) "
-                "ON CONFLICT (username) DO UPDATE SET data = EXCLUDED.data;",
-                (username, Json(data)),
-            )
+        execute_values(
+            cur,
+            "INSERT INTO app_users (username, data) VALUES %s "
+            "ON CONFLICT (username) DO UPDATE SET data = EXCLUDED.data;",
+            rows,
+        )
+    _invalidate()
+
+
+def save_user(username, data):
+    """Update a SINGLE user — use this instead of save_users() for one-user edits."""
+    with _conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            "INSERT INTO app_users (username, data) VALUES (%s, %s) "
+            "ON CONFLICT (username) DO UPDATE SET data = EXCLUDED.data;",
+            (username, Json(data)),
+        )
     _invalidate()
 
 
