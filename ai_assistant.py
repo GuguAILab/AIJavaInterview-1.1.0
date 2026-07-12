@@ -901,28 +901,6 @@ if not st.session_state["logged_in"]:
             st.error(f"Demo unavailable: {_e}")
         st.stop()
 
-    # ── Free Class 10 (Odia medium) MCQ practice test (no login required) ──
-    if _demo == "class10":
-        def _clear_demo():
-            try:
-                st.query_params.clear()
-            except Exception:
-                st.experimental_set_query_params()
-        st.info("🎁 **ମାଗଣା ଅଭ୍ୟାସ ପରୀକ୍ଷା — Class 10 (Odia Medium).** ମାଗଣାରେ ସାଇନ୍ ଅପ୍ କରି "
-                "ସବୁ ବିଷୟର ଅଧିକ ପ୍ରଶ୍ନ ଓ ପୂର୍ଣ୍ଣ ମକ୍ ଟେଷ୍ଟ ପାଆନ୍ତୁ।")
-        _b1, _b2, _b3 = st.columns([1, 1, 3])
-        if _b1.button("🔓 Sign up free", type="primary", use_container_width=True,
-                      key="demo_c10_signup"):
-            _clear_demo(); st.session_state["auth_page"] = "signup"; st.rerun()
-        if _b2.button("← Back to home", use_container_width=True, key="demo_c10_back"):
-            _clear_demo(); st.rerun()
-        try:
-            import demo_class10_odia
-            demo_class10_odia.render_demo_class10_mcq()
-        except Exception as _e:
-            st.error(f"Demo unavailable: {_e}")
-        st.stop()
-
     # ── Branded landing + login page (login view only) ──
     if st.session_state.get("auth_page", "login") == "login":
         from landing_login import render_login_page
