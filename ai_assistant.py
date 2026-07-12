@@ -95,6 +95,7 @@ def get_bank_questions(topic, difficulty, num_questions):
 
 # ── Auth now backed by Supabase (Postgres) — see user_db.py ──
 import user_db
+import session
 
 # ── User feedback (star rating + comment → DB + email) ──
 try:
@@ -718,6 +719,11 @@ iframe { display: block; margin: 0 !important; padding: 0 !important; }
 # ── Auth session state ──
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
+
+# Rehydrate a login from the signed cookie so a page refresh doesn't log the
+# user out, then auto-logout after a long idle period.
+session.restore()
+session.enforce_idle_timeout()
 if "username" not in st.session_state:
     st.session_state["username"] = ""
 if "user_email" not in st.session_state:
@@ -1248,10 +1254,13 @@ Smart Multilingual AI Career Assistant
                 ok, result = login_user(login_user_input, login_pass_input)
                 if ok:
                     ensure_admin_plan(login_user_input)
-                    st.session_state["logged_in"] = True
-                    st.session_state["username"] = login_user_input
-                    st.session_state["user_email"] = result
-                    st.session_state["is_admin"] = is_admin(login_user_input)
+                    # start() sets logged_in/username/user_email/is_admin AND
+                    # writes the signed cookie so the login survives a refresh.
+                    session.start(
+                        login_user_input,
+                        is_admin=is_admin(login_user_input),
+                        email=result,
+                    )
                     st.session_state["auth_msg"] = ""
                     st.rerun()
                 else:
@@ -1509,23 +1518,10 @@ with col_admin:
         st.empty()
 with col_logout:
     if st.button("🚪 Logout", use_container_width=True):
-        for key in [
-            "logged_in",
-            "username",
-            "user_email",
-            "auth_page",
-            "auth_msg",
-            "show_pricing",
-            "sub_msg",
-            "is_admin",
-            "show_admin",
-        ]:
-            st.session_state[key] = (
-                False
-                if key in ["logged_in", "is_admin", "show_pricing", "show_admin"]
-                else ""
-            )
-        st.session_state["auth_page"] = "login"
+        # Full wipe (cookie + ALL session state), not just an allowlist of keys.
+        # The old version left interview_answers, messages and the uploaded-resume
+        # profile behind, so the next user on the same browser inherited them.
+        session.destroy()
         st.rerun()
 
 # ── Show expiry warning ──
