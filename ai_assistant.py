@@ -272,22 +272,44 @@ def is_admin(username):
 
 
 def ensure_admin_plan(username):
-    """If user is admin, auto-promote to admin plan with no expiry."""
+    """If user is admin, auto-promote to admin plan with no expiry.
+
+    PERF: this runs on every login. It used to call save_users(ALL users),
+    which fired one INSERT per user (~31 round-trips to Supabase = 20+ seconds).
+    Now it (a) returns immediately for non-admins, (b) skips the write entirely
+    if the admin plan is already correct, and (c) writes only ONE row when it
+    does need to update.
+    """
     from datetime import datetime, timedelta
 
-    users = load_users()
-    if username not in users:
+    users = load_users()          # cached read (5s TTL) — no DB hit in a burst
+    data = users.get(username)
+    if not data:
         return
-    if is_admin(username):
-        users[username]["plan"] = "admin"
-        users[username]["role"] = "admin"
-        users[username]["subscription"] = {
-            "plan": "admin",
-            "activated": datetime.now().isoformat(),
-            "expires": (datetime.now() + timedelta(days=36500)).isoformat(),
-            "auto_renew": False,
-        }
-        save_users(users)
+
+    # Non-admins: nothing to do. (Previously we still loaded + rewrote everything.)
+    if (data.get("email", "").strip().lower()
+            != ADMIN_CONFIG["email"].strip().lower()):
+        return
+
+    # Already promoted with a valid far-future expiry? Then don't write at all.
+    sub = data.get("subscription") or {}
+    if data.get("plan") == "admin" and sub.get("plan") == "admin":
+        try:
+            if datetime.fromisoformat(sub.get("expires", "")) > datetime.now() + timedelta(days=3650):
+                return          # nothing changed — skip the DB write
+        except Exception:
+            pass
+
+    data["plan"] = "admin"
+    data["role"] = "admin"
+    data["subscription"] = {
+        "plan": "admin",
+        "activated": datetime.now().isoformat(),
+        "expires": (datetime.now() + timedelta(days=36500)).isoformat(),
+        "auto_renew": False,
+    }
+    user_db.save_user(username, data)      # ONE row, ONE round-trip
 
 
 def get_all_users_summary():
@@ -355,14 +377,15 @@ def activate_plan(username, plan_key):
         return False, "User not found."
     duration = PLANS[plan_key]["duration"]
     expires = (datetime.now() + timedelta(days=duration)).isoformat()
-    users[username]["plan"] = plan_key
-    users[username]["subscription"] = {
+    data = users[username]
+    data["plan"] = plan_key
+    data["subscription"] = {
         "plan": plan_key,
         "activated": datetime.now().isoformat(),
         "expires": expires,
         "auto_renew": True,
     }
-    save_users(users)
+    user_db.save_user(username, data)   # ONE row (was rewriting every user)
     return True, f"✅ {PLANS[plan_key]['name']} activated! Expires in {duration} days."
 
 
