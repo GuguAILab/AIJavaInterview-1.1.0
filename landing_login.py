@@ -229,12 +229,16 @@ def _render_marketing():
          "Search Jobs", "#0d9488"),
         ("📄", "#2563eb", "#eaf1ff", "Resume Preparation",
          "AI-powered resume builder with ATS-friendly templates and expert tips.", "Build Resume", "#2563eb"),
+        ("📝", "#e11d48", "#ffe4e6", "Class 10 MCQ (Odia)",
+         "Bilingual (Odia + English) MCQ practice for BSE Odisha Class 10 — Math, Science, English &amp; Social Science with instant scoring.",
+         "Start Test", "#e11d48"),
         ("🎬", "#7c3aed", "#f3edff", "Mock Interviews",
          "Realistic AI mock interviews with instant feedback and improvement tips.", "Start Mock", "#7c3aed"),
         ("📊", "#f59e0b", "#fff4e6", "Performance Analytics",
          "Track your progress with in-depth analytics and personalized insights.", "View Analytics", "#f59e0b"),
     ]
-    _card_links = {"Search Your Dream Job": "?demo=jobs", "Mock Interviews": "?demo=interview"}
+    _card_links = {"Search Your Dream Job": "?demo=jobs", "Mock Interviews": "?demo=interview",
+                   "Class 10 MCQ (Odia)": "?demo=class10"}
     cards = "".join(
         f'<a href="{_card_links.get(title, "#ml-login")}" '
         f'style="text-decoration:none;color:inherit;display:flex;'
@@ -257,8 +261,10 @@ def _render_marketing():
     )
 
     topics = ["DSA", "JAVA", "System Design", "AWS", "Devops",
-              "SpringBoot", "Python", "Java", "Agentic AI", "SQL", "Job Search", "Resume build"]
-    _chip_links = {"Job Search": "?demo=jobs", "Agentic AI": "?demo=interview"}
+              "SpringBoot", "Python", "Java", "Agentic AI", "SQL", "Job Search", "Resume build",
+              "Class 10 MCQ"]
+    _chip_links = {"Job Search": "?demo=jobs", "Agentic AI": "?demo=interview",
+                   "Class 10 MCQ": "?demo=class10"}
     chips = "".join(
         f'<a href="{_chip_links.get(t, "#ml-login")}" '
         f'style="text-decoration:none"><span class="chip">{t}</span></a>'
@@ -352,6 +358,67 @@ def _render_marketing():
     )
 
 
+def auth_progress_card(steps, title="Signing you in",
+                      subtitle="Loading your interview dashboard",
+                      placeholder=None):
+    """Branded purple->blue progress card shown during login / signup.
+
+    Rendered INLINE (never position:fixed — Streamlit nests markdown inside
+    containers that clip fixed elements, so it would never paint).
+    `steps` = list of (label, done). Pass a placeholder to repaint in place.
+    """
+    rows = []
+    spinner_used = False
+    for label, done in steps:
+        if done:
+            icon = ('<span style="display:inline-flex;align-items:center;justify-content:center;'
+                    'width:19px;height:19px;border-radius:50%;background:#ffffff;color:#7c3aed;'
+                    'font-size:11px;font-weight:800;flex:0 0 19px;">&#10003;</span>')
+            color = "rgba(255,255,255,.95)"
+        elif not spinner_used:
+            spinner_used = True
+            icon = ('<span class="apc-spin" style="display:inline-block;width:19px;height:19px;'
+                    'border:2.5px solid rgba(255,255,255,.30);border-top-color:#ffffff;'
+                    'border-radius:50%;flex:0 0 19px;"></span>')
+            color = "#ffffff"
+        else:
+            icon = ('<span style="display:inline-block;width:19px;height:19px;border-radius:50%;'
+                    'border:2px solid rgba(255,255,255,.25);flex:0 0 19px;"></span>')
+            color = "rgba(255,255,255,.45)"
+        rows.append(
+            '<div style="display:flex;align-items:center;gap:11px;margin:10px 0;'
+            'font-size:14px;color:' + color + ';">' + icon + '<span>' + label + '</span></div>'
+        )
+
+    done_n = sum(1 for _, d in steps if d)
+    pct = int(100 * done_n / max(len(steps), 1))
+
+    html = (
+        '<style>@keyframes apc-spin{to{transform:rotate(360deg)}}'
+        '.apc-spin{animation:apc-spin .8s linear infinite}'
+        '@keyframes apc-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}'
+        '.apc-card{animation:apc-in .3s ease-out}</style>'
+        '<div class="apc-card" style="max-width:430px;margin:16px auto 20px;border-radius:20px;'
+        'padding:30px 28px 24px;text-align:center;'
+        'background:linear-gradient(135deg,#7c3aed 0%,#0ea5e9 100%);'
+        'box-shadow:0 20px 45px rgba(124,58,237,.35);">'
+        '<div style="width:52px;height:52px;margin:0 auto 13px;border-radius:15px;'
+        'background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);'
+        'display:flex;align-items:center;justify-content:center;font-size:24px;">&#127908;</div>'
+        '<div style="font-size:17px;font-weight:700;color:#ffffff;">' + str(title) + '</div>'
+        '<div style="font-size:13px;color:rgba(255,255,255,.78);margin:5px 0 17px;">'
+        + str(subtitle) + '</div>'
+        '<div style="height:5px;border-radius:99px;background:rgba(255,255,255,.22);'
+        'overflow:hidden;margin-bottom:15px;">'
+        '<div style="height:100%;width:' + str(pct) + '%;border-radius:99px;background:#ffffff;'
+        'transition:width .4s ease;"></div></div>'
+        '<div style="text-align:left;">' + "".join(rows) + '</div></div>'
+    )
+    ph = placeholder if placeholder is not None else st.empty()
+    ph.markdown(html, unsafe_allow_html=True)
+    return ph
+
+
 def render_login_page(login_user, ensure_admin_plan, is_admin):
     """Render the full landing page + functional login card."""
     _inject_css()
@@ -402,21 +469,62 @@ def render_login_page(login_user, ensure_admin_plan, is_admin):
             if not u or not p:
                 st.error("⚠️ Please enter your username and password.")
             else:
+                import time as _t
+                _labels = ["Checking your account", "Verifying your credentials",
+                           "Loading your profile", "Preparing your dashboard"]
+                _ov = st.empty()   # ONE placeholder, repainted each step
+
+                def _paint(flags, title=None, subtitle=None):
+                    kw = {"placeholder": _ov}
+                    if title:
+                        kw["title"] = title
+                    if subtitle:
+                        kw["subtitle"] = subtitle
+                    auth_progress_card(list(zip(_labels, flags)), **kw)
+
+                # Login is sub-second now, so each stage needs a minimum dwell
+                # time or the card flashes past before the browser paints it.
+                _STEP = 0.45
+
+                _paint([True, False, False, False])
+                _t.sleep(_STEP)
+
                 ok, result = login_user(u, p)
+
                 if ok:
+                    _paint([True, True, False, False])
+                    _t.sleep(_STEP)
                     ensure_admin_plan(u)
-                    st.session_state["logged_in"] = True
-                    st.session_state["username"] = u
-                    st.session_state["user_email"] = result
-                    st.session_state["is_admin"] = is_admin(u)
+                    _admin = is_admin(u)
+
+                    _paint([True, True, True, False])
+                    _t.sleep(_STEP)
+                    # Persistent signed-cookie session (survives page refresh).
+                    try:
+                        import session
+                        session.start(u, is_admin=_admin, email=result)
+                    except Exception:
+                        st.session_state["logged_in"] = True
+                        st.session_state["username"] = u
+                        st.session_state["user_email"] = result
+                        st.session_state["is_admin"] = _admin
                     st.session_state["auth_msg"] = ""
+
                     try:
                         import analytics
                         analytics.track_login(u)
                     except Exception:
                         pass
+
+                    _paint([True, True, True, True],
+                           title="Welcome back, " + str(u),
+                           subtitle="Loading your interview dashboard…")
+                    _t.sleep(0.9)
+
+                    _ov.empty()
                     st.rerun()
                 else:
+                    _ov.empty()
                     st.error(result)
 
         if guest_btn:
@@ -594,8 +702,27 @@ def render_signup_page(register_user, login_user=None, ensure_admin_plan=None, i
             elif not agree:
                 st.error("⚠️ Please accept the Terms of Service to continue.")
             else:
+                import time as _t
+                _clabels = ["Checking username availability",
+                            "Creating your account",
+                            "Starting your 3-day free trial"]
+                _ov = st.empty()
+
+                auth_progress_card(list(zip(_clabels, [True, False, False])),
+                                   title="Creating your account",
+                                   subtitle="This will only take a moment",
+                                   placeholder=_ov)
+                _t.sleep(0.45)
+
                 ok, msg = register_user(su_username, su_pass, su_email)
+
                 if ok:
+                    auth_progress_card(list(zip(_clabels, [True, True, False])),
+                                       title="Creating your account",
+                                       subtitle="Setting up your free trial…",
+                                       placeholder=_ov)
+                    _t.sleep(0.45)
+
                     st.session_state["auth_page"] = "login"
                     st.session_state["auth_msg"] = msg
                     try:
@@ -608,9 +735,17 @@ def render_signup_page(register_user, login_user=None, ensure_admin_plan=None, i
                         report_email.send_welcome_email(su_email, su_username)
                     except Exception:
                         pass
-                    st.success(msg)
+
+                    auth_progress_card(list(zip(_clabels, [True, True, True])),
+                                       title="Welcome aboard, " + str(su_username) + "!",
+                                       subtitle="Your 3-day free trial has started",
+                                       placeholder=_ov)
+                    _t.sleep(1.1)
+
+                    _ov.empty()
                     st.rerun()
                 else:
+                    _ov.empty()
                     st.error(msg)
 
         st.markdown('<div class="ml-or">or continue with</div>', unsafe_allow_html=True)
