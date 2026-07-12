@@ -190,8 +190,11 @@ _CITY_ALIASES = {
 
 
 def build_xray_query(role, city="", sites=None, extra_skills=None,
-                     exclude_senior=False, recent_only=True):
-    """Build a Google X-ray query string for job hunting."""
+                     exclude_senior=False, recent_days=45):
+    """Build a Google X-ray query string for job hunting.
+
+    recent_days: 7 / 30 / 45 … or 0 (or None) for no date filter.
+    """
     parts = []
 
     # 1) site: block — OR them together so one search covers every source
@@ -221,9 +224,13 @@ def build_xray_query(role, city="", sites=None, extra_skills=None,
         parts.append("-senior -staff -principal -lead -director")
 
     # 6) recency — Google supports after:YYYY-MM-DD
-    if recent_only:
+    #    recent_days: number of days, or 0/None/False for no date filter.
+    #    (True is still accepted and means 45 days, for backward compatibility.)
+    if recent_days is True:
+        recent_days = 45
+    if recent_days:
         import datetime as _dt
-        since = _dt.date.today() - _dt.timedelta(days=45)
+        since = _dt.date.today() - _dt.timedelta(days=int(recent_days))
         parts.append(f"after:{since.isoformat()}")
 
     return " ".join(parts)
@@ -327,9 +334,20 @@ def render_xray_search(default_role="", default_city="", default_skills=None):
         help="Each becomes an exact-match phrase in the query.",
     ) if default_skills else []
 
+    RECENCY = {
+        "🔥 Last week (7 days)": 7,
+        "Last 2 weeks (14 days)": 14,
+        "Last month (30 days)": 30,
+        "Last 45 days": 45,
+        "Any time": 0,
+    }
     o1, o2 = st.columns(2)
     exclude_senior = o1.checkbox("Exclude senior/lead roles", value=False, key="xray_nosenior")
-    recent_only = o2.checkbox("Only recent (last 45 days)", value=True, key="xray_recent")
+    recency_label = o2.selectbox("Posted within", list(RECENCY.keys()), index=0,
+                                 key="xray_recency",
+                                 help="Tighter windows = fresher postings and less competition. "
+                                      "Widen it if you're getting too few results.")
+    recent_days = RECENCY[recency_label]
 
     if not role.strip():
         st.info("Enter a role above to build your search query.")
@@ -339,7 +357,7 @@ def render_xray_search(default_role="", default_city="", default_skills=None):
         st.warning("Pick at least one site to search.")
         return
 
-    gq = build_xray_query(role, city, sites, skills, exclude_senior, recent_only)
+    gq = build_xray_query(role, city, sites, skills, exclude_senior, recent_days)
     xq = build_x_twitter_query(role, city)
 
     st.markdown("**Your Google query** (copy it, or use the button below):")
@@ -352,46 +370,65 @@ def render_xray_search(default_role="", default_city="", default_skills=None):
                    use_container_width=True)
 
     # ── Per-site match counts ──
-    st.markdown("#### 📊 Matches per site")
+    st.markdown("#### 📊 Matching jobs per site")
     has_key = bool(_cfg("SERPER_API_KEY") or (_cfg("GOOGLE_CSE_KEY") and _cfg("GOOGLE_CSE_CX")))
 
-    if not has_key:
-        st.caption("ℹ️ Live counts need a search API key (Google blocks scraping its result "
-                   "counts). Add **SERPER_API_KEY** (2,500 free searches at serper.dev) or "
-                   "**GOOGLE_CSE_KEY** + **GOOGLE_CSE_CX** to your secrets. "
-                   "Until then, open each site's results directly:")
-        for s in sites:
-            per_site_q = build_xray_query(role, city, [s], skills, exclude_senior, recent_only)
-            r1, r2 = st.columns([3, 1])
-            r1.markdown(f"**{s}** — `{XRAY_SITES[s]}`")
-            r2.link_button("Open ↗", _google_url(per_site_q), use_container_width=True)
-    else:
-        if st.button("🔢 Count matches on each site", key="xray_count"):
+    # The button is always available.
+    if st.button("🔢 Count matching jobs", type="primary", key="xray_count",
+                 use_container_width=True):
+        if not has_key:
+            st.session_state["xray_counts"] = []
+            st.session_state["xray_count_err"] = (
+                "Live counts need a search API key — Google blocks scraping its result counts, "
+                "so there's no way to fetch real numbers without one.\n\n"
+                "**Enable counts (takes 2 minutes):**\n"
+                "- **Easiest:** get a free key at serper.dev (2,500 free searches) and add "
+                "`SERPER_API_KEY` to your Streamlit secrets, **or**\n"
+                "- Use Google's official Custom Search JSON API (100 searches/day free) and add "
+                "`GOOGLE_CSE_KEY` and `GOOGLE_CSE_CX`.\n\n"
+                "Meanwhile, the **Open ↗** buttons below run each site's search directly — "
+                "Google shows the result count at the top of the page."
+            )
+        else:
+            st.session_state["xray_count_err"] = None
             rows = []
-            prog = st.progress(0.0)
+            prog = st.progress(0.0, text="Counting…")
             for i, s in enumerate(sites, start=1):
                 per_site_q = build_xray_query(role, city, [s], skills,
-                                              exclude_senior, recent_only)
+                                              exclude_senior, recent_days)
                 n, src = count_results(per_site_q)
-                rows.append({"site": s, "count": n, "err": None if n is not None else src,
+                rows.append({"site": s, "op": XRAY_SITES[s], "count": n,
+                             "err": None if n is not None else src,
                              "url": _google_url(per_site_q)})
-                prog.progress(i / len(sites))
+                prog.progress(i / len(sites), text=f"Counting {s}…")
             prog.empty()
             st.session_state["xray_counts"] = rows
 
-        for row in st.session_state.get("xray_counts", []):
-            r1, r2, r3 = st.columns([2.5, 1, 1])
-            r1.markdown(f"**{row['site']}**")
-            if row["count"] is None:
-                r2.markdown(f"<span style='color:#dc2626'>—</span>", unsafe_allow_html=True)
-                r1.caption(f"⚠️ {row['err']}")
-            else:
-                r2.markdown(f"### {row['count']:,}")
-            r3.link_button("Open ↗", row["url"], use_container_width=True)
+    if st.session_state.get("xray_count_err"):
+        st.warning(st.session_state["xray_count_err"])
 
-        if st.session_state.get("xray_counts"):
-            st.caption("Counts are Google's *estimated* totals — treat them as a rough signal "
-                       "of where the roles are, not an exact job count.")
+    counts = {r["site"]: r for r in st.session_state.get("xray_counts", [])}
+
+    # One row per selected site: operator, count (if we have it), and a direct link.
+    for s in sites:
+        per_site_q = build_xray_query(role, city, [s], skills, exclude_senior, recent_days)
+        row = counts.get(s)
+        c1, c2, c3 = st.columns([2.6, 1, 1])
+        c1.markdown(f"**{s}**")
+        c1.caption(f"`{XRAY_SITES[s]}`")
+        if row and row["count"] is not None:
+            c2.markdown(f"### {row['count']:,}")
+            c2.caption("jobs")
+        elif row and row["err"]:
+            c2.markdown("—")
+            c2.caption(f"⚠️ {row['err']}")
+        else:
+            c2.markdown("—")
+        c3.link_button("Open ↗", _google_url(per_site_q), use_container_width=True)
+
+    if any(r.get("count") is not None for r in st.session_state.get("xray_counts", [])):
+        st.caption("Counts are Google's *estimated* totals — a rough signal of where the roles "
+                   "are, not an exact job count. Each count uses one API search.")
 
     with st.expander("💡 Why this works / how to get more out of it"):
         st.markdown(
