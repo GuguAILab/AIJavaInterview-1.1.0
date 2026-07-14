@@ -51,7 +51,7 @@ import json
 import os
 from datetime import date, datetime
 from typing import List, Optional
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 import streamlit as st
 
@@ -258,6 +258,21 @@ a.jb-cta::after{content:"";position:absolute;top:0;left:-60%;width:45%;height:10
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent);
   transform:skewX(-20deg);animation:jbShine 3.4s ease-in-out infinite;}
 
+/* OUR cta. Deliberately a quieter, outlined pill - NOT a second filled button.
+   If it looks like the apply button, someone clicks it believing they are
+   applying for the job. That is a broken promise to a job seeker, and it is
+   worse for us than a lost click. Apply stays primary. Always. */
+a.jb-prep,a.jb-prep:link,a.jb-prep:visited{
+  display:inline-flex !important;align-items:center;gap:6px;
+  margin-top:9px;font-size:12.5px !important;font-weight:700 !important;
+  text-decoration:none !important;color:#5b21b6 !important;
+  background:#f5f3ff !important;border:1.5px solid #ddd6fe !important;
+  padding:7px 13px !important;border-radius:9px !important;
+  transition:background .16s ease, border-color .16s ease, transform .16s ease !important;}
+a.jb-prep:hover{background:#ede9fe !important;border-color:#c4b5fd !important;
+  transform:translateY(-1px) !important;}
+.jb-prep-note{font-size:11px;color:#8b93a5;margin-top:5px;}
+
 .jb-note{font-size:11.5px;color:#5b6472;
   background:linear-gradient(135deg,#fdfdff,#f5f6fd);
   border:1px solid #e9eaf6;border-left:4px solid #7c3aed;
@@ -289,9 +304,16 @@ def _avatar(company: str) -> str:
             f'{initials}</div>')
 
 
-def render_jobs_board(limit: int = 5, show_admin_warnings: bool = False):
+def render_jobs_board(limit: int = 5, show_admin_warnings: bool = False,
+                      practice_cta: bool = True):
     """Render the openings panel. Put this on the dashboard / landing page —
-    NOT on the login form."""
+    NOT on the login form.
+
+    practice_cta: adds a quiet "Practise this interview" link under each apply
+    button. Someone reading "closes in 2 days" is the most motivated visitor you
+    will ever have — that is the moment practice is worth offering. It sends
+    ?practice=<company>, which the app reads to preselect the right track.
+    """
     jobs, bad = load_jobs()
 
     if show_admin_warnings and bad:
@@ -326,7 +348,21 @@ def render_jobs_board(limit: int = 5, show_admin_warnings: bool = False):
             # rel=noopener: the destination must not get a handle on our window.
             f'<a class="jb-cta" href="{j["url"]}" target="_blank" '
             f'rel="noopener noreferrer">Apply on official site \u2192</a>'
-            '</div></div>'
+            '</div>'
+            + (
+                '<div style="padding:0 16px 13px 76px;">'
+                f'<a class="jb-prep" href="?practice={quote(j["company"])}">'
+                f'\U0001f3a4 Practise the {j["company"]} interview '
+                f'\u2014 sign up free \u2192</a>'
+                # NOTE: this line used to say "No signup needed to try", which
+                # directly contradicted a button asking them to sign up. A user
+                # spots that in half a second, and it costs you trust on the one
+                # page where trust is the whole product. Keep the two in step.
+                '<div class="jb-prep-note">Free \u00b7 Real questions \u00b7 '
+                'Every answer scored 0\u201310 with feedback</div>'
+                '</div>' if practice_cta else ''
+            )
+            + '</div>'
         )
 
     st.markdown(
