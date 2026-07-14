@@ -431,6 +431,16 @@ def _do_login(u, p, login_user, ensure_admin_plan, is_admin):
 
     _STEP = 0.35  # min dwell per step so the sequence is perceivable
 
+    # A lock must gate the CHECK, not just the message. Otherwise an attacker
+    # simply ignores the warning and keeps testing passwords.
+    import login_guard
+    if login_guard.block_if_locked(u):
+        _ov.empty()
+        st.session_state["_login_failed_user"] = u
+        _t.sleep(1.2)
+        st.rerun()
+        return
+
     _paint([True, False, False, False])
     _t.sleep(_STEP)
 
@@ -438,8 +448,12 @@ def _do_login(u, p, login_user, ensure_admin_plan, is_admin):
 
     if not ok:
         _ov.empty()
-        st.session_state["auth_msg"] = result
-        st.rerun()          # back to the normal page, error shown there
+        # Count it ONCE, here. The page reruns after this, and a counter that
+        # ticked on every repaint would lock someone out for a single typo.
+        login_guard.record_failure(u)
+        st.session_state["_login_failed_user"] = u
+        st.session_state["auth_msg"] = ""   # guard renders the message now
+        st.rerun()
         return
 
     _paint([True, True, False, False])
@@ -458,6 +472,8 @@ def _do_login(u, p, login_user, ensure_admin_plan, is_admin):
         st.session_state["user_email"] = result
         st.session_state["is_admin"] = _admin
     st.session_state["auth_msg"] = ""
+    login_guard.clear(u)                    # success -> reset the counter
+    st.session_state.pop("_login_failed_user", None)
 
     try:
         import analytics
@@ -522,6 +538,7 @@ def render_login_page(login_user, ensure_admin_plan, is_admin):
             if st.button("Forgot Password?", use_container_width=True):
                 st.session_state["auth_page"] = "forgot"
                 st.session_state["auth_msg"] = ""
+                st.session_state.pop("_login_failed_user", None)
                 st.session_state["reset_step"] = 1
                 st.session_state["reset_username"] = ""
                 st.rerun()
@@ -529,7 +546,27 @@ def render_login_page(login_user, ensure_admin_plan, is_admin):
             if st.button("Create account →", use_container_width=True):
                 st.session_state["auth_page"] = "signup"
                 st.session_state["auth_msg"] = ""
+                st.session_state.pop("_login_failed_user", None)
                 st.rerun()
+
+        # ---- Failed-login message ----
+        # BUG FIX: auth_msg was set on failure (in _do_login) but was only ever
+        # RENDERED inside render_forgot_page. This page never displayed it, so a
+        # wrong password showed the user absolutely nothing. Silence.
+        import login_guard
+
+        def _go_forgot():
+            st.session_state["auth_page"] = "forgot"
+            st.session_state["auth_msg"] = ""
+            st.session_state["reset_step"] = 1
+            st.session_state["reset_username"] = ""
+            st.rerun()
+
+        _failed = st.session_state.get("_login_failed_user")
+        if _failed:
+            login_guard.render_message(_failed, on_forgot=_go_forgot)
+        elif st.session_state.get("auth_msg"):
+            st.error(st.session_state["auth_msg"])
 
         # ---- Handlers ----
         if login_btn:
