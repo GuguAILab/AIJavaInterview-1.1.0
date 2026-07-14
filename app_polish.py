@@ -57,27 +57,85 @@ def inject_polish():
 /* labels were light grey for a dark sidebar - too faint on white */
 .section-label{color:#64748b !important;}
 
-/* Make ONLY the config expander a big purple tap target. Scoped via the
-   #cfg-anchor marker so the Q&A review expanders stay plain — without this,
-   all five question cards turn into purple bars. */
-div:has(> #cfg-anchor) + div [data-testid="stExpander"] summary{
-  background:var(--brand-grad) !important;
-  color:#fff !important;
-  border-radius:12px !important;
-  font-size:1.05rem !important;
-  font-weight:700 !important;
-  padding:0.9rem 1rem !important;
+/* ---------------------------------------------------------------------
+   THE CONFIG BAR.  Scoped to the expander that follows #cfg-anchor, so the
+   Q&A review expanders stay plain.
+
+   The earlier selector was  div:has(> #cfg-anchor) + div  and it silently
+   matched nothing: Streamlit wraps markdown in
+     stElementContainer > stMarkdownContainer > (your html)
+   so the anchor is a GRANDchild of the container, not a child. Hence the
+   bar rendered as a plain grey strip. Both the current and the legacy class
+   names are listed so a Streamlit upgrade cannot quietly break it again.
+   --------------------------------------------------------------------- */
+[data-testid="stElementContainer"]:has(#cfg-anchor) + [data-testid="stElementContainer"] [data-testid="stExpander"],
+.element-container:has(#cfg-anchor) + .element-container [data-testid="stExpander"]{
+  border:none !important;
+  border-radius:14px !important;
+  box-shadow:0 10px 30px rgba(79,70,229,.18) !important;
+  overflow:hidden !important;
+  margin:10px 0 18px !important;
 }
-div:has(> #cfg-anchor) + div [data-testid="stExpander"] summary svg{fill:#fff !important;}
-div:has(> #cfg-anchor) + div [data-testid="stExpander"] summary p{
-  color:#fff !important; font-weight:700 !important;
+[data-testid="stElementContainer"]:has(#cfg-anchor) + [data-testid="stElementContainer"] [data-testid="stExpander"] summary,
+.element-container:has(#cfg-anchor) + .element-container [data-testid="stExpander"] summary{
+  background:var(--cta-grad) !important;
+  color:#fff !important;
+  font-size:1.06rem !important;
+  font-weight:800 !important;
+  letter-spacing:.2px !important;
+  padding:1rem 1.15rem !important;
+  border-radius:14px !important;
+  cursor:pointer !important;
+  list-style:none !important;
+  transition:filter .15s ease, transform .15s ease !important;
+}
+[data-testid="stElementContainer"]:has(#cfg-anchor) + [data-testid="stElementContainer"] [data-testid="stExpander"] summary:hover,
+.element-container:has(#cfg-anchor) + .element-container [data-testid="stExpander"] summary:hover{
+  filter:brightness(1.06) !important;
+  transform:translateY(-1px) !important;
+}
+[data-testid="stElementContainer"]:has(#cfg-anchor) + [data-testid="stElementContainer"] [data-testid="stExpander"] summary p,
+[data-testid="stElementContainer"]:has(#cfg-anchor) + [data-testid="stElementContainer"] [data-testid="stExpander"] summary span,
+.element-container:has(#cfg-anchor) + .element-container [data-testid="stExpander"] summary p{
+  color:#fff !important; font-weight:800 !important; font-size:1.06rem !important;
+}
+[data-testid="stElementContainer"]:has(#cfg-anchor) + [data-testid="stElementContainer"] [data-testid="stExpander"] summary svg,
+.element-container:has(#cfg-anchor) + .element-container [data-testid="stExpander"] summary svg{
+  fill:#fff !important; color:#fff !important; width:1.4rem !important; height:1.4rem !important;
+}
+/* the opened body: clean white card, not a bare page */
+[data-testid="stElementContainer"]:has(#cfg-anchor) + [data-testid="stElementContainer"] [data-testid="stExpander"] details > div,
+.element-container:has(#cfg-anchor) + .element-container [data-testid="stExpander"] details > div{
+  background:#fff !important;
+  border:1px solid #ecedf7 !important;
+  border-top:none !important;
+  border-radius:0 0 14px 14px !important;
+  padding:1.1rem 1.15rem 1.25rem !important;
 }
 
-/* phones: full-width, thumb-sized controls */
-@media (max-width: 900px){
-  .block-container{padding-left:.7rem !important; padding-right:.7rem !important;}
-  div[data-baseweb="select"]{font-size:1rem !important;}
-  .stButton>button{min-height:46px !important;}
+/* Fallback: if :has() is unavailable, the bar is still legible rather than
+   invisible. (Safari <15.4 / Chrome <105 - rare in 2026, but free to cover.) */
+@supports not selector(:has(*)){
+  [data-testid="stExpander"] summary{font-weight:700 !important;}
+}
+
+/* Controls inside the panel: it used to be a dark sidebar, so everything was
+   styled for dark. On a white card the old greys read as disabled inputs. */
+.sidebar-content div[data-baseweb="select"] > div,
+[data-testid="stExpander"] div[data-baseweb="select"] > div{
+  background:#fff !important;
+  border:1.5px solid #e3e5f2 !important;
+  border-radius:11px !important;
+  color:#1e2333 !important;
+  min-height:44px !important;
+}
+[data-testid="stExpander"] div[data-baseweb="select"] > div:hover{
+  border-color:var(--brand1) !important;
+}
+/* the old purple banner class - stop it bleeding past the card edge */
+.sidebar-title{
+  box-sizing:border-box !important;
+  max-width:100% !important;
 }
 
 /* ============ SIDEBAR (now empty - kept only so nothing regresses) ============ */
