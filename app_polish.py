@@ -37,7 +37,50 @@ def inject_polish():
   --cta-grad:linear-gradient(135deg,#9333ea 0%,#6d28d9 45%,#4f46e5 100%);
 }
 
-/* ============ SIDEBAR ============ */
+/* ============ CONFIG PANEL (was the sidebar) ============ */
+/* The config moved OUT of st.sidebar and into an expander in the main page,
+   because Streamlit collapses the sidebar on mobile and this app hides
+   <header>, which also hid the button that reopens it.
+
+   Consequence: every rule below that was scoped to
+   section[data-testid="stSidebar"] now matches NOTHING. The two that mattered
+   are re-declared here, unscoped, so the panel still looks right in the page. */
+
+/* .sidebar-content was a DARK box (#2d3748, white text). On the white page it
+   rendered as a dark slab with light Streamlit widgets inside it. Flatten it. */
+.sidebar-content{
+  background:transparent !important;
+  box-shadow:none !important;
+  color:inherit !important;
+  padding:0 !important;
+}
+/* labels were light grey for a dark sidebar - too faint on white */
+.section-label{color:#64748b !important;}
+
+/* Make ONLY the config expander a big purple tap target. Scoped via the
+   #cfg-anchor marker so the Q&A review expanders stay plain — without this,
+   all five question cards turn into purple bars. */
+div:has(> #cfg-anchor) + div [data-testid="stExpander"] summary{
+  background:var(--brand-grad) !important;
+  color:#fff !important;
+  border-radius:12px !important;
+  font-size:1.05rem !important;
+  font-weight:700 !important;
+  padding:0.9rem 1rem !important;
+}
+div:has(> #cfg-anchor) + div [data-testid="stExpander"] summary svg{fill:#fff !important;}
+div:has(> #cfg-anchor) + div [data-testid="stExpander"] summary p{
+  color:#fff !important; font-weight:700 !important;
+}
+
+/* phones: full-width, thumb-sized controls */
+@media (max-width: 900px){
+  .block-container{padding-left:.7rem !important; padding-right:.7rem !important;}
+  div[data-baseweb="select"]{font-size:1rem !important;}
+  .stButton>button{min-height:46px !important;}
+}
+
+/* ============ SIDEBAR (now empty - kept only so nothing regresses) ============ */
 section[data-testid="stSidebar"]{
   background:linear-gradient(180deg,#0c1330 0%,#070b1d 100%);
   border-right:1px solid rgba(124,58,237,.18);
@@ -204,7 +247,7 @@ def render_steps_card():
         'background:linear-gradient(135deg,#e0e7ff,#dbeafe);display:flex;'
         'align-items:center;justify-content:center;font-size:34px;">🚀</div>'
         '<div style="font-size:14.5px;color:#334155;line-height:1.7;">'
-        'Configure your interview in the sidebar and click<br>'
+        'Open <b>⚙️ Configure your interview</b> above, pick your topic,<br>then click<br>'
         '<span style="color:#7c3aed;font-weight:700;">🚀 Start New Interview</span><br>'
         'to begin your AI-powered mock interview.</div>'
         '</div>'
