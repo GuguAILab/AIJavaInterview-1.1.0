@@ -1,0 +1,25 @@
+[
+  {
+    "_README": "REPLACE THESE WITH REAL, VERIFIED OPENINGS BEFORE GOING LIVE.",
+    "_HOW": "Open the company's OWN careers site. Copy the role, eligibility, batch, location and closing date exactly as stated there. Paste the official URL. Do not copy from a WhatsApp forward, a Telegram channel, or an aggregator — those are where fake fresher drives come from.",
+    "_RULES": "url must be https and on a domain in OFFICIAL_DOMAINS (jobs_board.py). last_date must be YYYY-MM-DD. Any entry that is incomplete, expired, or not on an official domain is dropped automatically and never shown.",
+    "_DELETE_THIS_ENTRY": true,
+    "company": "",
+    "role": "",
+    "eligibility": "",
+    "batch": "",
+    "location": "",
+    "last_date": "",
+    "url": ""
+  },
+  {
+    "_comment": "EXAMPLE of a correctly-filled entry. The URL below is TCS's real official fresher hiring portal. VERIFY the role, eligibility, batch and closing date on that page yourself, then correct the fields — do not trust the values written here.",
+    "company": "TCS",
+    "role": "TCS NQT — Fresher Hiring",
+    "eligibility": "BSc / BCA / BE / BTech",
+    "batch": "2026",
+    "location": "Across India",
+    "last_date": "2026-08-26",
+    "url": "https://www.tcs.com/careers/india/tcs-bsc-ignite-Hiring"
+  }
+]
