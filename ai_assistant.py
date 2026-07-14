@@ -17,6 +17,7 @@ import streamlit as st
 #st.write("Secrets the app can see:", list(st.secrets.keys()))
 # Designed after-login polish + onboarding + hero banner (app_polish.py same folder)
 from app_polish import inject_polish, render_steps_card, render_hero_banner
+from jobs_board import render_jobs_board
 from groq import Groq
 
 # import speech_recognition as sr
@@ -2551,6 +2552,17 @@ if language_mode in MOCK_INTERVIEW_MODES:
 
         # Designed onboarding steps card (rocket + Configure→Improve pipeline)
         render_steps_card()
+
+        # ── Fresher openings ──────────────────────────────────────
+        # Real openings only, linked to official career pages. Expired,
+        # incomplete, or non-official links are dropped by jobs_board itself.
+        # Admins additionally see WHY an entry was rejected.
+        # NOT on the login page: that page has one job, and anything
+        # competing with it costs sign-ins.
+        render_jobs_board(
+            limit=5,
+            show_admin_warnings=st.session_state.get("is_admin", False),
+        )
 
         # Centered "Start New Interview" button in the main area
         _bc1, _bc2, _bc3 = st.columns([1, 2, 1])
