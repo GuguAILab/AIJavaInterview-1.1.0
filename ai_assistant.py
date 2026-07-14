@@ -509,7 +509,14 @@ def speak_async(text, lang="en"):
 # -------------------------------
 # 🎨 Page Config + Styles
 # -------------------------------
-st.set_page_config(page_title="AI Java Interview", page_icon="☕", layout="wide")
+st.set_page_config(
+    page_title="AI Mock Interview",
+    page_icon="☕",
+    layout="wide",
+    # MOBILE FIX: without this, Streamlit auto-collapses the sidebar on phones
+    # and the user lands on a page telling them to use a sidebar they cannot see.
+    initial_sidebar_state="expanded",
+)
 
 # Force UTF-8 charset in the browser (fixes emoji rendering on Windows)
 st.markdown('<meta charset="UTF-8">', unsafe_allow_html=True)
@@ -524,6 +531,58 @@ st.markdown("""
 #MainMenu {visibility: hidden; height: 0%;}
 header {visibility: hidden; height: 0%;}
 footer {visibility: hidden; height: 0%;}
+
+/* ===================================================================== */
+/* MOBILE FIX - DO NOT REMOVE                                            */
+/* The sidebar open button (the > hamburger) is a CHILD of <header>.      */
+/* Hiding <header> above also hid it. On desktop nobody notices, because  */
+/* the sidebar is open by default. On MOBILE Streamlit auto-collapses the */
+/* sidebar, so the user was left staring at "configure in the sidebar"    */
+/* with no sidebar and no way to open one. The app was unusable on phones.*/
+/* We force that one control back to visible and pin it above everything. */
+/* Both selectors are listed because the test id changed between          */
+/* Streamlit versions - keep both so an upgrade cannot silently re-break  */
+/* this.                                                                  */
+/* ===================================================================== */
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarCollapseButton"],
+button[kind="header"] {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: flex !important;
+    position: fixed !important;
+    top: 0.55rem !important;
+    left: 0.55rem !important;
+    z-index: 1000000 !important;
+    height: auto !important;
+    width: auto !important;
+    background: #6D4AFF !important;
+    border-radius: 10px !important;
+    padding: 0.35rem 0.5rem !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.35) !important;
+}
+[data-testid="collapsedControl"] svg,
+[data-testid="stSidebarCollapsedControl"] svg,
+button[kind="header"] svg {
+    fill: #ffffff !important;
+    color: #ffffff !important;
+    width: 1.6rem !important;
+    height: 1.6rem !important;
+}
+
+/* On phones the sidebar overlays the page - make it full-width and readable */
+@media (max-width: 768px) {
+    section[data-testid="stSidebar"] {
+        width: 85vw !important;
+        min-width: 85vw !important;
+    }
+    .block-container {
+        padding-left: 0.8rem !important;
+        padding-right: 0.8rem !important;
+        padding-top: 3.2rem !important;  /* clear the pinned hamburger */
+    }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -539,7 +598,7 @@ section[data-testid="stSidebar"] > div {
     padding-top: 0.5rem !important;
 }
 #MainMenu { visibility: hidden; }
-header[data-testid="stHeader"] { height: 0rem; }
+header[data-testid="stHeader"] { height: 0rem; overflow: visible !important; }
 body { background-color: #1f2937; }
 .main { background: #2d3748; border-radius: 14px; padding: 1rem; }
 .header {
