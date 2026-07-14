@@ -509,14 +509,7 @@ def speak_async(text, lang="en"):
 # -------------------------------
 # 🎨 Page Config + Styles
 # -------------------------------
-st.set_page_config(
-    page_title="AI Mock Interview",
-    page_icon="☕",
-    layout="wide",
-    # MOBILE FIX: Streamlit auto-collapses the sidebar on phones. Without this,
-    # users landed on a page telling them to use a sidebar they could not see.
-    initial_sidebar_state="expanded",
-)
+st.set_page_config(page_title="AI Java Interview", page_icon="☕", layout="wide")
 
 # Force UTF-8 charset in the browser (fixes emoji rendering on Windows)
 st.markdown('<meta charset="UTF-8">', unsafe_allow_html=True)
@@ -532,80 +525,15 @@ st.markdown("""
 header {visibility: hidden; height: 0%;}
 footer {visibility: hidden; height: 0%;}
 
-/* ==================================================================== */
-/* MOBILE FIX  -  DO NOT REMOVE                                         */
-/* (a) The sidebar OPEN button is a child of <header>. Hiding <header>   */
-/*     above also hid it, so mobile users could never reach the config.  */
-/* (b) The sidebar must be a full-width SLIDE-OVER DRAWER on phones.     */
-/*     Streamlit puts an inline width on the INNER wrappers, so setting  */
-/*     width on <section> alone leaves a thin dark strip with the        */
-/*     dropdowns spilling out of it. Every wrapper must be set.          */
-/* ==================================================================== */
+/* The sidebar is empty now (config moved into the page). Hide it and its
+   toggle so there is no phantom drawer to open. */
+section[data-testid="stSidebar"] {display: none !important;}
 [data-testid="collapsedControl"],
 [data-testid="stSidebarCollapsedControl"],
-[data-testid="stSidebarCollapseButton"],
-button[kind="header"] {
-    visibility: visible !important;
-    opacity: 1 !important;
-    display: flex !important;
-    position: fixed !important;
-    top: 0.55rem !important;
-    left: 0.55rem !important;
-    z-index: 1000000 !important;
-    height: auto !important;
-    width: auto !important;
-    background: #6D4AFF !important;
-    border-radius: 10px !important;
-    padding: 0.4rem 0.55rem !important;
-    box-shadow: 0 3px 12px rgba(0,0,0,.4) !important;
-}
-[data-testid="collapsedControl"] svg,
-[data-testid="stSidebarCollapsedControl"] svg,
-[data-testid="stSidebarCollapseButton"] svg,
-button[kind="header"] svg {
-    fill: #fff !important; color: #fff !important;
-    width: 1.7rem !important; height: 1.7rem !important;
-}
+[data-testid="stSidebarCollapseButton"] {display: none !important;}
 
-@media (max-width: 900px) {
-    section[data-testid="stSidebar"] {
-        width: 90vw !important;
-        min-width: 90vw !important;
-        max-width: 90vw !important;
-        box-shadow: 6px 0 30px rgba(0,0,0,.55) !important;
-        z-index: 999999 !important;
-    }
-    /* CRITICAL - miss these and you get the thin-strip bug */
-    section[data-testid="stSidebar"] > div,
-    section[data-testid="stSidebar"] > div > div,
-    section[data-testid="stSidebar"] [data-testid="stSidebarContent"],
-    section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"],
-    section[data-testid="stSidebar"] .block-container {
-        width: 100% !important;
-        min-width: 100% !important;
-        max-width: 100% !important;
-        overflow-x: hidden !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-    }
-    section[data-testid="stSidebar"] .stSelectbox,
-    section[data-testid="stSidebar"] .stSelectbox > div,
-    section[data-testid="stSidebar"] .stSlider,
-    section[data-testid="stSidebar"] .stRadio,
-    section[data-testid="stSidebar"] .stButton > button {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
-    section[data-testid="stSidebar"] label,
-    section[data-testid="stSidebar"] div[data-baseweb="select"] {
-        font-size: 1rem !important;
-    }
-    .block-container {
-        padding-top: 3.4rem !important;
-        padding-left: .8rem !important;
-        padding-right: .8rem !important;
-    }
-}
+/* Config-panel styling lives in app_polish.py, scoped to #cfg-anchor so it
+   does not also repaint the Q&A review expanders. */
 </style>
 """, unsafe_allow_html=True)
 
@@ -621,7 +549,7 @@ section[data-testid="stSidebar"] > div {
     padding-top: 0.5rem !important;
 }
 #MainMenu { visibility: hidden; }
-header[data-testid="stHeader"] { height: 0rem; overflow: visible !important; }
+header[data-testid="stHeader"] { height: 0rem; }
 body { background-color: #1f2937; }
 .main { background: #2d3748; border-radius: 14px; padding: 1rem; }
 .header {
@@ -2185,7 +2113,25 @@ if "bank_count" not in st.session_state:
 # -------------------------------
 # ⚙️ Sidebar with Redesigned UI
 # -------------------------------
-with st.sidebar:
+# ══════════════════════════════════════════════════════════════════════
+# CONFIGURATION PANEL  -  in the PAGE, not the sidebar.
+#
+# It used to live in st.sidebar. On mobile Streamlit collapses the sidebar,
+# and this app hides <header>, which also hid the only button that reopens
+# it. Mobile users landed on "configure in the sidebar" with no sidebar and
+# no way to summon one. Every CSS attempt to force the drawer open fought
+# Streamlit's own inline widths and lost.
+#
+# So: stop fighting it. The config is now an expander in the main page. It
+# is full-width, readable on a phone, works identically on desktop, and
+# depends on zero Streamlit internals that can change between versions.
+# ══════════════════════════════════════════════════════════════════════
+# Open by default until an interview is running, then fold away.
+_cfg_open = not st.session_state.get("interview_active", False)
+# Marker element. app_polish targets the expander that FOLLOWS this anchor,
+# so only the config panel gets the purple treatment.
+st.markdown('<div id="cfg-anchor"></div>', unsafe_allow_html=True)
+with st.expander("⚙️  Configure your interview", expanded=_cfg_open):
     st.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
 
     # ── Brand logo (AI Mock / Interview Platform) ──
@@ -2553,19 +2499,15 @@ with st.sidebar:
             "", type=["txt", "log", "csv"], label_visibility="collapsed"
         )
 
-    # ── START, from inside the drawer ────────────────────────────────
-    # On mobile the sidebar is a full-screen overlay. A Start button that lives
-    # only in the main body means: pick options -> close drawer -> scroll ->
-    # hunt for the button. Most people quit before step 3.
-    # This lets them configure AND start without ever leaving the drawer.
-    # Reuses the same _trigger_start flag as the main-area button, so there is
-    # exactly one start path and no duplicated logic.
+    # ── START, right here in the config panel ───────────────────────
+    # Pick your options and start, without scrolling anywhere. Reuses the
+    # same _trigger_start flag as the main-area button - one start path.
     st.markdown("---")
     if st.button(
         "🚀 Start New Interview",
         use_container_width=True,
         type="primary",
-        key="sidebar_start_btn",
+        key="cfg_start_btn",
     ):
         st.session_state["_trigger_start"] = True
         st.rerun()
@@ -2598,7 +2540,7 @@ if language_mode in MOCK_INTERVIEW_MODES:
         and not st.session_state["interview_done"]
     ):
         st.info(
-            "👈 Configure your interview in the sidebar and click **🚀 Start New Interview** to begin."
+            "👆 Open **⚙️ Configure your interview** above, pick your topic, then press **🚀 Start New Interview**."
         )
 
         # Designed onboarding steps card (rocket + Configure→Improve pipeline)
