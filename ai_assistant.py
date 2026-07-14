@@ -2139,6 +2139,29 @@ if "bank_count" not in st.session_state:
 # depends on zero Streamlit internals that can change between versions.
 # ══════════════════════════════════════════════════════════════════════
 # Open by default until an interview is running, then fold away.
+# ── Arriving from the jobs board ───────────────────────────────────
+# Set either by ?practice=<Company> (clicked while logged in) or carried
+# through signup by landing_login. Open the config for them and say which
+# company they came from - the whole point is that they arrived with a
+# specific drive in mind, and losing that context wastes the intent.
+#
+# We deliberately do NOT auto-pick a track. Guessing wrong ("we assumed you
+# want Core Java") is worse than asking, and the panel is one tap away.
+_from_job = st.query_params.get("practice") or st.session_state.pop(
+    "practice_company", None
+)
+if _from_job:
+    st.session_state["_cfg_force_open"] = True
+    st.session_state["_practice_banner"] = _from_job
+    st.query_params.clear()
+
+if st.session_state.get("_practice_banner"):
+    _co = st.session_state.pop("_practice_banner")
+    st.success(
+        f"🎤 Preparing for **{_co}**? Pick your track below and start a "
+        f"mock interview — every answer is scored with feedback on what to fix."
+    )
+
 # Collapsed by default - the header bar IS the button. One tap opens it.
 # (It also auto-opens the first time, so a brand-new user is not staring at
 #  a closed box wondering where to begin.)
