@@ -8124,5 +8124,346 @@
       "19. How would SQL vs NoSQL influence an architecture decision at scale?",
       "20. How would a document vs a relational model influence an architecture decision at scale?"
     ]
+  },
+  "Manual Testing & STLC": {
+    "Junior (0-2 yrs)": [
+      "1. What is the difference between verification and validation?",
+      "2. Explain the Software Testing Life Cycle (STLC) and its phases.",
+      "3. What is the difference between smoke testing and sanity testing?",
+      "4. What is regression testing, and when do you run it?",
+      "5. Explain the difference between functional and non-functional testing.",
+      "6. What is black box, white box, and grey box testing?",
+      "7. What is the difference between a test case and a test scenario?",
+      "8. What is positive and negative testing? Give an example of each.",
+      "9. What is retesting, and how is it different from regression testing?",
+      "10. What are entry and exit criteria in testing?",
+      "11. What is UAT, and who performs it?",
+      "12. What is exploratory testing, and when would you use it?",
+      "13. What is the difference between severity and priority?",
+      "14. What is a test plan, and what does it contain?",
+      "15. What is meant by test coverage?",
+      "16. What is ad-hoc testing?",
+      "17. Explain the difference between alpha and beta testing."
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. How do you decide what to include in a regression suite when you cannot run everything?",
+      "2. Your team is releasing weekly. How do you structure testing to keep up?",
+      "3. How do you test a feature when the requirements are incomplete or ambiguous?",
+      "4. What is risk-based testing, and how do you decide what to test first?",
+      "5. How do you estimate testing effort for a new feature?",
+      "6. A bug reached production. Walk me through what you do next.",
+      "7. What is the test pyramid, and why does it matter?",
+      "8. How do you test an application that integrates with a third-party API you can't control?",
+      "9. How would you test a payment flow end to end?",
+      "10. What is boundary value analysis and equivalence partitioning? Apply them to an age field accepting 18-60.",
+      "11. What is a traceability matrix, and why would you maintain one?",
+      "12. How do you handle a developer who says 'it works on my machine'?",
+      "13. How do you decide when a build is ready to release?",
+      "14. What is shift-left testing, and how have you applied it?",
+      "15. How do you test for backward compatibility?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. How do you build a test strategy for a product moving from quarterly to daily releases?",
+      "2. Your regression suite takes 6 hours and blocks every release. How do you fix that?",
+      "3. How do you measure whether your QA process is actually working? What metrics, and what are their failure modes?",
+      "4. How do you decide what NOT to automate?",
+      "5. How would you introduce quality ownership into a team where developers throw work over the wall to QA?",
+      "6. Defect leakage is rising quarter on quarter. How do you diagnose the root cause?",
+      "7. How do you test a system with microservices where services are released independently?",
+      "8. How would you design a testing approach for a system you cannot fully stage?",
+      "9. What is your view on the QA role in a team practising continuous deployment?",
+      "10. How do you balance test coverage against release speed when leadership wants both?",
+      "11. How would you set up quality gates in a CI/CD pipeline, and what should block a merge?",
+      "12. How do you test for data integrity in a system with eventual consistency?"
+    ]
+  },
+  "Test Case Design & Bug Reporting": {
+    "Junior (0-2 yrs)": [
+      "1. What are the essential fields of a well-written test case?",
+      "2. Write test cases for a login page.",
+      "3. What information must a good bug report contain?",
+      "4. What is the difference between a defect, an error, and a failure?",
+      "5. Explain the defect life cycle from New to Closed.",
+      "6. What does it mean when a bug is marked 'Cannot Reproduce'? What should you do?",
+      "7. What is severity vs priority? Give an example of high severity but low priority.",
+      "8. Write test cases for an ATM cash withdrawal.",
+      "9. What is equivalence partitioning? Apply it to a password field.",
+      "10. What is boundary value analysis? Apply it to a field accepting 1-100.",
+      "11. How do you write test cases when there is no documentation?",
+      "12. What is a decision table, and when is it useful?",
+      "13. What makes a test case reusable?",
+      "14. What is meant by test data, and how do you prepare it?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. A developer rejects your bug as 'not a bug'. How do you handle it?",
+      "2. How do you write test cases for a feature that is still being designed?",
+      "3. How do you prioritise which test cases to run when you have 2 hours before release?",
+      "4. Design test cases for a file upload feature. Consider everything that can go wrong.",
+      "5. How do you test a search feature? What edge cases matter?",
+      "6. Design test cases for OTP-based login.",
+      "7. How do you reduce duplicate test cases in a large suite?",
+      "8. How do you make a bug reproducible when it only occurs intermittently?",
+      "9. What is state transition testing? Apply it to an order status flow.",
+      "10. How would you test a shopping cart's discount and coupon logic?",
+      "11. How do you test error messages and validation without writing hundreds of cases?",
+      "12. What is pairwise testing, and when does it save you time?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. How do you keep a test suite of thousands of cases from rotting over time?",
+      "2. How do you audit an existing test suite for gaps and redundancy?",
+      "3. Your team writes test cases nobody reads. How do you change that?",
+      "4. How do you design tests for a feature whose acceptance criteria keep changing mid-sprint?",
+      "5. How would you standardise bug reporting across five teams that all do it differently?",
+      "6. How do you use production incidents to improve test design?",
+      "7. What is mutation testing, and would you use it? Why or why not?",
+      "8. How do you test a machine-learning-driven feature where the output is not deterministic?",
+      "9. How do you decide the right level for a test — unit, integration, or end to end?"
+    ]
+  },
+  "Selenium WebDriver": {
+    "Junior (0-2 yrs)": [
+      "1. What is Selenium WebDriver, and what can it not do?",
+      "2. What are the different types of locators in Selenium? Which do you prefer and why?",
+      "3. What is the difference between findElement and findElements?",
+      "4. What is the difference between implicit wait, explicit wait, and fluent wait?",
+      "5. What is the difference between driver.close() and driver.quit()?",
+      "6. How do you handle a dropdown in Selenium?",
+      "7. How do you handle an alert or popup?",
+      "8. How do you handle multiple browser windows or tabs?",
+      "9. What is XPath? What is the difference between absolute and relative XPath?",
+      "10. How do you handle an iframe in Selenium?",
+      "11. What is NoSuchElementException, and what causes it?",
+      "12. What is StaleElementReferenceException, and why does it happen?",
+      "13. How do you take a screenshot in Selenium?",
+      "14. How do you perform a mouse hover?",
+      "15. What is the Actions class used for?",
+      "16. How do you scroll a page in Selenium?",
+      "17. What is a headless browser, and why would you use one?",
+      "18. How do you check whether an element is displayed, enabled, or selected?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Your test passes locally but fails in the CI pipeline. How do you debug it?",
+      "2. How do you handle a dynamic element whose ID changes on every page load?",
+      "3. How do you wait for an AJAX call to complete before asserting?",
+      "4. Why is Thread.sleep() a bad idea, and what do you use instead?",
+      "5. How do you handle a web table where you need to find a row by its text?",
+      "6. How do you handle file upload and file download in Selenium?",
+      "7. What is the difference between driver.get() and driver.navigate().to()?",
+      "8. How do you run tests in parallel across browsers?",
+      "9. What is Selenium Grid, and when do you actually need it?",
+      "10. How do you handle authentication popups?",
+      "11. How do you deal with a shadow DOM element?",
+      "12. Write an XPath to find a row in a table where the first column contains a given order ID.",
+      "13. How do you handle a calendar or date picker widget?",
+      "14. What are the limitations of Selenium, and when would you reach for something else?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Your Selenium suite is flaky — 10% of runs fail randomly. Walk me through diagnosing and fixing that.",
+      "2. A 400-test suite takes 3 hours. How do you get it under 30 minutes?",
+      "3. How do you decide what to test in Selenium versus at the API layer?",
+      "4. How would you design Selenium tests to survive a UI redesign?",
+      "5. How do you handle test data setup and teardown so tests can run in parallel without colliding?",
+      "6. What is your view on Selenium vs Playwright vs Cypress in 2026? When would you migrate?",
+      "7. How do you run Selenium tests in a Docker-based CI pipeline?",
+      "8. How do you make a Selenium suite maintainable when five people are adding to it?",
+      "9. How do you report and triage failures so the team actually acts on them?",
+      "10. What is the true cost of an end-to-end UI test, and how do you justify it?"
+    ]
+  },
+  "Selenium with Java (TestNG)": {
+    "Junior (0-2 yrs)": [
+      "1. How do you set up a Selenium project with Maven? What goes in the pom.xml?",
+      "2. What is TestNG, and how is it different from JUnit?",
+      "3. Explain the TestNG annotations and the order in which they execute.",
+      "4. What is the difference between @BeforeMethod and @BeforeClass?",
+      "5. What is testng.xml used for?",
+      "6. How do you group tests in TestNG?",
+      "7. How do you set the priority of tests in TestNG?",
+      "8. What are assertions? What is the difference between hard and soft assertion?",
+      "9. How do you skip a test in TestNG?",
+      "10. How do you pass parameters to a test from testng.xml?",
+      "11. What is the @DataProvider annotation used for?",
+      "12. How do you generate a TestNG report?",
+      "13. What is the difference between == and .equals() in Java, and where does it bite you in tests?",
+      "14. How do you handle exceptions in a Selenium Java test?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. How do you implement data-driven testing with @DataProvider and Excel or CSV?",
+      "2. How do you run tests in parallel using TestNG? What can break when you do?",
+      "3. What is ITestListener, and how have you used it?",
+      "4. How do you take a screenshot automatically on test failure?",
+      "5. How do you implement retry logic for failing tests? And should you?",
+      "6. What is dependsOnMethods, and what is the risk of overusing it?",
+      "7. How do you manage WebDriver instances when running tests in parallel?",
+      "8. What is ThreadLocal, and why does it matter for parallel Selenium tests?",
+      "9. How do you integrate Extent Reports or Allure into a TestNG suite?",
+      "10. How do you read test configuration from a properties file?",
+      "11. How do you structure a Maven project for a Selenium framework?",
+      "12. How do you handle waits in a reusable way across the whole framework?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Design a Selenium + Java + TestNG framework from scratch. Walk me through the layers.",
+      "2. How do you make a TestNG suite thread-safe for parallel execution? Where do people usually get this wrong?",
+      "3. Your retry listener is masking real bugs by re-running failures until they pass. How do you handle that tension?",
+      "4. How do you integrate a TestNG Selenium suite into Jenkins or GitHub Actions?",
+      "5. How would you migrate a legacy Selenium framework with no page objects and lots of Thread.sleep()?",
+      "6. How do you version and share a test framework across multiple teams?",
+      "7. What is your approach to dependency management and driver versioning at scale?",
+      "8. How do you decide between TestNG and JUnit 5 for a new project?"
+    ]
+  },
+  "Selenium with Python (PyTest)": {
+    "Junior (0-2 yrs)": [
+      "1. How do you set up Selenium with Python? What packages do you need?",
+      "2. What is PyTest, and why is it preferred over unittest for Selenium?",
+      "3. What is a PyTest fixture? Give an example.",
+      "4. What are the fixture scopes in PyTest, and when would you use each?",
+      "5. What is conftest.py used for?",
+      "6. How do you parametrise a test in PyTest?",
+      "7. How do you skip or mark a test as expected to fail?",
+      "8. How do you run only a subset of tests using markers?",
+      "9. How do you assert in PyTest? How is it different from TestNG assertions?",
+      "10. How do you launch a browser and quit it cleanly using a fixture?",
+      "11. How do you generate an HTML report with pytest-html?",
+      "12. What is the difference between a list and a tuple in Python, and where does it come up in test data?",
+      "13. How do you handle waits in Selenium with Python?",
+      "14. How do you read test data from a CSV or JSON file in Python?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. How do you implement data-driven tests with @pytest.mark.parametrize?",
+      "2. How do you run PyTest tests in parallel with pytest-xdist? What breaks?",
+      "3. How do you take a screenshot on failure using a PyTest hook?",
+      "4. What is pytest_runtest_makereport, and how have you used it?",
+      "5. How do you share a WebDriver instance across tests safely?",
+      "6. How do you manage test configuration across environments (dev, staging, prod)?",
+      "7. How do you structure a PyTest + Selenium project?",
+      "8. How do you use fixtures to set up and tear down test data via API before a UI test?",
+      "9. What is the difference between yield fixtures and addfinalizer?",
+      "10. How do you integrate Allure reporting with PyTest?",
+      "11. How do you handle flaky tests with pytest-rerunfailures? What's the danger?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Design a Selenium + Python + PyTest framework. What are the layers and why?",
+      "2. How do you make PyTest fixtures work correctly with parallel execution?",
+      "3. How would you choose between Selenium with Python and Playwright with Python today?",
+      "4. How do you run a PyTest Selenium suite in Docker inside a CI pipeline?",
+      "5. How do you handle secrets and credentials in an automation framework?",
+      "6. Your suite has 800 tests and heavy fixture setup. How do you speed it up?",
+      "7. How do you enforce code quality in a test repo — linting, typing, review?"
+    ]
+  },
+  "Automation Frameworks (POM)": {
+    "Junior (0-2 yrs)": [
+      "1. What is the Page Object Model, and what problem does it solve?",
+      "2. What is a Page Factory?",
+      "3. Why should locators live in the page class and not in the test?",
+      "4. What should a page object contain, and what should it never contain?",
+      "5. What is a driver factory?",
+      "6. What is the difference between a hybrid framework and a data-driven framework?",
+      "7. What is a BaseTest or BaseClass, and what goes in it?",
+      "8. Why should assertions live in the test and not in the page object?",
+      "9. What is a utility class in a test framework?",
+      "10. How do you keep test data separate from test logic?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. Walk me through the folder structure of a framework you have built.",
+      "2. How do you handle common components like a header or nav bar across pages?",
+      "3. What is the Fluent Page Object pattern, and what does chaining buy you?",
+      "4. How do you handle environment-specific configuration?",
+      "5. How do you avoid duplicated waits scattered across page objects?",
+      "6. How do you design page objects for a single-page application?",
+      "7. How do you keep the framework usable by manual testers with limited coding skill?",
+      "8. What is BDD? What are the real costs of Cucumber, not just the benefits?",
+      "9. How do you handle logging in a framework, and what should be logged?",
+      "10. How do you version and distribute a shared framework library?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. Design an automation framework for a team of 10 with mixed skill levels. Justify each decision.",
+      "2. Your POM has 200 page classes and changing the login flow means touching 40 of them. What went wrong?",
+      "3. When is Page Object Model the wrong choice?",
+      "4. How do you measure the ROI of your automation framework? What would make you shut it down?",
+      "5. How do you handle test data at scale — generated, seeded, or fixed?",
+      "6. How do you keep a framework from becoming a second product that nobody has time to maintain?",
+      "7. How would you introduce automation into a team that has never automated anything?",
+      "8. What is your view on record-and-playback and low-code automation tools?"
+    ]
+  },
+  "API Testing (Postman / REST Assured)": {
+    "Junior (0-2 yrs)": [
+      "1. What is API testing, and why do it if you already test through the UI?",
+      "2. What is the difference between GET, POST, PUT, PATCH, and DELETE?",
+      "3. What do the status codes 200, 201, 400, 401, 403, 404, and 500 mean?",
+      "4. What is the difference between 401 and 403?",
+      "5. What is a REST API? What makes an API RESTful?",
+      "6. What are path parameters, query parameters, and request bodies?",
+      "7. What are request headers? Give examples you check in tests.",
+      "8. How do you validate a JSON response?",
+      "9. What is JSON schema validation, and why is it useful?",
+      "10. What is a collection in Postman? What is an environment?",
+      "11. How do you chain requests in Postman using variables?",
+      "12. What is REST Assured, and how do you write a basic test with it?",
+      "13. How do you test authentication — Basic Auth, Bearer token, API key?",
+      "14. What is idempotency? Which HTTP methods are idempotent?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. How do you write negative test cases for an API?",
+      "2. How do you test an API that depends on another service being up?",
+      "3. What is mocking or stubbing, and when do you use it in API testing?",
+      "4. How do you write assertions in REST Assured for a nested JSON response?",
+      "5. How do you handle authentication tokens that expire mid-suite?",
+      "6. How do you test pagination?",
+      "7. How do you test rate limiting?",
+      "8. How do you run a Postman collection from the command line in CI?",
+      "9. How do you validate response time in an API test?",
+      "10. How do you test file upload via an API?",
+      "11. What is contract testing, and what problem does it solve?",
+      "12. How do you use API calls to set up state for a UI test, and why is that a good idea?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. How do you design an API test strategy for a microservices system?",
+      "2. How do you prevent an API change in one service from silently breaking another?",
+      "3. How do you decide the boundary between API tests and end-to-end UI tests?",
+      "4. How do you test an event-driven system where the response is asynchronous?",
+      "5. How would you test an API for security — what do you check?",
+      "6. How do you manage test data for API tests running in parallel against a shared environment?",
+      "7. What is your approach to versioning tests alongside API versions?",
+      "8. How do you test idempotency and retries in a payment API?"
+    ]
+  },
+  "Agile, Jira & Defect Lifecycle": {
+    "Junior (0-2 yrs)": [
+      "1. What is Agile, and how is it different from Waterfall?",
+      "2. What is a sprint? What happens in sprint planning?",
+      "3. What is a daily stand-up, and what should you say in it?",
+      "4. What is a user story? What makes a good acceptance criterion?",
+      "5. What is the definition of done?",
+      "6. What is a backlog, and who owns it?",
+      "7. What is your role as a tester in a Scrum team?",
+      "8. Walk me through the defect life cycle in Jira.",
+      "9. What are the common Jira issue types, and how do you use them?",
+      "10. How do you log a bug in Jira? What do you attach?",
+      "11. What is a sprint retrospective?",
+      "12. What is velocity, and what is it not for?"
+    ],
+    "Mid-level (2-5 yrs)": [
+      "1. The sprint ends tomorrow and testing is not done. What do you do?",
+      "2. How do you handle a story that arrives in testing with no acceptance criteria?",
+      "3. How do you push back when the team wants to close a sprint with open critical bugs?",
+      "4. How do you decide whether a defect blocks a release?",
+      "5. How do you keep testing from always being the bottleneck at the end of a sprint?",
+      "6. How do you use Jira to track test coverage against stories?",
+      "7. How do you handle a product owner who keeps changing scope mid-sprint?",
+      "8. How do you report testing progress to stakeholders who don't care about test counts?",
+      "9. How do you contribute to sprint estimation as a tester?"
+    ],
+    "Senior (5+ yrs)": [
+      "1. How would you change a team's process where bugs are consistently found only in UAT?",
+      "2. How do you build a quality culture where developers write and own tests?",
+      "3. How do you handle a manager who measures QA by the number of bugs found?",
+      "4. How would you introduce shift-left testing into a team that resists it?",
+      "5. How do you manage QA across multiple squads working on one product?",
+      "6. How do you decide, as a QA lead, when a release should be blocked — and how do you defend it?",
+      "7. Defects keep bouncing between 'Cannot Reproduce' and 'Reopened'. How do you fix the process?"
+    ]
   }
 }
