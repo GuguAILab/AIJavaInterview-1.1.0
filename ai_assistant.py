@@ -1938,9 +1938,20 @@ MOCK_INTERVIEW_MODES = [
     "🗄️ SQL Mock Interview",
     "🏛️ System Design Mock Interview",
     "🧩 DSA Mock Interview",
+    "🧪 Testing Mock Interview",
 ]
 
 MOCK_INTERVIEW_TOPICS = {
+    "🧪 Testing Mock Interview": [
+        "Manual Testing & STLC",
+        "Test Case Design & Bug Reporting",
+        "Selenium WebDriver",
+        "Selenium with Java (TestNG)",
+        "Selenium with Python (PyTest)",
+        "Automation Frameworks (POM)",
+        "API Testing (Postman / REST Assured)",
+        "Agile, Jira & Defect Lifecycle",
+    ],
     "☕ Java Mock Interview": [
         "Core Java",
         "OOP & Design Patterns",
@@ -2177,6 +2188,7 @@ with st.expander("⚙️ Configure your interview", expanded=_cfg_open):
             "🗄️ SQL Mock Interview",
             "🏛️ System Design Mock Interview",
             "🧩 DSA Mock Interview",
+            "🧪 Testing Mock Interview",
             "English ↔ Hindi Tutor",
             "English ↔ Spanish Tutor",
             "System Assistant",
