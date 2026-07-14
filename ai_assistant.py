@@ -513,8 +513,8 @@ st.set_page_config(
     page_title="AI Mock Interview",
     page_icon="☕",
     layout="wide",
-    # MOBILE FIX: without this, Streamlit auto-collapses the sidebar on phones
-    # and the user lands on a page telling them to use a sidebar they cannot see.
+    # MOBILE FIX: Streamlit auto-collapses the sidebar on phones. Without this,
+    # users landed on a page telling them to use a sidebar they could not see.
     initial_sidebar_state="expanded",
 )
 
@@ -532,18 +532,15 @@ st.markdown("""
 header {visibility: hidden; height: 0%;}
 footer {visibility: hidden; height: 0%;}
 
-/* ===================================================================== */
-/* MOBILE FIX - DO NOT REMOVE                                            */
-/* The sidebar open button (the > hamburger) is a CHILD of <header>.      */
-/* Hiding <header> above also hid it. On desktop nobody notices, because  */
-/* the sidebar is open by default. On MOBILE Streamlit auto-collapses the */
-/* sidebar, so the user was left staring at "configure in the sidebar"    */
-/* with no sidebar and no way to open one. The app was unusable on phones.*/
-/* We force that one control back to visible and pin it above everything. */
-/* Both selectors are listed because the test id changed between          */
-/* Streamlit versions - keep both so an upgrade cannot silently re-break  */
-/* this.                                                                  */
-/* ===================================================================== */
+/* ==================================================================== */
+/* MOBILE FIX  -  DO NOT REMOVE                                         */
+/* (a) The sidebar OPEN button is a child of <header>. Hiding <header>   */
+/*     above also hid it, so mobile users could never reach the config.  */
+/* (b) The sidebar must be a full-width SLIDE-OVER DRAWER on phones.     */
+/*     Streamlit puts an inline width on the INNER wrappers, so setting  */
+/*     width on <section> alone leaves a thin dark strip with the        */
+/*     dropdowns spilling out of it. Every wrapper must be set.          */
+/* ==================================================================== */
 [data-testid="collapsedControl"],
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="stSidebarCollapseButton"],
@@ -559,28 +556,54 @@ button[kind="header"] {
     width: auto !important;
     background: #6D4AFF !important;
     border-radius: 10px !important;
-    padding: 0.35rem 0.5rem !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.35) !important;
+    padding: 0.4rem 0.55rem !important;
+    box-shadow: 0 3px 12px rgba(0,0,0,.4) !important;
 }
 [data-testid="collapsedControl"] svg,
 [data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="stSidebarCollapseButton"] svg,
 button[kind="header"] svg {
-    fill: #ffffff !important;
-    color: #ffffff !important;
-    width: 1.6rem !important;
-    height: 1.6rem !important;
+    fill: #fff !important; color: #fff !important;
+    width: 1.7rem !important; height: 1.7rem !important;
 }
 
-/* On phones the sidebar overlays the page - make it full-width and readable */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     section[data-testid="stSidebar"] {
-        width: 85vw !important;
-        min-width: 85vw !important;
+        width: 90vw !important;
+        min-width: 90vw !important;
+        max-width: 90vw !important;
+        box-shadow: 6px 0 30px rgba(0,0,0,.55) !important;
+        z-index: 999999 !important;
+    }
+    /* CRITICAL - miss these and you get the thin-strip bug */
+    section[data-testid="stSidebar"] > div,
+    section[data-testid="stSidebar"] > div > div,
+    section[data-testid="stSidebar"] [data-testid="stSidebarContent"],
+    section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"],
+    section[data-testid="stSidebar"] .block-container {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    section[data-testid="stSidebar"] .stSelectbox,
+    section[data-testid="stSidebar"] .stSelectbox > div,
+    section[data-testid="stSidebar"] .stSlider,
+    section[data-testid="stSidebar"] .stRadio,
+    section[data-testid="stSidebar"] .stButton > button {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] div[data-baseweb="select"] {
+        font-size: 1rem !important;
     }
     .block-container {
-        padding-left: 0.8rem !important;
-        padding-right: 0.8rem !important;
-        padding-top: 3.2rem !important;  /* clear the pinned hamburger */
+        padding-top: 3.4rem !important;
+        padding-left: .8rem !important;
+        padding-right: .8rem !important;
     }
 }
 </style>
@@ -2529,6 +2552,23 @@ with st.sidebar:
         uploaded_file = st.file_uploader(
             "", type=["txt", "log", "csv"], label_visibility="collapsed"
         )
+
+    # ── START, from inside the drawer ────────────────────────────────
+    # On mobile the sidebar is a full-screen overlay. A Start button that lives
+    # only in the main body means: pick options -> close drawer -> scroll ->
+    # hunt for the button. Most people quit before step 3.
+    # This lets them configure AND start without ever leaving the drawer.
+    # Reuses the same _trigger_start flag as the main-area button, so there is
+    # exactly one start path and no duplicated logic.
+    st.markdown("---")
+    if st.button(
+        "🚀 Start New Interview",
+        use_container_width=True,
+        type="primary",
+        key="sidebar_start_btn",
+    ):
+        st.session_state["_trigger_start"] = True
+        st.rerun()
 
     # ── 💬 User feedback (rate the app) ──
     try:
