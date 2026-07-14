@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 import sys
 
 # ── Force UTF-8 encoding on Windows (fixes emoji mojibake) ──
@@ -2048,6 +2049,19 @@ MOCK_INTERVIEW_TOPICS = {
     ],
 }
 
+# ── Subject for grading prompts ──
+# BUG FIX: evaluation and the final summary said "Java" hardcoded, so an
+# AWS/Python/DSA candidate was graded by a "Java interviewer" and told to
+# study Java topics. Derive the real subject from the selected mode + topic.
+def interview_subject(mode: str, topic: str) -> str:
+    """'AWS Mock Interview' + 'Lambda & Serverless' -> 'AWS (Lambda & Serverless)'"""
+    subject = "".join(c for c in (mode or "") if c.isascii()).strip()
+    subject = subject.replace("Mock Interview", "").strip()
+    if not subject:
+        subject = "Technical"
+    return f"{subject} ({topic})" if topic else subject
+
+
 # ── Mock Interview Session State ──
 if "interview_active" not in st.session_state:
     st.session_state["interview_active"] = False
@@ -2871,8 +2885,11 @@ if language_mode in MOCK_INTERVIEW_MODES:
                 final_answer = user_answer.strip() if not skip_q else "[Skipped]"
 
                 with st.spinner("🤖 Evaluating your answer..."):
+                    _subject = interview_subject(
+                        language_mode, st.session_state["interview_topic"]
+                    )
                     eval_prompt = (
-                        f"You are a strict but fair Java technical interviewer.\n"
+                        f"You are a strict but fair {_subject} technical interviewer.\n"
                         f"Question: {current_q}\n"
                         f"Candidate's Answer: {final_answer}\n\n"
                         f"Provide:\n"
@@ -2892,15 +2909,20 @@ if language_mode in MOCK_INTERVIEW_MODES:
                     eval_text = eval_result.choices[0].message.content.strip()
 
                 # Parse score
-                score_val = 5
-                for line in eval_text.split("\n"):
-                    if line.startswith("SCORE:"):
-                        try:
-                            score_val = int(
-                                line.replace("SCORE:", "").strip().split()[0]
-                            )
-                        except Exception:
-                            score_val = 5
+                # BUG FIX: this used to default to 5 on ANY parse failure, so a
+                # strong answer could be silently marked mediocre and the
+                # candidate would never know. Regex handles "SCORE: 8",
+                # "**SCORE:** 8/10", "Score: 8.5". If it truly cannot be read,
+                # SAY SO instead of quietly inventing a number.
+                _m = re.search(r"SCORE\D{0,6}(\d{1,2}(?:\.\d+)?)", eval_text, re.I)
+                if _m:
+                    score_val = int(round(max(0.0, min(10.0, float(_m.group(1))))))
+                else:
+                    score_val = 5
+                    eval_text = (
+                        "\u26a0\ufe0f Could not read a score for this answer - showing a "
+                        "neutral 5. The feedback below is still valid.\n\n" + eval_text
+                    )
 
                 st.session_state["interview_answers"].append(
                     {
@@ -2990,8 +3012,11 @@ if language_mode in MOCK_INTERVIEW_MODES:
             st.markdown("---")
             st.markdown("### 🤖 AI Overall Performance Analysis")
             with st.spinner("Generating final analysis..."):
+                _subject = interview_subject(
+                    language_mode, st.session_state["interview_topic"]
+                )
                 summary_prompt = (
-                    f"Java Interview Summary:\n"
+                    f"{_subject} Interview Summary:\n"
                     f"Topic: {st.session_state['interview_topic']}\n"
                     f"Level: {st.session_state['interview_difficulty']}\n"
                     f"Questions & Scores:\n"
@@ -3004,7 +3029,7 @@ if language_mode in MOCK_INTERVIEW_MODES:
                     "\nProvide:\n"
                     "1. Overall strengths (2-3 points)\n"
                     "2. Key weaknesses to improve (2-3 points)\n"
-                    "3. Top 3 Java topics to study before the next interview\n"
+                    f"3. Top 3 {_subject} topics to study before the next interview\n"
                     "4. Estimated readiness level: Not Ready / Borderline / Ready / Strongly Ready\n"
                     "Be specific and actionable."
                 )
