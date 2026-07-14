@@ -2127,30 +2127,24 @@ if "bank_count" not in st.session_state:
 # depends on zero Streamlit internals that can change between versions.
 # ══════════════════════════════════════════════════════════════════════
 # Open by default until an interview is running, then fold away.
-_cfg_open = not st.session_state.get("interview_active", False)
+# Collapsed by default - the header bar IS the button. One tap opens it.
+# (It also auto-opens the first time, so a brand-new user is not staring at
+#  a closed box wondering where to begin.)
+_cfg_open = st.session_state.pop("_cfg_force_open", False) or not st.session_state.get(
+    "_cfg_seen", False
+)
+st.session_state["_cfg_seen"] = True
+
 # Marker element. app_polish targets the expander that FOLLOWS this anchor,
-# so only the config panel gets the purple treatment.
+# so only the config panel gets the purple treatment - the Q&A review
+# expanders stay plain.
 st.markdown('<div id="cfg-anchor"></div>', unsafe_allow_html=True)
-with st.expander("⚙️  Configure your interview", expanded=_cfg_open):
+with st.expander("⚙️ Configure your interview", expanded=_cfg_open):
     st.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
 
-    # ── Brand logo (AI Mock / Interview Platform) ──
-    st.markdown(
-        '<div style="display:flex;align-items:center;gap:11px;padding:4px 2px 14px;">'
-        '<div style="width:42px;height:42px;border-radius:12px;flex:none;'
-        'background:linear-gradient(135deg,#3b82f6,#7c3aed);display:flex;'
-        'align-items:center;justify-content:center;font-size:22px;'
-        'box-shadow:0 6px 16px rgba(99,60,230,.45);">🤖</div>'
-        '<div style="line-height:1.12;">'
-        '<div style="color:#fff;font-weight:800;font-size:17px;">AI Mock</div>'
-        '<div style="color:#8ea0c4;font-size:11.5px;">Interview Platform</div>'
-        '</div></div>',
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        '<div class="sidebar-title">⚙️ Configuration</div>', unsafe_allow_html=True
-    )
+    # (Brand logo + "Configuration" banner removed: the expander header above
+    #  already says "Configure your interview". Two headers stacked on one panel
+    #  is sidebar furniture that no longer has a home.)
 
     st.markdown(
         '<div class="section-label">🎤 Input Mode</div>', unsafe_allow_html=True
