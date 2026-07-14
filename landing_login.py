@@ -494,6 +494,21 @@ def render_login_page(login_user, ensure_admin_plan, is_admin):
     """Render the full landing page + functional login card."""
     _inject_css()
 
+    # ── "Practise the TCS interview — sign up free" ───────────────────
+    # The jobs board links to ?practice=<Company>. A logged-out visitor who
+    # clicks it has just seen "closes in 2 days" - they are as motivated as
+    # they will ever be. Send them straight to signup, and remember WHICH
+    # company so the track can be preselected the moment they land.
+    _prac = st.query_params.get("practice")
+    if _prac:
+        st.session_state["practice_company"] = _prac
+        st.session_state["auth_page"] = "signup"
+        st.session_state["auth_msg"] = ""
+        # Clear it, or every rerun bounces them back to signup and they can
+        # never reach the login form again.
+        st.query_params.clear()
+        st.rerun()
+
     # ── FAST PATH ─────────────────────────────────────────────────────────
     # When the user submits the login form we stash the credentials and rerun.
     # On that rerun we land here FIRST and show the progress card immediately,
