@@ -511,16 +511,46 @@ def render_login_page(login_user, ensure_admin_plan, is_admin):
     st.markdown('<div class="ml-section"><div class="ml-loginwrap">', unsafe_allow_html=True)
     left, right = st.columns([1.05, 1])
     with left:
-        st.markdown(
-            _html("""
+        # Live fresher openings, in the promo column BESIDE the form.
+        #
+        # Deliberately NOT above or around the login form itself. That form has
+        # exactly one job, and anything competing with it costs sign-ins. Here
+        # it fills a column that was previously a generic "Success Journey"
+        # graphic - i.e. dead space - and gives a logged-out visitor a concrete
+        # reason to create an account.
+        #
+        # jobs_board drops anything expired, incomplete, or not on an official
+        # careers domain, so a stale or fake posting cannot reach this page.
+        # If there are no live openings it renders nothing at all, and the
+        # heading below is skipped too - never an empty promise.
+        try:
+            from jobs_board import load_jobs, render_jobs_board
+            _live, _ = load_jobs()
+        except Exception:
+            _live = []
+
+        if _live:
+            st.markdown(
+                _html("""
+<div class="ml-ready" style="padding-top:14px;padding-bottom:2px;">
+  <h2 style="margin-bottom:4px;">Practise for the drives that are open now</h2>
+  <p>Free mock interviews for the roles below. Create an account to start.</p>
+</div>
+                """),
+                unsafe_allow_html=True,
+            )
+            render_jobs_board(limit=3)
+        else:
+            st.markdown(
+                _html("""
 <div class="ml-ready" style="padding-top:14px;">
   <div class="ml-shield">🛡️🔒</div>
   <h2>Ready to Begin Your Success Journey?</h2>
   <p>Login to access personalized practice, mock interviews, and much more.</p>
 </div>
-            """),
-            unsafe_allow_html=True,
-        )
+                """),
+                unsafe_allow_html=True,
+            )
     with right:
         st.markdown('<div class="ml-formtitle">Login to Your Account</div>', unsafe_allow_html=True)
         with st.form("ml_login_form", clear_on_submit=False):
