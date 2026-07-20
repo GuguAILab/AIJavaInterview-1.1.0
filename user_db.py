@@ -360,3 +360,112 @@ def reset_password(username, new_password):
         )
     _invalidate()
     return True, "✅ Password reset successfully! Please log in with your new password."
+
+
+# ===========================================================================
+# INTERVIEW TRACKING
+# ---------------------------------------------------------------------------
+# Records every interview STARTED and FINISHED, per user. This is the metric
+# that actually matters — request counts and page views are noise; "how many
+# people started an interview, and how many finished" is signal.
+#
+# We use a dedicated table (not the app_users JSONB blob) so it is cheap to
+# query and aggregate. One row per event.
+# ===========================================================================
+
+def _ensure_interview_table():
+    """Create the interview_events table once (idempotent)."""
+    with _conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS interview_events (
+                id         BIGSERIAL PRIMARY KEY,
+                username   TEXT        NOT NULL,
+                event      TEXT        NOT NULL,   -- 'started' | 'finished'
+                track      TEXT,                    -- e.g. 'Java', 'Testing'
+                session_id TEXT,                    -- ties a start to its finish
+                score      REAL,                    -- final score, if finished
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS ix_ie_user  ON interview_events (username);
+            CREATE INDEX IF NOT EXISTS ix_ie_event ON interview_events (event);
+            """
+        )
+
+
+def log_interview_started(username, track=None, session_id=None):
+    """Call the moment an interview begins."""
+    _ensure_interview_table()
+    try:
+        with _conn() as conn, conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO interview_events (username, event, track, session_id)
+                   VALUES (%s, 'started', %s, %s);""",
+                (username or "guest", track, session_id),
+            )
+        return True
+    except Exception:
+        # Tracking must NEVER break the interview. Swallow errors silently.
+        return False
+
+
+def log_interview_finished(username, track=None, session_id=None, score=None):
+    """Call when the interview completes and a report is produced."""
+    _ensure_interview_table()
+    try:
+        with _conn() as conn, conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO interview_events
+                       (username, event, track, session_id, score)
+                   VALUES (%s, 'finished', %s, %s, %s);""",
+                (username or "guest", track, session_id, score),
+            )
+        return True
+    except Exception:
+        return False
+
+
+def interview_stats(username=None):
+    """Return counts. If username is given, stats for that user; else totals.
+
+    Returns dict: {started, finished, completion_rate}."""
+    _ensure_interview_table()
+    where = "WHERE username = %s" if username else ""
+    params = (username,) if username else ()
+    with _conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            f"""
+            SELECT
+                COUNT(*) FILTER (WHERE event = 'started')  AS started,
+                COUNT(*) FILTER (WHERE event = 'finished') AS finished
+            FROM interview_events {where};
+            """,
+            params,
+        )
+        started, finished = cur.fetchone()
+    started = started or 0
+    finished = finished or 0
+    rate = round(100 * finished / started, 1) if started else 0.0
+    return {"started": started, "finished": finished, "completion_rate": rate}
+
+
+def interview_leaderboard(limit=20):
+    """Per-user counts, most active first. Great for an admin panel."""
+    _ensure_interview_table()
+    with _conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT
+                username,
+                COUNT(*) FILTER (WHERE event = 'started')  AS started,
+                COUNT(*) FILTER (WHERE event = 'finished') AS finished,
+                MAX(created_at)                            AS last_active
+            FROM interview_events
+            GROUP BY username
+            ORDER BY finished DESC, started DESC
+            LIMIT %s;
+            """,
+            (limit,),
+        )
+        cols = ["username", "started", "finished", "last_active"]
+        return [dict(zip(cols, row)) for row in cur.fetchall()]
