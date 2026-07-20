@@ -1828,6 +1828,39 @@ if st.session_state.get("show_admin") and st.session_state.get("is_admin"):
 
     st.markdown("---")
 
+    # ── Interview analytics (the metric that actually matters) ─────────────
+    st.markdown("### 🎯 Interview Analytics")
+    try:
+        _stats = user_db.interview_stats()
+        a1, a2, a3 = st.columns(3)
+        a1.metric("🚀 Interviews Started", _stats["started"])
+        a2.metric("🏁 Interviews Finished", _stats["finished"])
+        a3.metric("✅ Completion Rate", f"{_stats['completion_rate']}%")
+
+        # a low completion rate is the single most important thing to notice
+        if _stats["started"] >= 5 and _stats["completion_rate"] < 50:
+            st.warning(
+                f"⚠️ Only {_stats['completion_rate']}% of interviews are being "
+                "finished. People are dropping off mid-interview — worth "
+                "investigating where."
+            )
+
+        # per-user leaderboard
+        _lb = user_db.interview_leaderboard(limit=25)
+        if _lb:
+            st.markdown("#### Per-user activity")
+            import pandas as _pd
+            _df = _pd.DataFrame(_lb)
+            _df.columns = ["User", "Started", "Finished", "Last active"]
+            st.dataframe(_df, use_container_width=True, hide_index=True)
+        else:
+            st.caption("No interviews recorded yet. Numbers appear here once "
+                       "users start running interviews.")
+    except Exception as _e:
+        st.caption(f"Interview analytics unavailable: {_e}")
+
+    st.markdown("---")
+
     # ── Plan Distribution ──
     st.markdown("### 📊 Plan Distribution")
     for pk, cnt in plan_counts.items():
