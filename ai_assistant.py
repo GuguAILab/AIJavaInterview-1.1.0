@@ -2376,6 +2376,20 @@ with st.expander("⚙️ Configure your interview", expanded=_cfg_open):
             st.session_state["waiting_for_answer"] = False
             st.session_state["interview_questions"] = []
 
+            # ── Track: interview STARTED ──────────────────────────────────
+            import uuid as _uuid
+            _sid = str(_uuid.uuid4())
+            st.session_state["interview_session_id"] = _sid
+            st.session_state["_finish_logged"] = False   # reset per interview
+            try:
+                user_db.log_interview_started(
+                    username=st.session_state.get("username", "guest"),
+                    track=st.session_state.get("interview_topic"),
+                    session_id=_sid,
+                )
+            except Exception:
+                pass   # tracking must never block the interview
+
             # Generate questions via Groq or load from bank
             with st.spinner("🤖 Preparing interview questions..."):
                 topic = st.session_state["interview_topic"]
@@ -3046,6 +3060,19 @@ if language_mode in MOCK_INTERVIEW_MODES:
         else:
             scores = [a["score"] for a in answers]
             avg_score = sum(scores) / total_q
+
+            # ── Track: interview FINISHED (once per interview) ────────────
+            if not st.session_state.get("_finish_logged", False):
+                st.session_state["_finish_logged"] = True
+                try:
+                    user_db.log_interview_finished(
+                        username=st.session_state.get("username", "guest"),
+                        track=st.session_state.get("interview_topic"),
+                        session_id=st.session_state.get("interview_session_id"),
+                        score=round(float(avg_score), 2),
+                    )
+                except Exception:
+                    pass
             passed = avg_score >= 6.0
 
             st.balloons() if passed else None
